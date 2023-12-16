@@ -14,7 +14,7 @@ const Footer = () => {
         justifyContent: "center",
       }}
     >
-      <Typography variant='h6' color="#1a237e" sx={{ }}>Result Management Portal v2.0.2</Typography>
+      <Typography variant='h6' color="#1a237e" sx={{ }}>Result Management Portal v2.0.3</Typography>
     </Paper>
   )
 }
