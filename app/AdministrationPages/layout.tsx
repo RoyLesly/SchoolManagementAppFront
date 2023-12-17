@@ -1,10 +1,14 @@
 "use client";
-import { styled, Box } from "@mui/material";
 import React, { useState } from "react";
-import Header from "@/app/AdministrationPages/layout/header/Header";
 import Sidebar from "@/app/AdministrationPages/layout/sidebar/Sidebar";
 import MyProvider from "@/Redux/MyProvider";
+import { IconBellRinging, IconMenu } from '@tabler/icons-react';
 import Footer from "@/app/AdministrationPages/layout/footer/Footer";
+import { Box, AppBar, Toolbar, styled, Stack, IconButton, Badge, Button } from '@mui/material';
+import Profile from "./layout/header/Profile";
+// import { useSelector } from "react-redux";
+import { selectAuthUser } from "@/Redux/Reducers/sliceUser";
+import WithAuthentication from "../(AuthenticationPages)/auth/WithAuthentication";
 
 
 const MainWrapper = styled("div")(() => ({
@@ -24,12 +28,30 @@ const PageWrapper = styled("div")(() => ({
 
 
 
-export default function RootLayout({
+const RootLayout = ({
   children,
 }: {
   children: React.ReactNode;
-}) {
+}) => {
   const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
+  console.log(isMobileSidebarOpen);
+  // const storeUser = useSelector(selectAuthUser);
+
+  const AppBarStyled = styled(AppBar)(({ theme }) => ({
+    boxShadow: 'none',
+    background: theme.palette.background.paper,
+    justifyContent: 'center',
+    backdropFilter: 'blur(4px)',
+    [theme.breakpoints.up('lg')]: {
+      minHeight: '70px',
+    },
+  }));
+  const ToolbarStyled = styled(Toolbar)(({ theme }) => ({
+    width: '100%',
+    color: theme.palette.text.secondary,
+  }));
+
   return (
     <MyProvider>
       <MainWrapper className="mainwrapper">
@@ -42,9 +64,47 @@ export default function RootLayout({
         <PageWrapper className="page-wrapper m-2">
 
           {/* Header */}
-          <Header 
-          // toggleMobileSidebar={setMobileSidebarOpen} 
-          />
+          {/* <Header
+            toggleMobileSidebar={setMobileSidebarOpen}
+          /> */}
+          <AppBarStyled position="sticky" color="default">
+            <ToolbarStyled>
+              <IconButton
+                color="inherit"
+                aria-label="menu"
+                onClick={() => setMobileSidebarOpen(true)}
+                sx={{
+                  display: {
+                    lg: "none",
+                    xs: "inline",
+                  },
+                }}
+              >
+                <IconMenu width="20" height="20" />
+              </IconButton>
+
+
+              <IconButton
+                size="large"
+                aria-label="show 11 new notifications"
+                color="inherit"
+                aria-controls="msgs-menu"
+                aria-haspopup="true"
+              >
+                <Badge variant="dot" color="primary">
+                  <IconBellRinging size="21" stroke="1.5" />
+                </Badge>
+
+              </IconButton>
+              <Box flexGrow={1} />
+              <Stack spacing={1} direction="row" alignItems="center">
+                <Button variant="contained" disableElevation color="primary"  target="_blank" href="">
+                  {/* {storeUser.id ? storeUser.username : "-"} */}
+                </Button>
+                <Profile />
+              </Stack>
+            </ToolbarStyled>
+          </AppBarStyled>
 
           {/* PageContent */}
           <Box 
@@ -58,12 +118,13 @@ export default function RootLayout({
           </Box>
 
           {/* PageFooter */}
-          {/* <Box px={2} py={2} sx={{ backgroundColor: "#AFCFCF", justifyItems: "center" }}> */}
             <Footer />
-          {/* </Box> */}
           
         </PageWrapper>
       </MainWrapper>
     </MyProvider>
   );
 }
+
+export default (RootLayout);
+// export default WithAuthentication(RootLayout);

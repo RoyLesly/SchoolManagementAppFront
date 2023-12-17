@@ -8,17 +8,18 @@ import Profile from './Profile';
 import { IconBellRinging, IconMenu } from '@tabler/icons-react';
 import { selectAuthUser } from '@/Redux/Reducers/sliceUser';
 import { useRouter } from 'next/navigation';
-import { notification } from 'antd';
-import NotLoggedInModal from './NotLoggedInModal';
 import WithAuthentication from '@/app/(AuthenticationPages)/auth/WithAuthentication';
 
+
 interface ItemType {
-  toggleMobileSidebar: any;
+  toggleMobileSidebar: any
 }
 
-const Header:FC<ItemType> = ({toggleMobileSidebar}) => {
+const Header = ({
+  toggleMobileSidebar,
+}: ItemType) => {
+
   const storeUser = useSelector(selectAuthUser);
-  const router = useRouter();
 
   const AppBarStyled = styled(AppBar)(({ theme }) => ({
     boxShadow: 'none',
@@ -66,7 +67,6 @@ const Header:FC<ItemType> = ({toggleMobileSidebar}) => {
         </IconButton>
         <Box flexGrow={1} />
         <Stack spacing={1} direction="row" alignItems="center">
-          {/* <Button variant="contained" disableElevation color="primary"  target="_blank" href="https://adminmart.com/product/modernize-next-js-admin-dashboard"> */}
           <Button variant="contained" disableElevation color="primary"  target="_blank" href="">
             {storeUser.id ? storeUser.username : "-"}
           </Button>
@@ -78,7 +78,7 @@ const Header:FC<ItemType> = ({toggleMobileSidebar}) => {
 };
 
 Header.propTypes = {
-  // sx: PropTypes.object,
+  sx: PropTypes.object,
 };
 
 export default WithAuthentication(Header);

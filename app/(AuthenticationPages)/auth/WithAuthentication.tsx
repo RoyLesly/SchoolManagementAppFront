@@ -13,10 +13,7 @@ const WithAuthentication = (Component: any) => {
         const storeUser = useSelector(selectAuthUser)
         const router = useRouter()
         const [ isAuthenticated, setIsAuthenticated ] = useState<boolean>(false)
-        console.log(storeUser.id)
         useEffect(() => {
-            console.log(storeUser.id)
-            console.log(storeUser)
             if (storeUser.id > 0){
                 setIsAuthenticated(true)
             } else {
@@ -25,10 +22,9 @@ const WithAuthentication = (Component: any) => {
             }
         }, [storeUser, router]);
 
-        return !!isAuthenticated ? <Component /> 
+        return !!isAuthenticated ? <MyProvider><Component /></MyProvider>
             : 
         <NotAuthenticated />
-        // <>No T</>
     };
 
     return AuthComponent;
