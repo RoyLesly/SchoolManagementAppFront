@@ -4,21 +4,23 @@ import {
   Typography,
   Button,
   Stack,
+  Grid,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { LoginUrl } from "@/Utils/Config";
+import { CheckUserUrl } from "@/Utils/Config";
 import { axiosRequest } from "@/Utils/functions";
 import {  Divider, notification } from "antd";
 import { useDispatch } from "react-redux";
 import { addAuthUser } from "@/Redux/Reducers/sliceUser";
 import { useRouter } from "next/navigation";
 import MyFormInputText from "@/Designs/MyFormInputText";
-import { DoneAll, DoneAllRounded } from "@mui/icons-material";
 
 interface loginType {
   title?: string;
   subtitle?: JSX.Element | JSX.Element[];
   subtext?: JSX.Element | JSX.Element[];
+  setShowMe: any
+  setUserID: any
 }
 
 interface IFormInput {
@@ -29,7 +31,7 @@ const defaultValues = {
   username: "",
 };
 
-const AuthCheckUser = ({ title, subtitle, subtext }: loginType) => {
+const AuthCheckUser = ({ title, subtitle, subtext, setShowMe, setUserID }: loginType) => {
   const [ loading, setLoading ] = useState(false);
   const dispatch = useDispatch();
   const router = useRouter()
@@ -41,7 +43,7 @@ const AuthCheckUser = ({ title, subtitle, subtext }: loginType) => {
   const onSubmit = async (data: IFormInput) => {
     const response = await axiosRequest<any>({
         method: "post",
-        url: LoginUrl,
+        url: CheckUserUrl,
         payload: data,
         hasAuth: true,
     })
@@ -50,22 +52,22 @@ const AuthCheckUser = ({ title, subtitle, subtext }: loginType) => {
       if (response.data["errors"]){
         notification.error({
           "message": "NOT FOUND !!!",
-          "description": "User Does Not Exist In Data Base"
+          "description": JSON.stringify(response.data["errors"])
         })
       }
-      if (response.data["success"]["user"]){
-        const user = response.data["success"]['user']
-        dispatch(addAuthUser(user))
+      console.log(response.data["success"])
+      if (response.data["success"]["user_id"]){
+        setUserID(response.data["success"]['user_id'])
         notification.success({
           "message": "CREATE PASSWORD !!!",
           "description": "User Found"
         })
-        router.push("/CreatePassword")
+        setShowMe(true)
       }
       else {
         notification.success({
           "message": "HAS PASSWORD !!!",
-          "description": "User Found => LOGIN"
+          "description": JSON.stringify(response.data["success"])
         })
         router.push("/")  
       }    
@@ -75,6 +77,13 @@ const AuthCheckUser = ({ title, subtitle, subtext }: loginType) => {
 
   return (
     <>
+      <Box display="flex" alignItems="center" justifyContent="center">
+        <Grid item xs={12} sm={12} lg={4} xl={3} display="flex" justifyContent="center" alignItems="center">
+          <Typography variant="subtitle1" textAlign="center" color="textSecondary" mb={1}>
+            CHECK USER
+          </Typography>
+        </Grid>
+      </Box>
       {title ? (
         <Typography fontWeight="700" variant="h2" mb={1}>
           {title}

@@ -176,7 +176,7 @@ const TableProfiles:FC<UserProfilesProps> = ({ userprofiletype }) => {
                                                 <Button 
                                                     onClick={ () => { 
                                                         dispatch(addChoosenUserProfile(item)); 
-                                                        router.push(`/AdministrationPages/AccountSettings/${item.user.id}`) 
+                                                        router.push(`/AdministrationPages/AccountSettings`) 
                                                     }} 
                                                     variant="contained" disableElevation color="primary">
                                                     View

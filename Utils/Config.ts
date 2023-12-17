@@ -1,6 +1,6 @@
 // const BaseUrl = "http://127.0.0.1:8000/";
-const BaseUrl = "https://st-joan.com/back/"
-// const BaseUrl = "http://172.16.10.247:8000/"
+// const BaseUrl = "https://st-joan.com/back/"
+const BaseUrl = "http://172.16.10.247:8000/"
 // const BaseUrl = "http://192.168.199.177:8000/"
 // const BaseUrl = "http://192.168.43.143:8000/"
 // const BaseUrl = "http://192.168.100.4:8000/"
@@ -23,6 +23,7 @@ export const DeletePermGroupUrl = BaseUrl + "user/groups";
 export const PermissionsUrl = BaseUrl + "user/permissions";
 
 export const LoginUrl = BaseUrl + "user/login";
+export const CheckUserUrl = BaseUrl + "user/check-user";
 export const MeUrl = BaseUrl + "user/me";
 export const UserCRUDUrl = BaseUrl + "user/crud-user";
 export const AssignGroupToUserUrl = BaseUrl + "user/assign-group-to-user";

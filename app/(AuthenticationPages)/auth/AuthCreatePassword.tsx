@@ -4,6 +4,7 @@ import {
   Typography,
   Button,
   Stack,
+  Grid,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { CreateUpdateResetPasswordUrl } from "@/Utils/Config";
@@ -18,6 +19,8 @@ interface loginType {
   title?: string;
   subtitle?: JSX.Element | JSX.Element[];
   subtext?: JSX.Element | JSX.Element[];
+  setShowMe: any
+  userID: number
 }
 
 interface IFormInput {
@@ -29,10 +32,8 @@ const defaultValues = {
   confirm_password: "",
 };
 
-const AuthCreatePassword = ({ title, subtitle, subtext }: loginType) => {
-  const storeAuthUser = useSelector(selectAuthUser)
+const AuthCreatePassword = ({ title, subtitle, subtext, setShowMe, userID }: loginType) => {
   const [ loading, setLoading ] = useState(false);
-  const dispatch = useDispatch();
   const router = useRouter()
 
   const { handleSubmit, reset, control } = useForm<IFormInput>({
@@ -51,12 +52,11 @@ const AuthCreatePassword = ({ title, subtitle, subtext }: loginType) => {
     const response = await axiosRequest<any>({
         method: "post",
         url: CreateUpdateResetPasswordUrl,
-        payload: {...data, user_id: storeAuthUser.id, action: "creating_password"},
+        payload: {...data, user_id: userID, action: "creating_password"},
         hasAuth: true,
     })
 
     if (response) {
-      console.log(response.data)
       if (response.data["error"]){
         notification.error({
           "message": "NOT FOUND !!!",
@@ -69,6 +69,7 @@ const AuthCreatePassword = ({ title, subtitle, subtext }: loginType) => {
           "description": JSON.stringify(response.data["success"])
         })
         router.push("/")
+        setShowMe(false)
       } 
     }
     setLoading(false)
@@ -76,6 +77,13 @@ const AuthCreatePassword = ({ title, subtitle, subtext }: loginType) => {
 
   return (
     <>
+      <Box display="flex" alignItems="center" justifyContent="center">
+        <Grid item xs={12} sm={12} lg={4} xl={3} display="flex" justifyContent="center" alignItems="center">
+          <Typography variant="subtitle1" textAlign="center" color="textSecondary" mb={1}>
+            CREATE PASSWORD
+          </Typography>
+        </Grid>
+      </Box>
       {title ? (
         <Typography fontWeight="700" variant="h2" mb={1}>
           {title}

@@ -1,12 +1,16 @@
 "use client";
 import Link from "next/link";
 import { Grid, Box, Card, Stack, Typography } from "@mui/material";
-// components
 import PageContainer from "@/components/CompAdmin/container/PageContainer";
 import AuthCheckUser from "../auth/AuthCheckUser";
 import MyProvider from "@/Redux/MyProvider";
+import AuthCreatePassword from "../auth/AuthCreatePassword";
+import { useState } from "react";
 
 const CheckUserPage = () => {
+
+  const [ showPasswordComp, setShowPasswordComp ] = useState<boolean>(false)
+  const [ userID, setUserID ] = useState<number>(0)
   return (
     <MyProvider>
       <PageContainer title="Login" description="this is Login page">
@@ -45,45 +49,80 @@ const CheckUserPage = () => {
                 elevation={9}
                 sx={{ p: 4, zIndex: 1, width: "100%", maxWidth: "500px" }}
               >
-                <Box display="flex" alignItems="center" justifyContent="center">
-                  <Grid item xs={12} sm={12} lg={4} xl={3} display="flex" justifyContent="center" alignItems="center">
-                    <Typography variant="subtitle1" textAlign="center" color="textSecondary" mb={1}>
-                      CHECK USER
-                    </Typography>
-                  </Grid>
-                </Box>
-                <AuthCheckUser
-                  subtext={
-                    <Typography
-                      variant="subtitle1"
-                      textAlign="center"
-                      color="textSecondary"
-                      mb={1}
-                    >
-                      Result Portal
-                    </Typography>
-                  }
-                  subtitle={
-                    <Stack
-                      direction="row"
-                      spacing={1}
-                      justifyContent="center"
-                      mt={3}
-                    >
+                { showPasswordComp ?
+
+                  <AuthCreatePassword
+                    setShowMe={setShowPasswordComp}
+                    userID={userID}
+                    subtext={
                       <Typography
-                        component={Link}
-                        href="/"
-                        fontWeight="500"
-                        sx={{
-                          textDecoration: "none",
-                          color: "primary.main",
-                        }}
+                        variant="subtitle1"
+                        textAlign="center"
+                        color="textSecondary"
+                        mb={1}
                       >
-                        Back To Login
                       </Typography>
-                    </Stack>
-                  }
-                />
+                    }
+                    subtitle={
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        justifyContent="center"
+                        mt={3}
+                      >
+                        <Typography
+                          component={Link}
+                          href="/"
+                          fontWeight="500"
+                          sx={{
+                            textDecoration: "none",
+                            color: "primary.main",
+                          }}
+                        >
+                          Back To Login
+                        </Typography>
+                      </Stack>
+                    }
+                  />
+
+                  :
+
+                  <AuthCheckUser
+                    setShowMe={setShowPasswordComp}
+                    setUserID={setUserID}
+                    subtext={
+                      <Typography
+                        variant="subtitle1"
+                        textAlign="center"
+                        color="textSecondary"
+                        mb={1}
+                      >
+                        Result Portal
+                      </Typography>
+                    }
+                    subtitle={
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        justifyContent="center"
+                        mt={3}
+                      >
+                        <Typography
+                          component={Link}
+                          href="/"
+                          fontWeight="500"
+                          sx={{
+                            textDecoration: "none",
+                            color: "primary.main",
+                          }}
+                        >
+                          Back To Login
+                        </Typography>
+                      </Stack>
+                    }
+                  />
+                }
+
               </Card>
             </Grid>
           </Grid>
