@@ -14,7 +14,7 @@ import {
 import DashboardCard from '@/components/CompAdmin/shared/DashboardCard';
 import { useEffect, useState } from 'react';
 import { UserProfile, UserType } from '@/Utils/types';
-import { useGetAllUsers } from '@/Utils/customHooks';
+import { useGetAllUserProfiles, useGetAllUsers } from '@/Utils/customHooks';
 import { getAllUsers } from '@/Utils/functions';
 import AddUserFormModal from '@/Designs/Modals/AddUserFormModal';
 import EditUserFormModal from '@/Designs/Modals/EditUserFormModal';
@@ -24,7 +24,7 @@ import MyButtonAdd from '@/Designs/MyButtonAdd';
 import { green, red } from '@mui/material/colors';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
-import { addChoosenUser, removeChoosenUser } from '@/Redux/Reducers/sliceChoosenUserAndProfile';
+import { addChoosenUserProfile, removeChoosenUser } from '@/Redux/Reducers/sliceChoosenUserAndProfile';
 
 
 const TableUsers = () => {
@@ -32,14 +32,16 @@ const TableUsers = () => {
     const dispatch = useDispatch();
     const [ fetching, setFetching ] = useState<boolean>(false);
     const [ record, setRecord ] = useState<UserType>();
+    const [ userProfiles, setUserProfiles ] = useState<UserProfile[]>([]);
     const [ users, setUsers ] = useState<UserType[]>([]);
     const [ usersData, setUsersData ] = useState<UserType[]>([]);
     const [ addUserFormModal, setAddUserFormModal ] = useState<boolean>(false);
     const [ editUserFormModal, setEditUserFormModal ] = useState<boolean>(false);
     const [ deleteUserFormModal, setDeleteUserFormModal ] = useState<boolean>(false);
-    dispatch(removeChoosenUser)
+    dispatch(removeChoosenUser())
 
     useGetAllUsers(setUsers, setFetching)
+    useGetAllUserProfiles(setUserProfiles, setFetching)
 
     useEffect(() => {
         setUsersData(users)
@@ -102,7 +104,7 @@ const TableUsers = () => {
                                 
                                     <TableCell>
                                         <Typography variant="subtitle2" fontWeight={600}>
-                                            Username / Matricle
+                                            Username
                                         </Typography>
                                     </TableCell>
 
@@ -159,7 +161,7 @@ const TableUsers = () => {
                                                     fontWeight: "500",
                                                 }}
                                             >
-                                                {item.username} / {item?.matricle}
+                                                {item.username}
                                             </Typography>
                                         </TableCell>
 
@@ -229,7 +231,9 @@ const TableUsers = () => {
                                                 </Button>
                                                 <Button 
                                                     onClick={ () => { 
-                                                        dispatch(addChoosenUser(item)); 
+                                                        console.log(item.id);
+                                                        console.log(userProfiles.filter((item: UserProfile) => item.user.id == item.id )[0]);
+                                                        dispatch(addChoosenUserProfile( userProfiles.filter((up: UserProfile) => up.user.id == item.id )[0]) ); 
                                                         router.push(`/AdministrationPages/AccountSettings`) 
                                                     }} 
                                                     variant="contained" disableElevation color="primary">

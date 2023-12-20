@@ -6,9 +6,8 @@ import { IconBellRinging, IconMenu } from '@tabler/icons-react';
 import Footer from "@/app/AdministrationPages/layout/footer/Footer";
 import { Box, AppBar, Toolbar, styled, Stack, IconButton, Badge, Button } from '@mui/material';
 import Profile from "./layout/header/Profile";
-// import { useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { selectAuthUser } from "@/Redux/Reducers/sliceUser";
-import WithAuthentication from "../(AuthenticationPages)/auth/WithAuthentication";
 
 
 const MainWrapper = styled("div")(() => ({
@@ -27,16 +26,12 @@ const PageWrapper = styled("div")(() => ({
 }));
 
 
-
 const RootLayout = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
   const [isMobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-
-  console.log(isMobileSidebarOpen);
-  // const storeUser = useSelector(selectAuthUser);
 
   const AppBarStyled = styled(AppBar)(({ theme }) => ({
     boxShadow: 'none',
@@ -52,6 +47,8 @@ const RootLayout = ({
     color: theme.palette.text.secondary,
   }));
 
+  // const storeUser = useSelector(selectAuthUser)
+
   return (
     <MyProvider>
       <MainWrapper className="mainwrapper">
@@ -64,9 +61,6 @@ const RootLayout = ({
         <PageWrapper className="page-wrapper m-2">
 
           {/* Header */}
-          {/* <Header
-            toggleMobileSidebar={setMobileSidebarOpen}
-          /> */}
           <AppBarStyled position="sticky" color="default">
             <ToolbarStyled>
               <IconButton

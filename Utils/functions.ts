@@ -56,7 +56,6 @@ export const axiosRequest = async <T>({
         headers = { ...headers, 'content-type': 'multipart/form-data' }
     } 
     payload = {payload: payload}
-    console.log(payload, params)
 
     const response = await Axios({
         method,
@@ -203,13 +202,15 @@ export const getAllDomains = async (
 
 export const getAllSpecialties = async (
     setSpecialty: (data: SpecialtyProps[]) => void,
-    setFetching: (val: boolean) => void
+    setFetching: (val: boolean) => void,
+    params?: { searchField: string, value: string | number }
 ) => {
 
     const response = await axiosRequest<{ results: SpecialtyProps[] }>({
         url: SpecialtyCRUDUrl,
         hasAuth: true,
         showError: false,
+        params
     })
     if (response) {
         setSpecialty(response.data.results)
@@ -219,13 +220,15 @@ export const getAllSpecialties = async (
 
 export const getAllMainSpecialties = async (
     setMainSpecialty: (data: MainSpecialtyProps[]) => void,
-    setFetching: (val: boolean) => void
+    setFetching: (val: boolean) => void,
+    params?: { searchField: string, value: string | number }
 ) => {
 
     const response = await axiosRequest<{ results: MainSpecialtyProps[] }>({
         url: MainSpecialtyCRUDUrl,
         hasAuth: true,
         showError: false,
+        params
     })
     if (response) {
         setMainSpecialty(response.data.results)
@@ -253,13 +256,15 @@ export const getAllMainCourses = async (
 
 export const getAllCourses = async (
     setCourses: (data: CourseProps[]) => void,
-    setFetching: (val: boolean) => void
+    setFetching: (val: boolean) => void,
+    params?: { searchField: string, value: string | number | boolean }
 ) => {
 
     const response = await axiosRequest<{ results: CourseProps[] }>({
         url: CourseCRUDUrl,
         hasAuth: true,
         showError: false,
+        params
     })
     if (response) {
         setCourses(response.data.results)
@@ -270,13 +275,15 @@ export const getAllCourses = async (
 
 export const getAllResults = async (
     setResults: (data: ResultProps[]) => void,
-    setFetching: (val: boolean) => void
+    setFetching: (val: boolean) => void,
+    params?: { searchField: string, value: string | number }
 ) => {
 
     const response = await axiosRequest<{ results: ResultProps[] }>({
         url: ResultRUDUrl,
         hasAuth: true,
         showError: false,
+        params
     })
     if (response) {
         setResults(response.data.results)

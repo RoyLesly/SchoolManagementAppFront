@@ -22,7 +22,9 @@ const Page4Results = () => {
   const [record, setRecord] = useState<ResultProps | null>(null)
   const [editResults, setEditResults] = useState<boolean>(false)
 
-  useGetAllResults(setResults, setFetching)
+  // useGetAllResults(setResults, setFetching)
+  useGetAllResults(setResults, setFetching, { searchField: "course", value: storeCourse.id})
+  console.log(results)
 
   const reset = () => {
     getAllResults(setResults, setFetching)

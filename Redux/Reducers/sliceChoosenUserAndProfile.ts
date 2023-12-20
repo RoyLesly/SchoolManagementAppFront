@@ -33,7 +33,7 @@ export const choosenUserSlice = createSlice({
 })
 
 export const choosenUserProfileSlice = createSlice({
-    name: 'choosedUserProfile',
+    name: 'choosenUserProfile',
     initialState: initialChoosenUserProfileState,
     reducers: {
         addChoosenUserProfile: (state, action: PayloadAction<UserProfile>) => {

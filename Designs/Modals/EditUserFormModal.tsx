@@ -26,9 +26,8 @@ const EditUserFormModal:FC<EditUserFormProps> = ({ showModal, setShowModal, rese
     
     const onSubmit = async (values: DataProps) => {
         setLoading(true)
-        console.log(values)
         if (values["username"] == "" || values["username"] == undefined || values["username"] == null){
-            values["username"] = record["username"]
+            values["username"] = record["username"].toLowerCase()
         }
         if (values["role"] == "" || values["role"] == undefined || values["role"] == null){
             values["role"] = record["role"]
@@ -39,8 +38,11 @@ const EditUserFormModal:FC<EditUserFormProps> = ({ showModal, setShowModal, rese
         if (values["is_active"] == undefined || values["is_active"].length < 1){
             values["is_active"] = record["is_active"]
         }
-        const payload = {...values, updated_by_id: storeUserID}
-        console.log(payload)
+        const payload = {
+            ...values, 
+            username: values["username"].toLowerCase(),
+            updated_by_id: storeUserID
+        }
 
         const response = await axiosRequest<any>({
             method: "put",

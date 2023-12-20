@@ -11,16 +11,16 @@ import CardContent from '@mui/material/CardContent'
 import FormControl from '@mui/material/FormControl'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import MyFormInputText from '@/Designs/MyFormInputText'
-import { UserProfile } from '@/Utils/types'
+import { UserType } from '@/Utils/types'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectChoosenUser, selectChoosenUserProfile } from '@/Redux/Reducers/sliceChoosenUserAndProfile'
 import { useForm } from 'react-hook-form'
 import { useRouter } from 'next/navigation'
 import { axiosRequest } from '@/Utils/functions'
 import { addUserProfile, selectAuthUser, selectUserProfile } from '@/Redux/Reducers/sliceUser'
-import { UserProfilesUrl } from '@/Utils/Config'
+import { UserCRUDUrl, UserProfilesUrl } from '@/Utils/Config'
 import { notification } from 'antd'
 import MyButtonLoader from '@/Designs/MyButtonLoader'
+import { useGetAllUsers } from '@/Utils/customHooks'
 
 const TabInfoStudentLecturer = () => {
   const router = useRouter();
@@ -32,45 +32,48 @@ const TabInfoStudentLecturer = () => {
   const [ sex, setSex ] = useState<string>("")
   const [ hod, setHod ] = useState<boolean>(false)
   const [ title, setTitle ] = useState<string>("")
+  const [ users, setUsers ] = useState<UserType[]>([])
+
+  useGetAllUsers(setUsers, ()=>{}, { searchField: "id", value: storeUser.id })
 
   useEffect(() => {
-    setHod(storeProfile.user.hod ? storeProfile.user.hod : false)
-    setSex(storeProfile?.user.sex)
-    setTitle(storeProfile?.user.title ? storeProfile.user.title : "")
-  }, [storeProfile])
+    setHod(users[0]?.hod ? users[0]?.hod : false)
+    setSex(users[0]?.sex ? users[0].sex : "")
+    setTitle(users[0]?.title ? users[0].title : "")
+  }, [users])
 
-  const defaultValues = {...storeProfile};
-  const { handleSubmit, reset, control } = useForm<UserProfile>({
+  const defaultValues = {...users[0]};
+  const { handleSubmit, reset, control } = useForm<UserType>({
     defaultValues: defaultValues,
   });
 
-  const onSubmit = async (data: UserProfile) => {
+  const onSubmit = async (data: UserType) => {
     setLoading(true)
     let values = {
       ...data, 
-      user_id: data.user.id,
-      role: storeUser.role,
+      user_id: data.id,
       sex: sex,
       hod: hod,
       title: title,
       updated_by_id: storeUser.id,
-      multiple: true,
+      username: defaultValues["username"],
+      email: defaultValues["email"],
+      role: defaultValues["role"],
     }
 
     const response = await axiosRequest<any>({
         method: "put",
-        url: UserProfilesUrl + "/" + data.id,
+        url: UserCRUDUrl + "/" + defaultValues.id,
         payload: values,
         hasAuth: true,
     })
     
     if (response?.data) {
       if (response.data.success) {
-        console.log(response.data.success)
         dispatch(addUserProfile(response.data.success));
         notification.success({
           "message": "OK",
-          "description": "Successfully Updated Profile"
+          "description": "Successfully Updated User"
         });
         router.back();
       }
@@ -98,7 +101,7 @@ const TabInfoStudentLecturer = () => {
             <Grid item xs={12} sm={12} sx={{ marginTop: 5 }}>
               <FormControl>
                 <FormLabel sx={{ fontSize: '0.875rem' }}>Title</FormLabel>
-                <RadioGroup row onChange={(e) => {setTitle(e.target.value)}} defaultValue={defaultValues?.user.title} aria-label='gender' name='account-settings-info-radio'>
+                <RadioGroup row onChange={(e) => {setTitle(e.target.value)}} defaultValue={defaultValues?.title} aria-label='gender' name='account-settings-info-radio'>
                   <FormControlLabel value={"Prof"} label="Prof" control={<Radio />} />
                   <FormControlLabel value={"Engr"} label="Engr" control={<Radio />} />
                   <FormControlLabel value="Dr" label="Dr" control={<Radio />} />
@@ -112,7 +115,7 @@ const TabInfoStudentLecturer = () => {
             <Grid item xs={12} sm={3}>
               <FormControl>
                 <FormLabel sx={{ fontSize: '0.875rem' }}>Head Of Department</FormLabel>
-                <RadioGroup row onChange={(e) => {setHod(e.target.value == "true")} } defaultValue={defaultValues?.user.hod} aria-label='gender' name='account-settings-info-radio'>
+                <RadioGroup row onChange={(e) => {setHod(e.target.value == "true")} } defaultValue={defaultValues?.hod} aria-label='gender' name='account-settings-info-radio'>
                   <FormControlLabel value={true} label="Yes" control={<Radio />} />
                   <FormControlLabel value={false} label="No" control={<Radio />} />
                 </RadioGroup>
@@ -123,7 +126,7 @@ const TabInfoStudentLecturer = () => {
           <Grid item xs={12} sm={3}>
             <FormControl>
               <FormLabel sx={{ fontSize: '0.875rem' }}>Gender</FormLabel>
-              <RadioGroup row onChange={(e) => {setSex(e.target.value)}} defaultValue={defaultValues?.user.sex} aria-label='gender' name='account-settings-info-radio'>
+              <RadioGroup row onChange={(e) => {setSex(e.target.value)}} defaultValue={defaultValues?.sex} aria-label='gender' name='account-settings-info-radio'>
                 <FormControlLabel value='Male' label='Male' control={<Radio />} />
                 <FormControlLabel value='Female' label='Female' control={<Radio />} />
               </RadioGroup>
@@ -137,7 +140,7 @@ const TabInfoStudentLecturer = () => {
               label={"Address"}
               size={"large"}
               required={true}
-              defaultValue={defaultValues?.user.address}
+              defaultValue={defaultValues?.address}
             />       
           </Grid>
 
@@ -148,7 +151,7 @@ const TabInfoStudentLecturer = () => {
               label={"Place Of Birth"}
               size={"large"}
               required={true}
-              defaultValue={defaultValues?.user.pob}
+              defaultValue={defaultValues?.pob}
             />       
           </Grid>
 
@@ -159,7 +162,7 @@ const TabInfoStudentLecturer = () => {
               label={"Date Of Birth"}
               size={"large"}
               required={true}
-              defaultValue={defaultValues?.user.dob}
+              defaultValue={defaultValues?.dob}
             />       
           </Grid>
           
@@ -170,7 +173,7 @@ const TabInfoStudentLecturer = () => {
               label={"About"}
               size={"large"}
               required={true}
-              defaultValue={defaultValues?.user.about}
+              defaultValue={defaultValues?.about}
 
             />
           </Grid>

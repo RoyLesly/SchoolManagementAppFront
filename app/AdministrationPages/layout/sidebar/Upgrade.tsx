@@ -1,5 +1,5 @@
+import { LogoLink } from '@/Utils/Config';
 import { Box, Typography, Button } from '@mui/material';
-import img1 from 'public/images/backgrounds/stjoan.jpg';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -23,7 +23,7 @@ export const Upgrade = () => {
                     </Button>
                 </Box>
                 <Box mt="-6px">
-                    <Image alt="Remy Sharp" src={img1} width={70} />
+                    <Image alt="Remy Sharp" src={LogoLink} height={70} width={70} />
                 </Box>
             </>
         </Box>

@@ -1,6 +1,7 @@
 // const BaseUrl = "http://127.0.0.1:8000/";
 const BaseUrl = "https://st-joan.com/back/"
 // const BaseUrl = "http://172.16.10.247:8000/"
+// const BaseUrl = "http://192.168.130.177:8000/"
 // const BaseUrl = "http://192.168.199.177:8000/"
 // const BaseUrl = "http://192.168.43.143:8000/"
 // const BaseUrl = "http://192.168.100.4:8000/"
@@ -9,7 +10,10 @@ const BaseUrl = "https://st-joan.com/back/"
 // const BaseUrl = "http://192.168.100.5:8000/"
 
 
-export const LogoUrl = BaseUrl + "staticfiles/images/stjoan.jpg";
+export const LogoLink = "https://st-joan.com/result/images/logos/stjoan.jpg";
+// export const LogoLink = "/images/logos/stjoan.jpg";
+// export const LogoLink = "/home/cp2200222p23/public_html/result/images/logos/stjoan.jpg";
+export const AvatarLink = "/images/avatars/user.jpg";
 export const ActivationUrl = BaseUrl + "app/activation/activate";
 export const AdminUrl = BaseUrl + "admin";
 export const ExtendUrl = BaseUrl + "app/activation/extend";
@@ -29,7 +33,8 @@ export const UserCRUDUrl = BaseUrl + "user/crud-user";
 export const AssignGroupToUserUrl = BaseUrl + "user/assign-group-to-user";
 export const AssignPermissionsToGroupUrl = BaseUrl + "user/assign-permissions-to-group";
 export const CreateUpdateResetPasswordUrl = BaseUrl + "user/create-update-reset-password";
-export const ForgotPasswordUrl = BaseUrl + "user/forgot-password";
+// export const ForgotPasswordUrl = BaseUrl + "user/forgot-password";
+export const ForgotPasswordUrl = BaseUrl + "user/password_reset";
 export const UserProfilesUrl = BaseUrl + "user/user-profiles";
 export const UserActivitiesUrl = BaseUrl + "user/activities-log";
 

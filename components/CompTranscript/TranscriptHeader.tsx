@@ -1,5 +1,5 @@
 'use client';
-import { LogoUrl } from '@/Utils/Config'
+import { LogoLink } from '@/Utils/Config'
 import { ResultProps } from '@/Utils/types';
 import { Box, Grid, Typography, styled } from '@mui/material'
 import Image from 'next/image'
@@ -40,7 +40,7 @@ const TranscriptHeader:FC<TranscriptHeaderProps> = ({ data}) => {
         </Grid>
 
         <Grid container justifyContent="center" spacing={0} xs={1.3} p={0} m={0}>
-          <Image alt='LOGO' src={LogoUrl} width={130} height={130}/>
+          <Image alt='LOGO' src={LogoLink} width={130} height={130}/>
         </Grid>
 
         <Grid container direction="column" spacing={0} xs={5}>

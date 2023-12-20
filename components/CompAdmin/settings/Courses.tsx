@@ -6,9 +6,9 @@ import {
     Table, TableBody, TableCell, TableHead, TableRow,
     Button, Stack, Input,
 } from '@mui/material';
-import { CourseProps, LevelProps, MainCourseProps, SpecialtyProps, UserProfile } from '@/Utils/types';
-import { useGetAllLevels, useGetAllMainCourses, useGetAllCourses, useGetAllUserProfiles, useGetAllSpecialties } from '@/Utils/customHooks';
-import { getAllCourses, getAllMainCourses, getAllSpecialties } from '@/Utils/functions';
+import { CourseProps, LevelProps, MainCourseProps, SpecialtyProps, UserProfile, UserType } from '@/Utils/types';
+import { useGetAllLevels, useGetAllMainCourses, useGetAllCourses, useGetAllUserProfiles, useGetAllSpecialties, useGetAllUsers } from '@/Utils/customHooks';
+import { getAllCourses, getAllMainCourses, getAllSpecialties, getAllUsers } from '@/Utils/functions';
 import DeleteItemFormModal from '@/Designs/Modals/DeleteItemFormModal';
 import MyButtonReload from '@/Designs/MyButtonReload';
 import MyButtonAdd from '@/Designs/MyButtonAdd';
@@ -35,17 +35,18 @@ const Courses = () => {
     const [ addCourseMainFormModal, setAddCourseMainFormModal ] = useState<boolean>(false)
     const [ editCourseMainFormModal, setEditCourseMainFormModal ] = useState<boolean>(false)
     const [ deleteCourseMainFormModal, setDeleteCourseMainFormModal ] = useState<boolean>(false)
-    const [ profiles, setProfiles ] = useState<UserProfile[]>([])
+    const [ userTeachers, setUserTeachers ] = useState<UserType[]>([])
     const [ specialties, setSpecialties ] = useState<SpecialtyProps[]>([])
 
     useGetAllCourses(setCourses, setFetching);
     useGetAllSpecialties(setSpecialties, setFetching);
     useGetAllMainCourses(setMainCourses, setFetching);
     useGetAllLevels(setLevels, setFetching);
-    useGetAllUserProfiles(setProfiles, setFetching);
+    // useGetAllUsers(setUserTeachers, setFetching)
 
     useEffect(() => {
         setCourseData(courses)
+        getAllUsers(setUserTeachers, setFetching, { searchField: "role", value: "teacher"});
     }, [courses])
 
     useEffect(() => {
@@ -139,7 +140,7 @@ const Courses = () => {
 
                         <TableCell>
                             <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                                {item.assigned_to?.username}
+                                {item.assigned_to?.first_name} {item.assigned_to?.last_name}
                             </Typography>
                         </TableCell>
 
@@ -227,10 +228,10 @@ const Courses = () => {
         /> 
             :
         <MyTableCard
-            title={"Courses Titles Section"}
+            title={"Courses Section"}
             buttonReset={<MyButtonReload fetching={fetching} reset={reset} />}
             buttonAdd={<MyButtonAdd setAddItem={setAddCourseFormModal} />}
-            extra={<Button onClick={() => {setShowMain(true)}} variant='outlined' sx={{ marginX: 1 }}>Show Course Titles</Button>}
+            extra={<Button onClick={() => {setShowMain(true)}} variant='outlined' sx={{ marginX: 1 }}>Show All Courses</Button>}
             table={<TableComp />}
             search={<Input placeholder='Search Course Title ...' onChange={(e) => SearchMainCourse(e.target.value)}/>}
         />
@@ -242,7 +243,7 @@ const Courses = () => {
         mainCourses={mainCourses}
         reset={reset}
         specialty={specialties}
-        profile={profiles}
+        userTeachers={userTeachers}
     />
 
     <AddMainCourseFormModal
@@ -257,7 +258,7 @@ const Courses = () => {
         record={record}
         record_name={record?.main_course.course_name}
         specialty={specialties}
-        profile={profiles}
+        userTeachers={userTeachers}
         mainCoursesData={mainCourses}
         reset={reset} 
     />

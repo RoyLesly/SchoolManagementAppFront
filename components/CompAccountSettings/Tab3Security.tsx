@@ -28,7 +28,7 @@ import { CreateUpdateResetPasswordUrl, UserProfilesUrl } from '@/Utils/Config'
 import MyButtonLoader from '@/Designs/MyButtonLoader'
 import ResetPasswordFormModal from '@/Designs/Modals/RestPasswordFormModal'
 import { selectAuthUser, selectUserProfile } from '@/Redux/Reducers/sliceUser'
-import { selectChoosenUser } from '@/Redux/Reducers/sliceChoosenUserAndProfile'
+import { selectChoosenUser, selectChoosenUserProfile } from '@/Redux/Reducers/sliceChoosenUserAndProfile'
 
 interface State {
   newPassword: string
@@ -42,11 +42,11 @@ interface State {
 const Tab3Security = () => {
 
   const storeUser = useSelector(selectAuthUser);
-  const storeChoosenUser = useSelector(selectChoosenUser);
+  const storeChoosenUserProfile = useSelector(selectChoosenUserProfile);
   const storeProfile = useSelector(selectUserProfile);
   const [ loading, setLoading ] = useState<boolean>(false);
   const [ resetPasswordModal, setResetPasswordModal ] = useState<boolean>(false);
-  console.log(storeChoosenUser)
+  console.log(storeChoosenUserProfile)
 
   const defaultValues = {
     currentPassword: '',
@@ -87,7 +87,7 @@ const Tab3Security = () => {
 
     let value = {
       ...values,
-      user_id: storeChoosenUser.id,
+      user_id: storeChoosenUserProfile.id,
       password: values["currentPassword"],
       updating_password: true,
       updated_by_id: storeUser.id,
@@ -169,7 +169,7 @@ const Tab3Security = () => {
               <Grid container spacing={4}>
                 
                 <Grid item xs={12} sx={{ marginTop: 3 }} container justifyContent="center">
-                  <Typography>Change Password For - {storeChoosenUser.first_name} {storeChoosenUser.last_name}</Typography>
+                  <Typography>Change Password For - {storeChoosenUserProfile.user.first_name} {storeChoosenUserProfile.user.last_name}</Typography>
                 </Grid>
 
                 <Grid item xs={12} sx={{ marginTop: 1 }}>
@@ -273,7 +273,7 @@ const Tab3Security = () => {
           </Grid>
         </CardContent>
 
-        <Grid item xs={12} container justifyContent="center">
+        {/* <Grid item xs={12} container justifyContent="center">
           <Button
             type='reset'
             variant='outlined'
@@ -283,7 +283,7 @@ const Tab3Security = () => {
           >
             Clear Fields
           </Button>
-        </Grid>
+        </Grid> */}
 
         <Divider sx={{ marginTop: 4, marginBottom: 4 }} />
 
@@ -298,11 +298,7 @@ const Tab3Security = () => {
             >
               Update Password
             </Button>
-            <MyButtonLoader
-              fetching={loading}
-              loadingText="Saving"
-            />
-            <Button
+            {/* <Button
               type='reset'
               variant='contained'
               color='secondary'
@@ -310,7 +306,7 @@ const Tab3Security = () => {
               onClick={() => setResetPasswordModal(true)}
             >
               Reset Password
-            </Button>
+            </Button> */}
           </Grid>
         </Grid>     
       </form>

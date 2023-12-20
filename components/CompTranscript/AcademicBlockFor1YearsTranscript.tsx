@@ -5,7 +5,6 @@ import { Box, Typography } from '@mui/material'
 import React from 'react'
 
 const AcademicBlockFor1YearsTranscript = (props: any) => {
-  console.log(props)
   return (
     <Box sx={{ height: '50%'}} mx={0} mt={0} mb={0}>
       <Box textAlign="center" m={-0.5}>

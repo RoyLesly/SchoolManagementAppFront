@@ -21,7 +21,6 @@ interface TranscriptFor1YearsProps {
 }
 
 const TranscriptFor1Years:FC<TranscriptFor1YearsProps> = ({ dataToPrint }) => {
-  console.log(dataToPrint)
   const componentRefPrint = useRef<any>();
   const handlePrint = useReactToPrint({
     content: () => componentRefPrint.current,

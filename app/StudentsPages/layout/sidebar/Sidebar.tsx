@@ -1,18 +1,16 @@
 import { useMediaQuery, Box, Drawer } from "@mui/material";
 import Logo from "../shared/logo/Logo";
 import SidebarItems from "./SidebarItems";
-import { Upgrade } from "./Updrade";
+import { Upgrade } from "./Upgrade";
 
 interface ItemType {
   isMobileSidebarOpen: boolean;
   onSidebarClose: (event: React.MouseEvent<HTMLElement>) => void;
-  isSidebarOpen: boolean;
 }
 
 const Sidebar = ({
   isMobileSidebarOpen,
   onSidebarClose,
-  isSidebarOpen,
 }: ItemType) => {
   const lgUp = useMediaQuery((theme: any) => theme.breakpoints.up("lg"));
 
@@ -31,7 +29,7 @@ const Sidebar = ({
         {/* ------------------------------------------- */}
         <Drawer
           anchor="left"
-          open={isSidebarOpen}
+          open={isMobileSidebarOpen}
           variant="permanent"
           PaperProps={{
             sx: {

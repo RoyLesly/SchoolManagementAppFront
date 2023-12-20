@@ -153,9 +153,12 @@ export interface CourseProps {
     semester: string | number
     course_code: string
     course_credit: number
+    hours: number
     completed: boolean
     assigned: boolean
+    paid: boolean
     assigned_to: UserType
+    date_assigned?: string
     created_at: string
     created_by: UserType
     updated_at: string

@@ -33,7 +33,6 @@ const defaultValues = {
 };
 
 const AuthForgotPassword = ({ title, subtitle, subtext }: loginType) => {
-  const storeUser = useSelector(selectAuthUser)
   const [ loading, setLoading ] = useState(false);
   const dispatch = useDispatch();
   const router = useRouter()

@@ -3,7 +3,7 @@ import { FC, useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { CourseCRUDUrl } from '@/Utils/Config';
 import { axiosRequest } from '@/Utils/functions';
-import { CourseProps, DataProps, MainCourseProps, SpecialtyProps, UserProfile } from '@/Utils/types';
+import { CourseProps, DataProps, MainCourseProps, SpecialtyProps, UserType } from '@/Utils/types';
 import { selectAuthUser } from '@/Redux/Reducers/sliceUser';
 import MyButtonUpdate from '@/Designs/MyButtonUpdate';
 
@@ -14,35 +14,36 @@ interface EditCourseFormProps {
   showModal: any
   setShowModal: any
   mainCoursesData: MainCourseProps[] | []
-  profile: UserProfile[]
+  userTeachers: UserType[]
   specialty: SpecialtyProps[]
   record: CourseProps | null
   reset: any
   record_name: any
 }
 
-const EditCourseFormModal:FC<EditCourseFormProps> = ({ showModal, mainCoursesData, profile, specialty, setShowModal, reset, record, record_name }: any) => {
+const EditCourseFormModal:FC<EditCourseFormProps> = ({ showModal, mainCoursesData, userTeachers, specialty, setShowModal, reset, record, record_name }: any) => {
 
     const storeUserID = useSelector(selectAuthUser).id
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false)
     const [specialtyData, setSpecialtyData] = useState<SpecialtyProps[]>([]);
-    const [profileData, setProfileData] = useState<UserProfile[]>([]);
+    const [userActiveTeachers, setUserActiveTeachers] = useState<UserType[]>([]);
     const [year, setYear] = useState(0)
     const [yearList, setYearList] = useState<any>([])
     const [assignedTo, setAssignedTo] = useState<string | null>(null)
 
     useEffect(() => {
-        const filA = profile?.filter((item: UserProfile) => item.user?.role.includes("teacher"))
-        setProfileData(filA)
-    }, [profile])
-
-    useEffect(() => {
-        const filA = profile?.filter((item: UserProfile) => item?.user?.id == record?.assigned_to?.id)
-        if (filA.length > 0) {
-            setAssignedTo((filA[0].first_name + " " + filA[0].last_name))
+        const filA = userTeachers?.filter((item: UserType) => item?.is_active == true)
+        setUserActiveTeachers(filA)
+        const filB = userTeachers?.filter((item: UserType) => item?.id == record?.assigned_to?.id)
+        if (filB.length > 0) {
+            setAssignedTo((filB[0].first_name + " " + filB[0].last_name))
         }
-    }, [record, profile])
+    }, [record, userTeachers])
+    console.log(userActiveTeachers)
+    console.log(record)
+    console.log(userTeachers)
+
     
     const onSubmit = async (values: DataProps) => {
         setLoading(true)
@@ -109,12 +110,12 @@ const EditCourseFormModal:FC<EditCourseFormProps> = ({ showModal, mainCoursesDat
     const thisYear = new Date().getFullYear() - 1
     useEffect(() => {
         const list = []
-        for (let index = 0; index < 3; index++) {
-            list.push(thisYear + index)
+        for (let index = 1; index < 3; index++) {
+            list.push(`${thisYear + index}` + "/" + `${thisYear + index + 1}`)
         }
         setYearList(list)
     }, [thisYear])
-    
+
     return (
         <Modal
             title={`EDIT - ${record_name}`}
@@ -182,7 +183,7 @@ const EditCourseFormModal:FC<EditCourseFormProps> = ({ showModal, mainCoursesDat
                 >
                     <Select defaultValue={`${assignedTo ? assignedTo : "None"}`}>
                         <Option key={0} value="">----------</Option>
-                        {profileData.map((item: UserProfile) => <Option key={item.id} value={item.user.id}>{item?.user.first_name} {item?.user.last_name}</Option>)}
+                        {userActiveTeachers.map((item: UserType) => <Option key={item.id} value={item.id}>{item?.first_name} {item?.last_name}</Option>)}
                     </Select>
                 </Form.Item>
 

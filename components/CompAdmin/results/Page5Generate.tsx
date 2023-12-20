@@ -27,12 +27,11 @@ const Page5Generate = () => {
   const [selectedStudentLevels, setSelectedStudentLevels] = useState<number[]>([])
   const [selectedAcademicYearToPrint, setSelectedAcademicYearToPrint] = useState<string[]>([])
 
-  const [resultsDataList, setResultsDataList] = useState<ResultProps[]>([])
   const [record, setRecord] = useState<ResultProps | null>(null)
   const [editResults, setEditResults] = useState<boolean>(false)
 
   useGetAllResults(setResults, setFetching)
-  useGetAllUsers(setUsers, setFetching, { searchField: "role", value: "student"})
+  useGetAllUsers(setUsers, ()=>{}, { searchField: "role", value: "student"})
 
   const reset = () => {
     getAllResults(setResults, setFetching)

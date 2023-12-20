@@ -22,6 +22,7 @@ import Tab2Specialties from './Tab2Specialties';
 import { useSelector } from 'react-redux';
 import Tab2Courses from './Tab2Courses';
 import { selectChoosenUser, selectChoosenUserProfile } from '@/Redux/Reducers/sliceChoosenUserAndProfile';
+import Tab3CourseManagement from './Tab3CourseManagement';
 
 const Tab = styled(MuiTab)<TabProps>(({ theme }) => ({
   [theme.breakpoints.down('md')]: {
@@ -91,6 +92,17 @@ const AccountSettings:FC<AccountSettingsProps> = ({  }) => {
               </Box>
             }
           />}
+          {storeAccountRole == "student" ? <></>
+          :
+          <Tab
+            value='coursemanagement'
+            label={
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <LockOpenOutline />
+                <TabName>Course Management</TabName>
+              </Box>
+            }
+          />}
           <Tab
             value='security'
             label={
@@ -117,7 +129,10 @@ const AccountSettings:FC<AccountSettingsProps> = ({  }) => {
         { storeAccountRole == "student" ? <TabPanel sx={{ p: 0 }} value='specialties'>
           <Tab2Specialties />
         </TabPanel> : <TabPanel sx={{ p: 0 }} value='courses'>
-          <Tab2Courses />
+          <Tab2Courses setValue={setValue} />
+        </TabPanel>}
+        { storeAccountRole == "student" ? <></> : <TabPanel sx={{ p: 0 }} value='coursemanagement'>
+          <Tab3CourseManagement />
         </TabPanel>}
         <TabPanel sx={{ p: 0 }} value='security'>
           <Tab3Security />

@@ -4,7 +4,7 @@ import { FC, useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { CourseCRUDUrl } from '@/Utils/Config';
 import { axiosRequest } from '@/Utils/functions';
-import { DataProps, MainCourseProps, SpecialtyProps, UserProfile } from '@/Utils/types';
+import { DataProps, MainCourseProps, SpecialtyProps, UserProfile, UserType } from '@/Utils/types';
 import MyButtonSave from '@/Designs/MyButtonSave';
 import AddCourseTransversalSelectFormModal from './AddCourseTransversalSelectFormModal';
 import { FormatColorResetOutlined } from '@mui/icons-material';
@@ -14,23 +14,22 @@ import { selectAuthUser } from '@/Redux/Reducers/sliceUser';
 const { Option } = Select
 
 interface AddCourseUserFormProps {
-  showModal: any
-  setShowModal: any
-  mainCourses: MainCourseProps[]
-  profile: UserProfile[]
-  specialty: SpecialtyProps[]
-  reset: any
+    showModal: any
+    setShowModal: any
+    mainCourses: MainCourseProps[]
+    userTeachers: UserType[]
+    specialty: SpecialtyProps[]
+    reset: any
 }
 
-const AddCourseFormModal:FC<AddCourseUserFormProps> = ({ showModal, profile, specialty, setShowModal, mainCourses, reset }: any) => {
+const AddCourseFormModal:FC<AddCourseUserFormProps> = ({ showModal, userTeachers, specialty, setShowModal, mainCourses, reset }: any) => {
 
     const storeUserID = useSelector(selectAuthUser).id
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const [mainCoursesData, setMainCoursesData] = useState<MainCourseProps[]>([]);
     const [specialtyData, setSpecialtyData] = useState<SpecialtyProps[]>([]);
-    const [profileData, setProfileData] = useState<UserProfile[]>([]);
-    const [courseData, setCourseData] = useState<any>();
+    const [userActiveTeacher, setUserActiveTeacher] = useState<UserType[]>([]);
     const [year, setYear] = useState(0)
     const [yearList, setYearList] = useState<any>();
     const [type, setType] = useState<string>("");
@@ -46,9 +45,9 @@ const AddCourseFormModal:FC<AddCourseUserFormProps> = ({ showModal, profile, spe
       setSpecialtyData(specialty)
     }, [specialty])
     useEffect(() => {
-        const filA = profile?.filter((item: UserProfile) => item?.user?.role.includes("teacher"))
-        setProfileData(filA)
-      }, [profile])
+        const filA = userTeachers?.filter((item: UserType) => item?.is_active == true)
+        setUserActiveTeacher(filA)
+      }, [userTeachers])
     
     const onSubmit = async (values: DataProps) => {
         
@@ -67,7 +66,6 @@ const AddCourseFormModal:FC<AddCourseUserFormProps> = ({ showModal, profile, spe
                 hasAuth: true,
             })
         
-            console.log(response)
             if (response?.data.success) {
                 notification.success({
                     message: "Operation Successful",
@@ -225,14 +223,12 @@ const AddCourseFormModal:FC<AddCourseUserFormProps> = ({ showModal, profile, spe
                     >
                         <Select placeholder="Assign To">
                             <Option key={0} value="">----------</Option>
-                            {/* {profileData?.map((item: UserProfile) => <Option key={item.id} value={item.id}>{item?.first_name} {item?.last_name}</Option>)} */}
+                            {userActiveTeacher?.map((item: UserType) => <Option key={item.id} value={item.id}>{item?.first_name} {item?.last_name}</Option>)}
                         </Select>
                     </Form.Item>
 
                     <Form.Item>
                         <MyButtonSave loading={loading} />
-                        {/* {type == "Transversal" && <MyButtonSave loading={loading} />} */}
-                        {/* {type == "Transversal" && <Button onClick={() => { setShowAddTransversalCourses(true) }} className='w-full bg-blue-3500'>Select Specialties</Button>} */}
                     </Form.Item>
                 </Form>
             </Modal>

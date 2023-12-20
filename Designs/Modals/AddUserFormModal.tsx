@@ -50,7 +50,10 @@ const AddUserFormModal:React.FC<AddUserFormProps> = ({ showModal, setShowModal, 
     defaultValues: defaultValues,
   });
   const onSubmit = async (data: IFormInput) => {
-    const payload = {...data, created_by_id: storeUser.id}
+    const payload = {
+      ...data, 
+      username: data["username"].toLowerCase(),
+      created_by_id: storeUser.id}
 
     const response = await axiosRequest<any>({
         method: "post",

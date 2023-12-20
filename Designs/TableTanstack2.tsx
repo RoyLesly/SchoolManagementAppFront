@@ -48,6 +48,21 @@ const CalcWeightedPoint = (cv: number, mark: number) => {
   return wp
 }
 
+const addTwoNumber = (a: number, b: number) => {
+  let aa = 0
+  let bb = 0
+  if (Number.isInteger(a)) {
+    aa = a;
+  }
+  if (Number.isInteger(b)) {
+    bb = b;
+  }
+  let sum = aa + bb
+  return sum;
+}
+
+console.log(addTwoNumber(3, 2))
+
 
 const defaultColumns: ColumnDef<ResultProps>[] = [
   {
@@ -75,7 +90,7 @@ const defaultColumns: ColumnDef<ResultProps>[] = [
     footer: props => props.column.id,
   },
   {
-    accessorFn: row => ((row.ca) + parseInt(row.exam)),
+    accessorFn: row => (addTwoNumber(parseInt(`${row.ca}`), parseInt(row.exam))),
     id: 'marks',
     cell: info => info.getValue(),
     size: 125,
@@ -83,19 +98,19 @@ const defaultColumns: ColumnDef<ResultProps>[] = [
     footer: props => props.column.id,
   },
   {
-    accessorFn: row => CalcGrade(row.ca + parseInt(row.exam)),
+    accessorFn: row => CalcGrade(addTwoNumber(parseInt(`${row.ca}`), parseInt(row.exam))),
     id: "calculated grade",
     header: () => <span>GD</span>,
     footer: props => props.column.id,
   },
   {
-    accessorFn: row => CalcGradePoint(row.ca + parseInt(row.exam)),
+    accessorFn: row => CalcGradePoint(addTwoNumber(parseInt(`${row.ca}`), parseInt(row.exam))),
     id: "calculated grade point",
     header: () => <span>GP</span>,
     footer: props => props.column.id,
   },
   {
-    accessorFn: row => CalcWeightedPoint(row.course.course_credit, (row.ca + parseInt(row.exam))),
+    accessorFn: row => CalcWeightedPoint(row.course.course_credit, addTwoNumber(parseInt(`${row.ca}`), parseInt(row.exam))),
     id: "cv * gp",    
     header: () => <span>WP</span>,
     footer: props => props.column.id,
@@ -104,7 +119,6 @@ const defaultColumns: ColumnDef<ResultProps>[] = [
 
 const TableTanstack2 = (props: any) => {
   const [data, setData] = React.useState(() => [...props.data])
-  console.log(data)
   const [columns] = React.useState<typeof defaultColumns>(() => [
     ...defaultColumns,
   ])

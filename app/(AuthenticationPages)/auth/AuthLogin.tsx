@@ -4,6 +4,7 @@ import {
   Typography,
   Button,
   Stack,
+  CircularProgress,
 } from "@mui/material";
 import Link from "next/link";
 
@@ -49,6 +50,7 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
   });
 
   const onSubmit = async (data: IFormInput) => {
+    setFetching(true)
 
     const response = await axiosRequest<any>({
         method: "post",
@@ -64,8 +66,9 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
       if (response?.data.errors) {
         notification.error({
           "message": "ERROR !!!",
-          "description": `${response?.data.errors}`
+          "description": JSON.stringify(response?.data.errors)
         })
+        setFetching(false)    
         return
       } else if (response?.data.success) {
         const userCategory = response.data.success;
@@ -75,7 +78,6 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
         })
 
         dispatch(addAuthUser(userCategory?.authUser));
-        // return
         reset();
         dispatch(addUserProfile(profiles.filter((item: UserProfile) => item.user.id == userCategory?.authUser.id)[0]))
         if (userCategory?.authUser.role == "teacher") {
@@ -90,7 +92,13 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
       } else {
         alert(JSON.stringify(response));
       }
+    } else {
+      notification.error({
+        "message": "SERVER NOT FOUND !!!",
+        "description": "Check Server !!!"
+      })
     }
+    setFetching(false)    
   };
 
   return (
@@ -151,8 +159,9 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
           size="large"
           fullWidth
           onClick={handleSubmit(onSubmit)} 
+          disabled={fetching}
         >
-          Submit
+          <div style={{ marginRight: 10 }}>Submit</div> <CircularProgress size={12} style={{ marginRight: 4 }} />
         </Button>
       </Box>
       

@@ -15,7 +15,8 @@ const NotLoggedInModal:FC<NotLoggedInModalProps> = ({ showModal,setShowModal }) 
         <Modal
             title={``}
             open={showModal}
-            onCancel={() => setShowModal(false)}
+            onCancel={() => {}}
+            // onCancel={() => setShowModal(false)}
             footer={false}
         >
             <Grid container spacing={3} sx={{ alignItems: 'center' }} direction="column">

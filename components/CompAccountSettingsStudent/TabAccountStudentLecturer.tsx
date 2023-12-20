@@ -18,11 +18,11 @@ import MyFormInputText from '@/Designs/MyFormInputText'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { addChoosenUserProfile, selectChoosenUserProfile } from '@/Redux/Reducers/sliceChoosenUserAndProfile'
-import { LevelProps, SpecialtyProps, UserProfile } from '@/Utils/types'
+import { LevelProps, SpecialtyProps, UserProfile, UserType } from '@/Utils/types'
 import { axiosRequest } from '@/Utils/functions'
-import { UserProfilesUrl } from '@/Utils/Config'
+import { UserCRUDUrl, UserProfilesUrl } from '@/Utils/Config'
 import { addUserProfile, selectAuthUser, selectUserProfile } from '@/Redux/Reducers/sliceUser'
-import { useGetAllLevels, useGetAllSpecialties, useGetAllUserProfiles } from '@/Utils/customHooks'
+import { useGetAllLevels, useGetAllSpecialties, useGetAllUserProfiles, useGetAllUsers } from '@/Utils/customHooks'
 import { notification } from 'antd'
 import { useRouter } from 'next/navigation'
 import MyButtonLoader from '@/Designs/MyButtonLoader'
@@ -61,6 +61,7 @@ const TabAccountStudentLecturer = () => {
   const dispatch = useDispatch()
   const storeProfile = useSelector(selectUserProfile);
   const storeUser = useSelector(selectAuthUser)
+  const [ users, setUsers ] = useState<UserType[]>([])
   const [ levels, setLevels ] = useState<LevelProps[]>([])
   const [ specialties, setSpecialties ] = useState<SpecialtyProps[]>([]);
   const [ specialtiesData1, setSpecialtiesData1 ] = useState<SpecialtyProps[]>([]);
@@ -72,15 +73,15 @@ const TabAccountStudentLecturer = () => {
   useGetAllLevels(setLevels, setFetching)
   useGetAllSpecialties(setSpecialties, setFetching)
   useGetAllUserProfiles(setProfiles, setFetching)
+  useGetAllUsers(setUsers, setFetching, { searchField: "id", value: storeUser.id})
 
   useEffect(() => {
     setSpecialtiesData1(specialties)
   }, [specialties])
 
   useEffect(() => {
-    const storeProf = profiles.filter((item: UserProfile) => item.user.id == storeUser.id);
-    const storeSpec = storeProf.map((item: UserProfile) => item.specialty);
-    dispatch(addChoosenUserProfile(storeProf[0]));
+    const storeProfs = profiles.filter((item: UserProfile) => item.user.id == storeUser.id);
+    const storeSpec = storeProfs.map((item: UserProfile) => item.specialty);
     if (storeSpec[0] != null) {
       setMySpecialties(storeSpec);
     }
@@ -90,8 +91,8 @@ const TabAccountStudentLecturer = () => {
     // setSpecialtiesData2(specialtiesData1)
   }, [])
 
-  const defaultValues = {...storeProfile};
-  const { handleSubmit, reset, control } = useForm<UserProfile>({
+  const defaultValues = {...users[0]};
+  const { handleSubmit, reset, control } = useForm<UserType>({
     defaultValues: defaultValues,
   });
   const [openAlert, setOpenAlert] = useState<boolean>(true)
@@ -106,22 +107,37 @@ const TabAccountStudentLecturer = () => {
     }
   }
 
-  const onSubmit = async (data: UserProfile) => {
-    setLoading(true)
+  const onSubmit = async (data: UserType) => {
+    console.log(data)
+    console.log(defaultValues)
+    if (data["first_name"] == "" || data["first_name"] == undefined){
+      data["first_name"] = defaultValues["first_name"]
+    }
+    if (data["last_name"] == "" || data["last_name"] == undefined){
+      data["last_name"] = defaultValues["last_name"]
+    }
+    if (data["telephone"].toString() == "" || data["telephone"] == undefined){
+      data["telephone"] = defaultValues["telephone"]
+    }
+    if (data["email"] == "" || data["email"] == undefined){
+      data["email"] = defaultValues["email"]
+    }
 
     let values = {
       ...data, 
-      first_name: data.user.first_name.toUpperCase(),
-      last_name: data.user.last_name.toUpperCase(),
-      user_id: data.user.id,
-      role: storeUser.role,
+      first_name: data.first_name.toUpperCase(),
+      last_name: data.last_name.toUpperCase(),
+      user_id: data.id,
+      username: defaultValues.username,
+      role: defaultValues.role,
       updated_by_id: storeUser.id,
       multiple: true,
     }
+    setLoading(true)
 
     const response = await axiosRequest<any>({
         method: "put",
-        url: UserProfilesUrl + "/" + data.id,
+        url: UserCRUDUrl + "/" + defaultValues.id,
         payload: values,
         hasAuth: true,
     })
@@ -133,7 +149,7 @@ const TabAccountStudentLecturer = () => {
         dispatch(addUserProfile(response.data.success));
         notification.success({
           "message": "OK",
-          "description": "Successfully Updated Profile"
+          "description": "Successfully Updated User"
         });
         router.back();
       }
@@ -152,16 +168,6 @@ const TabAccountStudentLecturer = () => {
       setLoading(false)
     }
   };
-
-  const FilterByYear = (val: any) => {
-    const fil = specialties.filter((item: SpecialtyProps) => item.academic_year == val)
-    setSpecialtiesData1(fil)
-  }
-  const FilterByLevel = (val: any) => {
-    const fil = specialtiesData1.filter((item: SpecialtyProps) => item.level.id == val)
-    // setSpecialtiesData2(fil)
-  }
-
 
   return (
     <CardContent>
@@ -194,7 +200,7 @@ const TabAccountStudentLecturer = () => {
           </Grid>
 
 
-          <Grid item xs={12}>
+          <Grid item xs={6}>
             <MyFormInputText 
               name={"username"}
               control={control}
@@ -202,27 +208,38 @@ const TabAccountStudentLecturer = () => {
               size={"large"}
               required={true}
               disabled={true}
-              defaultValue={defaultValues.user.username}
+              defaultValue={defaultValues.username}
+            />  
+          </Grid>     
+          <Grid item xs={6}>
+            <MyFormInputText 
+              name={"matricle"}
+              control={control}
+              label={""}
+              size={"large"}
+              required={true}
+              disabled={true}
+              defaultValue={defaultValues?.matricle}
             />  
           </Grid>     
           <Grid item xs={12} sm={6}>
             <MyFormInputText 
               name={"first_name"}
               control={control}
-              label={"First Name"}
+              label={""}
               size={"large"}
               required={true}
-              defaultValue={defaultValues.user.first_name}
+              defaultValue={defaultValues.first_name}
             />       
           </Grid>
           <Grid item xs={12} sm={6}>
             <MyFormInputText 
               name={"last_name"}
               control={control}
-              label={"Last Name"}
+              label={""}
               size={"large"}
               required={true}
-              defaultValue={defaultValues.user.last_name}
+              defaultValue={defaultValues.last_name}
             />       
           </Grid> 
 
@@ -230,10 +247,10 @@ const TabAccountStudentLecturer = () => {
             <MyFormInputText 
               name={"telephone"}
               control={control}
-              label={"Telephone"}
+              label={""}
               size={"large"}
               required={true}
-              defaultValue={defaultValues.user.telephone}
+              defaultValue={defaultValues.telephone}
             />       
           </Grid>
           
@@ -241,10 +258,10 @@ const TabAccountStudentLecturer = () => {
             <MyFormInputText 
               name={"email"}
               control={control}
-              label={"Email"}
+              label={""}
               size={"large"}
               required={true}
-              defaultValue={defaultValues.user.email}
+              defaultValue={defaultValues.email}
             />       
           </Grid>
 
@@ -262,7 +279,7 @@ const TabAccountStudentLecturer = () => {
             </Grid> )}
           </Grid> : null}
 
-          {!storeProfile.user.email_confirmed ? (
+          {!users[0]?.email_confirmed ? (
             <Grid item xs={12} sx={{ mb: 0 }}>
               <Alert
                 severity='warning'
@@ -302,7 +319,7 @@ const TabAccountStudentLecturer = () => {
       <ConfirmEmailModal
         showModal={openConfirmationModal}
         setShowModal={setOpenConfirmationModal}
-        email={storeProfile.user.email}
+        email={defaultValues.email}
         reset={reset}
       />
 

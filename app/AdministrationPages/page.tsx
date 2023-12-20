@@ -3,7 +3,19 @@ import { Grid, Box } from '@mui/material';
 import PageContainer from '@/app/AdministrationPages/components/container/PageContainer';
 // components
 import SalesOverview from '@/app/AdministrationPages/components/dashboard/SalesOverview';
+import { useDispatch } from 'react-redux';
+import { removeChoosenCourse, removeChoosenDomain, removeChoosenSpecialty } from '@/Redux/Reducers/sliceDomainSpecialityCourse';
+import { removeChoosenUser, removeChoosenUserProfile } from '@/Redux/Reducers/sliceChoosenUserAndProfile';
 const Dashboard = () => {
+
+  const dispatch = useDispatch();
+  dispatch(removeChoosenCourse());
+  dispatch(removeChoosenDomain());
+  dispatch(removeChoosenUser());
+  dispatch(removeChoosenUserProfile());
+  dispatch(removeChoosenSpecialty());
+
+
   return (
     <PageContainer title="Dashboard" description="this is Dashboard">
       <Box>

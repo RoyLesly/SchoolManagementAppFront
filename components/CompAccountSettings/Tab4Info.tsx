@@ -65,10 +65,10 @@ const Tab4Info = () => {
     let values = {
       ...storeChoosenUserProfile.user, 
       address: data.address?.toUpperCase(),
-      about: data.about.toUpperCase(),
+      about: data.about?.toUpperCase(),
       user_id: data.id,
       dob: data.dob,
-      pob: data.pob.toUpperCase(),
+      pob: data.pob?.toUpperCase(),
       role: storeChoosenUserProfile.user.role,
       sex: sex,
       hod: hod,

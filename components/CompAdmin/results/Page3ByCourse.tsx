@@ -1,7 +1,7 @@
 'use client';
 import { useGetAllCourses } from '@/Utils/customHooks'
 import { getAllCourses } from '@/Utils/functions'
-import { CourseProps, MainCourseProps } from '@/Utils/types'
+import { CourseProps, MainCourseProps, UserType } from '@/Utils/types'
 import React, { FC, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import MyButtonView from '@/Designs/MyButtonView';
@@ -41,6 +41,11 @@ const Page3ByCourse:FC<Page3ByCourseProps> = ({ setSelectedNumber }) => {
       {title: "COURSE NAME", dataIndex: "main_course", 
           render: (item: MainCourseProps) => <div className='italic font-semibold tracking-widest'>
               {item.course_name}
+          </div>
+      },                       
+      {title: "LECTURER", dataIndex: "assigned_to", 
+          render: (item: UserType) => <div className='italic font-semibold tracking-widest'>
+              {item?.first_name} {item?.last_name}
           </div>
       },                       
       {title: "ACTION",

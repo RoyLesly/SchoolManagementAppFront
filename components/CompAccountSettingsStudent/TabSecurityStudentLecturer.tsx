@@ -270,7 +270,7 @@ const TabSecurityStudentLecturer = () => {
           </Grid>
         </CardContent>
 
-        <Grid item xs={12} container justifyContent="center">
+        {/* <Grid item xs={12} container justifyContent="center">
           <Button
             type='reset'
             variant='outlined'
@@ -280,7 +280,7 @@ const TabSecurityStudentLecturer = () => {
           >
             Clear Fields
           </Button>
-        </Grid>
+        </Grid> */}
 
         <Divider sx={{ marginTop: 4, marginBottom: 4 }} />
 
@@ -299,7 +299,7 @@ const TabSecurityStudentLecturer = () => {
               fetching={loading}
               loadingText="Saving"
             /> : null}
-            <Button
+            {/* <Button
               type='reset'
               variant='outlined'
               color='secondary'
@@ -307,7 +307,7 @@ const TabSecurityStudentLecturer = () => {
               onClick={() => setResetPasswordModal(true)}
             >
               Reset Password
-            </Button>
+            </Button> */}
           </Grid>
         </Grid>     
       </form>

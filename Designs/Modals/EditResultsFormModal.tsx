@@ -23,8 +23,7 @@ const EditResultsFormModal:FC<EditResultsFormProps> = ({ showModal, setShowModal
 
     
     const onSubmit = async (values: DataProps) => {
-        console.log(record)
-        setLoading(true)
+  
         if (values["ca"] == "" || values["ca"] == undefined || values["ca"] == null){
             values["ca"] = record["ca"]
         }
@@ -34,6 +33,28 @@ const EditResultsFormModal:FC<EditResultsFormProps> = ({ showModal, setShowModal
         if (values["resit"] == "" || values["resit"] == undefined || values["resit"] == null){
             values["resit"] = record["resit"]
         }
+        if (values["ca"] > 30 || values["ca"] < 0){
+            notification.error({
+                message: "Invalid Range !!!",
+                description: "Valid Range 0 - 30"
+            })
+            return;
+        }
+        if (values["exam"] > 70 || values["exam"] < 0){
+            notification.error({
+                message: "Invalid Range !!!",
+                description: "Valid Range 0 - 70"
+            })
+            return;
+        }
+        if (values["resit"] > 60 || values["resit"] < 0){
+            notification.error({
+                message: "Invalid Range !!!",
+                description: "Valid Range 0 - 60"
+            })
+            return;
+        }
+        setLoading(true)
 
         const payload = {
             ...values, 
@@ -90,19 +111,19 @@ const EditResultsFormModal:FC<EditResultsFormProps> = ({ showModal, setShowModal
                 <Form.Item label="CA" name="ca"
                     rules={[{ required: false, message: "Please Input CA" }]}
                 >
-                    <Input placeholder={`${record?.ca}`} type='number' />
+                    <Input placeholder={`${record?.ca}`} type='number' max={30} />
                 </Form.Item>
 
                 <Form.Item label="EXAM" name="exam"
                     rules={[{ required: false, message: "Please Input EXAM" }]}
                 >
-                    <Input placeholder={`${record?.exam}`} type='number' />
+                    <Input placeholder={`${record?.exam}`} type='number' max={70}/>
                 </Form.Item>
 
                 <Form.Item label="RESIT" name="resit"
                     rules={[{ required: false, message: "Please Input RESIT" }]}
                 >
-                    <Input placeholder={`${record?.resit}`} type='number' />
+                    <Input placeholder={`${record?.resit}`} type='number' max={60}/>
                 </Form.Item>
 
                 <Form.Item>

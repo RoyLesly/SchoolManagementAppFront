@@ -53,7 +53,7 @@ export const useGetAllUsers = (
 
     useEffect(() => {
         getAllUsers(setUsers, setFetching, params)
-    }, [setUsers, setFetching])
+    }, [setUsers, setFetching, params])
 }
 
 export const useGetAllUserProfiles = (
@@ -64,7 +64,7 @@ export const useGetAllUserProfiles = (
 
     useEffect(() => {
         getAllUserProfiles(setUserProfiles, setFetching, params)
-    }, [setUserProfiles, setFetching])
+    }, [setUserProfiles, setFetching, params])
 }
 
 export const useGetAllDomains = (
@@ -78,29 +78,32 @@ export const useGetAllDomains = (
 
 export const useGetAllSpecialties = (
     setAllSpecialties: (data: SpecialtyProps[]) => void,
-    setFetching: (val: boolean) => void
+    setFetching: (val: boolean) => void,
+    params?: { searchField: string, value: string | number }
 ) => {
     useEffect(() => {
-        getAllSpecialties(setAllSpecialties, setFetching)
-    }, [setAllSpecialties, setFetching])
+        getAllSpecialties(setAllSpecialties, setFetching, params)
+    }, [setAllSpecialties, setFetching, params])
 }
 
 export const useGetAllMainSpecialties = (
     setAllMainSpecialties: (data: MainSpecialtyProps[]) => void,
-    setFetching: (val: boolean) => void
+    setFetching: (val: boolean) => void,
+    params?: { searchField: string, value: string | number}
 ) => {
     useEffect(() => {
-        getAllMainSpecialties(setAllMainSpecialties, setFetching)
-    }, [setAllMainSpecialties, setFetching])
+        getAllMainSpecialties(setAllMainSpecialties, setFetching, params)
+    }, [setAllMainSpecialties, setFetching, params])
 }
 
 export const useGetAllCourses = (
     setAllCourses: (data: CourseProps[]) => void,
-    setFetching: (val: boolean) => void
+    setFetching: (val: boolean) => void,
+    params?: { searchField: string, value: string | number | boolean}
 ) => {
     useEffect(() => {
-        getAllCourses(setAllCourses, setFetching)
-    }, [setAllCourses, setFetching])
+        getAllCourses(setAllCourses, setFetching, params)
+    }, [setAllCourses, setFetching, params])
 }
 
 export const useGetAllMainCourses = (
@@ -114,11 +117,12 @@ export const useGetAllMainCourses = (
 
 export const useGetAllResults = (
     setAllResults: (data: ResultProps[]) => void,
-    setFetching: (val: boolean) => void
+    setFetching: (val: boolean) => void,
+    params?: { searchField: string, value: string | number}
 ) => {
     useEffect(() => {
-        getAllResults(setAllResults, setFetching)
-    }, [setAllResults, setFetching])
+        getAllResults(setAllResults, setFetching, params)
+    }, [setAllResults, setFetching, params])
 }
 
 export const useGetAllLevels = (

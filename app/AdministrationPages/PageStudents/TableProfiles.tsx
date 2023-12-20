@@ -89,10 +89,14 @@ const TableProfiles:FC<UserProfilesProps> = ({ userprofiletype }) => {
                             <TableHead>
                                 <TableRow>
                                 
-                                    <TableCell>
+                                    <TableCell>{userprofiletype == "student" ?
                                         <Typography variant="subtitle2" fontWeight={600}>
                                             Username / Matricle
                                         </Typography>
+                                            : 
+                                        <Typography variant="subtitle2" fontWeight={600}>
+                                            Username
+                                        </Typography>}
                                     </TableCell>
 
                                     <TableCell>
@@ -128,27 +132,35 @@ const TableProfiles:FC<UserProfilesProps> = ({ userprofiletype }) => {
                             <TableBody>
                                 {userProfilesData.map((item: UserProfile) => (
                                     <TableRow key={item.id}>
+
                                         <TableCell>
-                                            <Typography
-                                                sx={{
-                                                    fontSize: "15px",
-                                                    fontWeight: "500",
-                                                }}
-                                            >
-                                                {item.user.username} / {item.user?.matricle}
-                                            </Typography>
+                                            {userprofiletype == "student" ? 
+                                                <Typography
+                                                    sx={{
+                                                        fontSize: "15px",
+                                                        fontWeight: "500",
+                                                    }}
+                                                >
+                                                    {item.user.username} / {item.user?.matricle}
+                                                </Typography>
+                                                :
+                                                <Typography variant="subtitle2" fontWeight={600}>
+                                                    {item.user.username}                                           
+                                                </Typography>
+                                            }
                                         </TableCell>
 
-                                        {userprofiletype == "student" ? <TableCell>
-                                            <Typography variant="subtitle2" fontWeight={600}>
-                                                {item.user?.first_name} {item.user?.last_name}
-                                            </Typography>
-                                            </TableCell> : <TableCell>
+                                        <TableCell>
+                                            {userprofiletype == "student" ? 
+                                                <Typography variant="subtitle2" fontWeight={600}>
+                                                    {item.user?.first_name} {item.user?.last_name}
+                                                </Typography>
+                                            :
                                                 <Typography variant="subtitle2" fontWeight={600}>
                                                     {item.user?.title}. {item.user?.first_name} {item.user?.last_name}                                            
                                                 </Typography>
-                                            </TableCell>
-                                        }
+                                            }
+                                        </TableCell>
 
                                         {userprofiletype == "student" && <TableCell>
                                             <Typography
