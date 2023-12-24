@@ -9,6 +9,7 @@ import {
     Button,
     Stack,
     Fab,
+    Input,
 } from '@mui/material';
 import DashboardCard from '@/components/CompAdmin/shared/DashboardCard';
 import { FC, useEffect, useState } from 'react';
@@ -52,6 +53,8 @@ const TableProfiles:FC<UserProfilesProps> = ({ userprofiletype }) => {
         getAllUserProfiles(setUserProfiles, setFetching)
     }
 
+
+
     const buttonSx = {
         ...(fetching && {
             bgcolor: green[500], '&:hover': {
@@ -60,13 +63,23 @@ const TableProfiles:FC<UserProfilesProps> = ({ userprofiletype }) => {
         }),
     };
 
+    const searchProfile = (val: string) => {
+        const filter = userProfiles.filter((item: UserProfile) => item.user.role == userprofiletype);
+        if (val.length > 1) {
+            const filA = filter.filter((item: UserProfile) => item.user?.first_name?.toLowerCase().includes(val.toLowerCase()));
+            const filB = filter.filter((item: UserProfile) => item.user?.last_name?.toLowerCase().includes(val.toLowerCase()));
+            setUserProfilesData(filA);
+        } else {
+            setUserProfilesData(filter);
+        }
+    }
+
     return (
 
         <DashboardCard title={`${userprofiletype == "student" ? "Student" : "Lecturer"} List`}>
             <Box sx={{ overflow: 'auto', width: { xs: '380px', sm: 'auto' } }}>
                 <Grid container spacing={0}>
                     <Grid item xs={12}>
-                        <MyButtonReload fetching={fetching} reset={reset} />
                         <Button sx={{ m: 0, position: 'relative' }}>
                             <Fab
                                 aria-label="save"
@@ -77,6 +90,13 @@ const TableProfiles:FC<UserProfilesProps> = ({ userprofiletype }) => {
                             {fetching ? "Loading" : <>{userProfilesData.length}</>}
                             </Fab>
                         </Button>
+                        
+                        {userprofiletype == "student" ? 
+                            <Input placeholder='Search Student Name or Matricle ...' onChange={(e) => searchProfile(e.target.value)} style={{ width: 250, marginLeft: 12 }}/> 
+                                : 
+                            <Input placeholder='Search Lecturer Name ...' onChange={(e) => searchProfile(e.target.value)} style={{ width: 250, marginLeft: 12 }}/>
+                        }
+
                     </Grid>
                     <Grid item xs={12}>
                         <Table

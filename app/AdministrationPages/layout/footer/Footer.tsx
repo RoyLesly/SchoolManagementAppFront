@@ -1,5 +1,4 @@
-import { Box, Paper, Typography } from '@mui/material';
-import { green } from '@mui/material/colors';
+import { Paper, Typography } from '@mui/material';
 import React from 'react'
 
 const Footer = () => {
@@ -14,7 +13,7 @@ const Footer = () => {
         justifyContent: "center",
       }}
     >
-      <Typography variant='h6' color="#1a237e" sx={{ }}>Result Management Portal v2.0.4</Typography>
+      <Typography variant='h6' color="#1a237e" sx={{ }}>Moove Student v2.0.5</Typography>
     </Paper>
   )
 }

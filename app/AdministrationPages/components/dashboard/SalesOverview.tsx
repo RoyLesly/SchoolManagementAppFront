@@ -29,7 +29,7 @@ const SalesOverview = () => {
             toolbar: {
                 show: true,
             },
-            height: 370,
+            height: 270,
         },
         colors: [primary, secondary],
         plotOptions: {
@@ -91,7 +91,7 @@ const SalesOverview = () => {
 
     return (
 
-        <DashboardCard title="Sales Overview" action={
+        <DashboardCard title="Students Overview" action={
             <Select
                 labelId="month-dd"
                 id="month-dd"

@@ -33,14 +33,28 @@ const Tab2Results:FC<Tab2ResultsProps> = ({  }) => {
   useEffect(() => {
       const filA = allResults.filter((item: ResultProps) => item.student.id == storeChoosenUserProfile.id);
       const filB = filA.filter((item: ResultProps) => item.course?.specialty?.id == storeChoosenUserProfile?.specialty?.id);
-      console.log(storeChoosenUserProfile)
-      console.log(filA)
-      console.log(filB)
       setAllMyResults(filB)
-  }, [allResults, storeUser, storeChoosenUserProfile])
-  console.log(storeChoosenUserProfile)
-  console.log(allMyResults)
-  
+  }, [allResults, storeUser, storeChoosenUserProfile])  
+
+  const calcTotalMarks = (ca: any, exam: any, resit: any ) => {
+    let sum: number = 0
+    if (resit != null) {
+        sum = parseInt(ca) + parseInt(resit)
+    } else {
+        sum = parseInt(ca) + parseInt(exam)
+    }
+    if (isNaN(sum)){ return "N/A"}
+    return sum
+  }
+
+  const checkValidated = (mark: any) => {
+    if (mark > 49.9 && mark < 100.1) {
+        return <Typography variant='h5' style={{ color: "green"}}>Validated</Typography>
+    } 
+    else if (mark < 50) {
+        return <Typography variant='h5' style={{ color: "red"}}>Not Validated</Typography>
+    } 
+  }
 
   return (
     <DashboardCard title={`RESULTS FOR ${storeChoosenUserProfile?.specialty?.main_specialty.specialty_name} ${storeChoosenUserProfile?.specialty?.level.level} `}>
@@ -86,7 +100,7 @@ const Tab2Results:FC<Tab2ResultsProps> = ({  }) => {
 
                               <TableCell>
                                   <Typography variant="subtitle2" fontWeight={600}>
-                                      AV
+                                      TOTAL
                                   </Typography>
                               </TableCell>
 
@@ -129,12 +143,12 @@ const Tab2Results:FC<Tab2ResultsProps> = ({  }) => {
                                   </TableCell>
                                   <TableCell>
                                       <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                                          {item.average}
+                                        {calcTotalMarks(item.ca, item.exam, item.resit)}
                                       </Typography>
                                   </TableCell>
                                   <TableCell>
                                       <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                                          {item.validated}
+                                          {checkValidated(calcTotalMarks(item.ca, item.exam, item.resit))}
                                       </Typography>
                                   </TableCell>
                               </TableRow>

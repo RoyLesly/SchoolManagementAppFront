@@ -15,7 +15,7 @@ import Button, { ButtonProps } from '@mui/material/Button'
 // ** Icons Imports
 import Close from 'mdi-material-ui/Close'
 import MyFormInputText from '@/Designs/MyFormInputText'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectChoosenUser, selectChoosenUserProfile } from '@/Redux/Reducers/sliceChoosenUserAndProfile'
 import { LevelProps, SpecialtyProps, UserProfile, UserType } from '@/Utils/types'
@@ -26,7 +26,7 @@ import { useGetAllLevels, useGetAllSpecialties, useGetAllUsers } from '@/Utils/c
 import { Spin, notification } from 'antd'
 import { useRouter } from 'next/navigation'
 import MyButtonLoader, { MyButtonLoader2 } from '@/Designs/MyButtonLoader'
-import { CircularProgress, IconButton, Typography, styled } from '@mui/material'
+import { CircularProgress, FormLabel, IconButton, Input, Typography, styled } from '@mui/material'
 import { ArrowCircleRight } from '@mui/icons-material'
 import { green } from '@mui/material/colors'
 
@@ -60,21 +60,18 @@ interface Tab1AccountProps {
 const Tab1Account:FC<Tab1AccountProps> = ({ }) => {
 
   const router = useRouter()
-  const dispatch = useDispatch()
   const storeUser = useSelector(selectAuthUser)
   const storeChoosenUserProfile = useSelector(selectChoosenUserProfile);
-  const [ fetching, setFetching ] = useState<boolean>(false)
   const [ loading, setLoading ] = useState<boolean>(false)
-  const [ users, setUsers ] = useState<UserType[]>([])
 
-  useGetAllUsers(setUsers, setFetching, { searchField: "id", value: storeChoosenUserProfile.user.id })
 
   const defaultValues = {...storeChoosenUserProfile.user};
   const { handleSubmit, reset, control } = useForm<UserType>({
     defaultValues: defaultValues,
   });
-  const [openAlert, setOpenAlert] = useState<boolean>(true)
-  const [imgSrc, setImgSrc] = useState<string>('/images/avatars/1.png')
+
+  const [ openAlert, setOpenAlert ] = useState(false)
+  const [ imgSrc, setImgSrc ] = useState<string>('/images/avatars/1.png')
 
   const onChange = (file: ChangeEvent) => {
     const reader = new FileReader()
@@ -149,7 +146,112 @@ const Tab1Account:FC<Tab1AccountProps> = ({ }) => {
 
   return (
     <CardContent>
-      <form>
+
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Grid container spacing={6}>
+
+          <Grid item xs={12} sx={{ marginTop: 4, marginBottom: 1 }}>
+            <FormControl component="fieldset">
+              <FormLabel component="legend">Username</FormLabel>
+              <Controller
+                rules={{ }}
+                control={control}
+                name="username"
+                render={( {field} ) => {
+                  console.log(field)
+                  return (
+                    <Input {...field} />
+                  )
+                }}
+              ></Controller>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} md={6} sx={{ width: 300 }}>
+            <FormControl component="fieldset">
+              <FormLabel component="legend">First Name</FormLabel>
+              <Controller
+                rules={{ }}
+                control={control}
+                name="first_name"
+                render={( {field} ) => {
+                  console.log(field)
+                  return (
+                    <Input {...field} />
+                  )
+                }}
+              ></Controller>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} md={6} sx={{ width: 300 }}>
+            <FormControl component="fieldset">
+              <FormLabel component="legend">Last Name</FormLabel>
+              <Controller
+                rules={{ }}
+                control={control}
+                name="last_name"
+                render={( {field} ) => {
+                  console.log(field)
+                  return (
+                    <Input {...field} />
+                  )
+                }}
+              ></Controller>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} md={6} sx={{ width: 300 }}>
+            <FormControl component="fieldset">
+              <FormLabel component="legend">TELEPHONE</FormLabel>
+              <Controller
+                rules={{ }}
+                control={control}
+                name="telephone"
+                render={( {field} ) => {
+                  console.log(field)
+                  return (
+                    <Input {...field} />
+                  )
+                }}
+              ></Controller>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} md={6} sx={{ width: 300 }}>
+            <FormControl component="fieldset">
+              <FormLabel component="legend">EMAIL</FormLabel>
+              <Controller
+                rules={{ }}
+                control={control}
+                name="email"
+                render={( {field} ) => {
+                  console.log(field)
+                  return (
+                    <Input {...field} />
+                  )
+                }}
+              ></Controller>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} md={6} sx={{ width: 300 }}>
+            <Button
+              color="primary"
+              variant="contained"
+              size="large"
+              onClick={handleSubmit(onSubmit)} 
+              sx={{ marginRight: 3.5 }}
+            >
+              Save Changes
+            </Button>
+          </Grid>
+
+        </Grid>
+
+      </form>
+
+      {/* <form>
         <Grid container spacing={6}>
 
           <Grid item xs={12} sx={{ marginTop: 4, marginBottom: 1 }}>
@@ -269,7 +371,7 @@ const Tab1Account:FC<Tab1AccountProps> = ({ }) => {
             </Grid>
           </Grid>
         </Grid>
-      </form>
+      </form> */}
     </CardContent>
   )
 }

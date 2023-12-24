@@ -22,7 +22,7 @@ const PrintTranscriptModal:FC<PrintTranscriptProps> = ({ open, setOpen, selected
     >
       <Box sx={{ ...style, width: 627 }}>
         <h2 id="parent-modal-title">Transcript Preview</h2>
-          {Array.isArray(selectedAcademicYearToPrint) ? <p>
+          {selectedAcademicYearToPrint == "all" ? <p>
             Print For Years (Under Development)
           </p> : <p>
             <TranscriptFor1Years

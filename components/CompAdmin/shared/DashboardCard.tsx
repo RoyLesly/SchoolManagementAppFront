@@ -3,6 +3,7 @@ import { Card, CardContent, Typography, Stack, Box } from "@mui/material";
 
 type Props = {
   title?: string;
+  count?: number;
   subtitle?: string;
   action?: JSX.Element | any;
   footer?: JSX.Element;
@@ -17,6 +18,7 @@ const DashboardCard = ({
   title,
   subtitle,
   children,
+  count,
   action,
   footer,
   cardheading,
@@ -53,6 +55,9 @@ const DashboardCard = ({
                 ) : (
                   ""
                 )}
+              </Box>
+              <Box>
+                {count ? <Typography variant="h5">{count}</Typography> : ""}
               </Box>
               {action}
             </Stack>

@@ -131,7 +131,6 @@ export const getActivation = async (
             created_at: (item.created_at)?.toString().slice(0, 10),
             ending_at: (item.ending_at)?.toString().slice(0, 10) + " " + (item.ending_at)?.toString().slice(11, 16),
         }))
-        // setAllActivation(data)
         setAllActivation(data[0])
         setFetching(false)
     }
@@ -140,7 +139,7 @@ export const getActivation = async (
 export const getAllUsers = async (
     setAllUsers: (data: UserType[]) => void,
     setFetching: (val: boolean) => void,
-    params?: { searchField: string, value: string | number }
+    params?: { kpi?: boolean, searchField: any, value: any}
 ) => {
 
     const response = await axiosRequest<{ results: UserType[] }>({
@@ -163,7 +162,7 @@ export const getAllUsers = async (
 export const getAllUserProfiles = async (
     setAllUserProfiles: (data: UserProfile[]) => void,
     setFetching: (val: boolean) => void,
-    params?: { searchField: string, value: string | number }
+    params?: { kpi?: boolean, searchField: any, value: any}
 ) => {
 
     const response = await axiosRequest<{ results: UserProfile[] }>({

@@ -1,11 +1,10 @@
 'use client';
-import { choosenCourse, choosenSpecialty } from '@/Redux/Reducers/sliceDomainSpecialityCourse';
-import { useGetAllResults, useGetAllUsers } from '@/Utils/customHooks';
+import { useGetAllResults } from '@/Utils/customHooks';
 import PageContainer from '@/app/AdministrationPages/components/container/PageContainer';
-import { Box, Button, Grid, Input, Stack, Typography } from '@mui/material';
-import { CourseProps, ResultProps, UserProfile, UserType } from '@/Utils/types';
+import { Box, Button, Grid, Stack, Typography } from '@mui/material';
+import { CourseProps, ResultProps, UserType } from '@/Utils/types';
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Select, Table } from 'antd';
 import FetchingDataIndicator from '@/Designs/FetchingDataIndicator';
 import MyButtonView from '@/Designs/MyButtonView';
@@ -13,6 +12,7 @@ import EditResultsFormModal from '@/Designs/Modals/EditResultsFormModal';
 import { getAllResults } from '@/Utils/functions';
 import PrintTranscriptModal from '@/Designs/Modals/PrintTranscriptModal';
 import { addPrintResults } from '@/Redux/Reducers/sliceResults';
+import { useGetAllStudents } from '@/Utils/customHooksExtra';
 
 const Page5Generate = () => {
   const dispatch = useDispatch()
@@ -31,7 +31,7 @@ const Page5Generate = () => {
   const [editResults, setEditResults] = useState<boolean>(false)
 
   useGetAllResults(setResults, setFetching)
-  useGetAllUsers(setUsers, ()=>{}, { searchField: "role", value: "student"})
+  useGetAllStudents(setUsers, setFetching)
 
   const reset = () => {
     getAllResults(setResults, setFetching)
@@ -90,8 +90,7 @@ const Page5Generate = () => {
   }
 
   const OnSelectAcademicYear = (val: any) => {
-    console.log(val)
-    if (Array.isArray(val)) {
+    if (val == "all") {
       setResultsForSelectedYearStudent(resultsForSelectedStudent)
     } else {
       const filterResultByYear = resultsForSelectedStudent.filter((item: ResultProps) => item?.course.specialty.academic_year == val)
@@ -99,7 +98,6 @@ const Page5Generate = () => {
     }
     setSelectedAcademicYearToPrint(val)
   }
-  console.log(selectedStudentAcademicYear)
 
   return (
     <PageContainer title="Dashboard" description="this is Dashboard">
@@ -107,22 +105,29 @@ const Page5Generate = () => {
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <Stack direction="row" spacing={3}>
+              
               <Box>            
                 <div className={`bg-black rounded ${fetching ? "px-4" : ""}`}><FetchingDataIndicator fetching={fetching} /></div>
               </Box>
-              <Box>
-                <div className='cursor-pointer rounded bg-blue-100 w-full text-center hover:bg-blue-500 font-semibold italic'>
-                  <Select
-                    style={{ width: 220 }}
-                    placeholder="Student Name or Matricle"
-                    showSearch
-                    onSelect={OnSelectStudent}
-                    filterOption={(input, option) => option ? option.children ? option.children.join("").toLowerCase().includes(input.toLowerCase()) : false : false}
-                  >
-                    {users.map((u: UserType) => <Select.Option Key={u.id} value={u.id}>{u.first_name} {u.last_name} {u.matricle}</Select.Option>)}
-                  </Select>
-                </div>
-              </Box>
+              
+              {users.length > 0 ? 
+                <Box>
+                  <div className='cursor-pointer rounded bg-blue-100 w-full text-center hover:bg-blue-500 font-semibold italic'>
+                    <Select
+                      style={{ width: 220 }}
+                      placeholder="Student Name or Matricle"
+                      showSearch
+                      onSelect={OnSelectStudent}
+                      filterOption={(input, option) => option ? option.children ? option.children.join("").toLowerCase().includes(input.toLowerCase()) : false : false}
+                    >
+                      {users.map((u: UserType) => <Select.Option Key={u.id} value={u.id}>{u.first_name} {u.last_name} {u.matricle}</Select.Option>)}
+                    </Select>
+                  </div>
+                </Box>
+                :
+                <></>
+              }
+
               {selectedStudentAcademicYear.length > 0 ?
                 <Box>
                   <Select
@@ -134,10 +139,12 @@ const Page5Generate = () => {
                       {selectedStudentAcademicYear.map((item: string, index: number) => 
                         <Select.Option Key={index} value={item}>{item} Level-{selectedStudentLevels[index]}</Select.Option>)
                       }
-                      <Select.Option Key={selectedStudentAcademicYear} value={selectedStudentAcademicYear}>All Levels</Select.Option>
+                      <Select.Option Key="all" value="all">All Levels</Select.Option>
                     </>
                   </Select>
-                </Box> : <></>}
+                </Box> : <></>
+              }
+
             </Stack>
           </Grid>
 

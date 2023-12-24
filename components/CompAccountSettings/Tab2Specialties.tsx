@@ -19,6 +19,7 @@ import { useRouter } from 'next/navigation'
 import MyButtonLoader from '@/Designs/MyButtonLoader'
 import { InputLabel, MenuItem, Select, Typography } from '@mui/material'
 import { useGetAllDomains, useGetAllLevels, useGetAllSpecialties, useGetAllUserProfiles } from '@/Utils/customHooks'
+import { useGetAllUserProfilesStudents } from '@/Utils/customHooksExtra'
 
 
 const Tab2Specialties = () => {
@@ -26,15 +27,14 @@ const Tab2Specialties = () => {
   const router = useRouter()
   const dispatch = useDispatch()
   const storeProfile = useSelector(selectChoosenUserProfile);
-  const storeUser = useSelector(selectAuthUser)
-  const storeChoosenUser = useSelector(selectChoosenUser)
+  const storeUser = useSelector(selectAuthUser);
+
   const [ profiles, setProfiles ] = useState<UserProfile[]>([])
-
   const [ myProfiles, setMyProfiles ] = useState<UserProfile[]>([])
-  const [ specialties, setSpecialties ] = useState<SpecialtyProps[]>([])
 
-  const [ specialtyList, setSpecialtyList ] = useState<any[]>([])
-  const [ highestLevel, setHighestLevel ] = useState<number>(1)
+  const [ specialties, setSpecialties ] = useState<SpecialtyProps[]>([])
+  const [ mySpecialtyList, setMySpecialtyList ] = useState<any[]>([])
+
   const [ specialtiesData, setSpecialtiesData ] = useState<SpecialtyProps[]>([])
   const [ specialtiesDataNext, setSpecialtiesDataNext ] = useState<SpecialtyProps[]>([])
   const [ specialty_id, setSpecialty_id ] = useState<number>(0)
@@ -50,14 +50,13 @@ const Tab2Specialties = () => {
   const thisYear = new Date().getFullYear()
 
   useGetAllSpecialties(setSpecialties, setFetching)
-  useGetAllUserProfiles(setProfiles, setFetching)
+  useGetAllUserProfilesStudents(setProfiles, setFetching)
   useGetAllDomains(setDomains, setFetching);
   useGetAllLevels(setLevels, setFetching);
 
   useEffect(() => {
-    const fil = profiles.filter((item: UserProfile) => item.user?.id == storeUser.id)
-    setMyProfiles(fil)
-  }, [profiles, storeUser])
+    setMyProfiles(profiles.filter((item: UserProfile) => item?.user?.id == storeProfile?.user?.id))
+  }, [profiles, storeProfile])
 
 
   interface IFormInput {
@@ -74,23 +73,27 @@ const Tab2Specialties = () => {
 
   useEffect(() => {
     const fil = profiles.filter((item: UserProfile) => item?.user?.id == storeProfile?.user?.id)
-    const filA = fil.map((item: UserProfile) => item?.specialty)
-    if (filA.length > 0) {
-      setSpecialtyList(filA)
+    setMyProfiles(fil)
+    const filA = fil.filter((item: UserProfile) => item?.specialty != undefined)
+    const filB = filA.map((item: UserProfile) => item?.specialty)
+    if (filB.length > 0) {
+      // setMySpecialtyList(filB)
     }
   }, [profiles, storeProfile])
 
   useEffect(() => {
-    const levels = specialtyList.map((item: SpecialtyProps) => item?.level?.level)
+    const levels = mySpecialtyList.map((item: SpecialtyProps) => item?.level?.level)
     const largest_num = levels.reduce((largest, current) => (current > largest ? current : largest), levels[0]) 
-    const specWithHighestLevel = specialtyList.filter((item: SpecialtyProps) => item?.level?.level == largest_num)[0]
+    const specWithHighestLevel = mySpecialtyList.filter((item: SpecialtyProps) => item?.level?.level == largest_num)[0]
+    console.log(mySpecialtyList)
+    console.log(specWithHighestLevel)
     const yearOfHighestSpecialty = specWithHighestLevel ? specWithHighestLevel?.academic_year[3] : 0
     const filA = specialties?.filter((item: SpecialtyProps) => item?.level?.level == (largest_num + 1))
     const filB = filA.filter((item: SpecialtyProps) => +item?.academic_year[3] == (+yearOfHighestSpecialty + 1))
     if (filB.length > 0) {
       setSpecialtiesDataNext(filB.reverse())
     }
-  }, [promote, specialtyList, specialties])
+  }, [promote, mySpecialtyList, specialties])
 
 
   console.log(storeProfile)
@@ -225,7 +228,7 @@ const Tab2Specialties = () => {
 
         </Grid>
 
-        {specialtyList[0] == null ? <>
+        {mySpecialtyList[0] == null ? <>
 
           <Grid item xs={12}>
             <Typography variant='h3'>
@@ -324,7 +327,7 @@ const Tab2Specialties = () => {
             </Typography>
           </Grid>
 
-          {specialtyList.map((item: UserProfile) => (
+          {mySpecialtyList.map((item: UserProfile) => (
           <>
             <Grid key={item?.id} item xs={12} sm={6} lg={4} spacing={2}>
               <Grid>
@@ -351,7 +354,7 @@ const Tab2Specialties = () => {
         </>
         }
 
-        {specialtyList[0] != null && <>
+        {mySpecialtyList[0] != null && <>
             <Grid item xs={12}>
               <Button onClick={() => {setPromote(!promote)}}>Click To Promote To Next Level</Button>
             </Grid>
