@@ -13,9 +13,10 @@ import {
 import { IconListCheck, IconMail, IconUser } from "@tabler/icons-react";
 import { removeAuthUser, selectAuthUser } from "@/Redux/Reducers/sliceUser";
 import { useDispatch, useSelector } from "react-redux";
-import NotLoggedInModal from "./NotLoggedInModal";
 import MyProvider from "@/app/Redux/MyProvider";
 import { AvatarLink } from "@/Utils/Config";
+import LogoutConfirmationModal from "./LogoutConfirmationModal";
+import NotLoggedInModal from "./NotLoggedInModal";
 
 const Profile = () => {
   const dispatch = useDispatch()
@@ -92,7 +93,7 @@ const Profile = () => {
           </MenuItem>
           <Box mt={1} py={1} px={2}>
             <Button
-              onClick={() => { dispatch(removeAuthUser()); setShowModal(true) }}
+              onClick={() => { setShowModal(true) }}
               variant="outlined"
               color="primary"
               fullWidth
@@ -103,8 +104,14 @@ const Profile = () => {
         </Menu>
       </Box>
 
+      <LogoutConfirmationModal 
+        showModal={showModal}
+        setShowModal={setShowModal}
+        dispatch={dispatch}
+        remove={removeAuthUser}
+      />
       <NotLoggedInModal 
-        showModal={storeUser.id ? false : true}
+        showModal={storeUser.id > 0 ? false : true}
         setShowModal={setShowModal}
       />
     </MyProvider>

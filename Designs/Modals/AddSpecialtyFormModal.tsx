@@ -61,7 +61,7 @@ const AddSpecialtyFormModal:FC<AddSpecialtyUserFormProps> = ({ showModal, mainSp
     const thisYear = new Date().getFullYear()
     useEffect(() => {
         const list = []
-        for (let index = 1; index < 3; index++) {
+        for (let index = 0; index < 3; index++) {
             list.push((thisYear + index - 1) + "/" + (thisYear + index))
         }
         setYearList(list)

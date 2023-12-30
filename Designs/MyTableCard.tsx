@@ -1,6 +1,6 @@
 import React, { FC } from 'react'
 import {
-    Box, Grid, 
+    Box, Grid, LinearProgress, 
 } from '@mui/material';
 import DashboardCard from '@/components/CompAdmin/shared/DashboardCard';
 
@@ -13,8 +13,9 @@ interface MyTableCardProps {
     table: any
     extra?: any
     search?: any
+    loading: boolean
 }
-const MyTableCard:FC<MyTableCardProps> = ({ title, table, buttonAdd, buttonReset, extra, search }) => {
+const MyTableCard:FC<MyTableCardProps> = ({ title, table, buttonAdd, buttonReset, extra, search, loading }) => {
   return (
     <DashboardCard title={`${title}`}>
         <Box sx={{ overflow: 'auto', width: { xs: '380px', sm: 'auto' } }}>
@@ -25,9 +26,17 @@ const MyTableCard:FC<MyTableCardProps> = ({ title, table, buttonAdd, buttonReset
                     {extra}
                     {search}
                 </Grid>
-                <Grid item xs={12}>
-                    {table}
-                </Grid>
+                {loading ? 
+                    <div style={{ flex: 1, alignItems: "center", textAlign: "center", justifyContent: "center", fontSize: "30", paddingTop: 50, paddingBottom: 70, paddingLeft: 60, paddingRight: 25 }}>
+                        Data Loading <LinearProgress style={{ marginTop: 30, padding: 5 }}/>
+                    </div> 
+                    
+                    : 
+                    
+                    <Grid item xs={12}>
+                        {table}
+                    </Grid>
+                }
             </Grid>
         </Box>
     </DashboardCard>

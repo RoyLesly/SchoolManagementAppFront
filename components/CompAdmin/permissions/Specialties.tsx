@@ -16,7 +16,8 @@ import MyButtonReload from '@/Designs/MyButtonReload';
 import MyButtonAdd from '@/Designs/MyButtonAdd';
 
 const Specialties = () => {
-    const [ fetching, setFetching ] = useState<boolean>(false)
+    const [ fetching, setFetching ] = useState<boolean>(true)
+    const [ loading, setLoading ] = useState<boolean>(true)
     const [ record, setRecord ] = useState<SpecialtyProps | null>(null)
     const [ specialties, setSpecialty ] = useState<SpecialtyProps[]>([])
     const [ specialtyData, setSpecialtyData ] = useState<SpecialtyProps[]>([])
@@ -104,6 +105,7 @@ const Specialties = () => {
         buttonReset={<MyButtonReload fetching={fetching} reset={reset} />}
         buttonAdd={<MyButtonAdd setAddItem={setAddSpecialtyFormModal} />}
         table={<TableComp />}
+        loading={loading}
     />
 
     <AddSpecialtyFormModal

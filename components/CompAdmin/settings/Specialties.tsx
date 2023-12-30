@@ -4,22 +4,24 @@ import MyTableCard from '@/Designs/MyTableCard'
 import {
     Typography, 
     Table, TableBody, TableCell, TableHead, TableRow,
-    Button, Stack,
+    Button, Stack, LinearProgress,
 } from '@mui/material';
 import { DomainProps, LevelProps, MainSpecialtyProps, SpecialtyProps } from '@/Utils/types';
 import { useGetAllDomains, useGetAllLevels, useGetAllMainSpecialties, useGetAllSpecialties } from '@/Utils/customHooks';
-import { getAllDomains, getAllMainSpecialties, getAllSpecialties } from '@/Utils/functions';
+import { getAllDomains, getAllLevels, getAllMainSpecialties, getAllSpecialties } from '@/Utils/functions';
 import AddSpecialtyFormModal from '@/Designs/Modals/AddSpecialtyFormModal';
 import EditSpecialtyFormModal from '@/Designs/Modals/EditSpecialtyFormModal';
 import DeleteItemFormModal from '@/Designs/Modals/DeleteItemFormModal';
-import MyButtonReload from '@/Designs/MyButtonReload';
 import MyButtonAdd from '@/Designs/MyButtonAdd';
 import { MainSpecialtyCRUDUrl, SpecialtyCRUDUrl } from '@/Utils/Config';
 import EditMainSpecialtyFormModal from '@/Designs/Modals/EditMainSpecialtyFormModal';
 import AddMainSpecialtyFormModal from '@/Designs/Modals/AddMainSpecialtyFormModal';
+import MyButtonLoader from '@/Designs/MyButtonLoader';
 
 const Specialties = () => {
-    const [ fetching, setFetching ] = useState<boolean>(false)
+    const [ fetching, setFetching ] = useState<boolean>(true)
+    const [ loading, setLoading ] = useState<boolean>(true)
+    const [ count, setCount ] = useState<number>(0)
     const [ showSpecialty, setShowSpecialty ] = useState<boolean>(false)
     const [ record, setRecord ] = useState<SpecialtyProps | null>(null)
     const [ specialties, setSpecialties ] = useState<SpecialtyProps[]>([])
@@ -36,21 +38,25 @@ const Specialties = () => {
     const [ specialtyMainData, setSpecialtyMainData ] = useState<MainSpecialtyProps[]>([])
     const [ addSpecialtyMainFormModal, setAddSpecialtyMainFormModal ] = useState<boolean>(false)
     const [ editSpecialtyMainFormModal, setEditSpecialtyMainFormModal ] = useState<boolean>(false)
-    const [ deleteSpecialtyMainFormModal, setDeleteSpecialtyMainFormModal ] = useState<boolean>(false)
-
-
-    useGetAllSpecialties(setSpecialties, setFetching);
-    useGetAllMainSpecialties(setMainSpecialties, setFetching);
-    useGetAllDomains(setDomains, setFetching);
-    useGetAllLevels(setLevels, setFetching);
 
     useEffect(() => {
-        setSpecialtyData(specialties)
-    }, [specialties])
-
-    useEffect(() => {
-        setSpecialtyMainData(mainSpecialties)
-    }, [mainSpecialties])
+        if (count == 0) {
+            getAllSpecialties(setSpecialties, setFetching)
+            getAllMainSpecialties(setMainSpecialties, setFetching)
+            getAllDomains(setDomains, setFetching)
+            getAllLevels(setLevels, setFetching)
+            setCount(count + 1)
+        }
+        if (count == 1) {
+            if (mainSpecialties.length > 0) { setMainSpecialties(mainSpecialties); setCount(count + 1); }
+        }
+        if (count == 2) {
+            if (specialties.length > 0) { setSpecialtyData(specialties); setCount(count + 1); setLoading(false); }
+        }
+        if (count == 3) {
+            
+        }
+    }, [specialties, mainSpecialties, count, domains])
 
     const reset = () => {
         setFetching(true)
@@ -186,74 +192,92 @@ const Specialties = () => {
     )
   return (<>
 
-    { showSpecialty ? 
-    <MyTableCard
-        title={"Specialty Section"}
-        buttonReset={<MyButtonReload fetching={fetching} reset={reset} />}
-        buttonAdd={<MyButtonAdd setAddItem={setAddSpecialtyMainFormModal} />}
-        extra={<Button onClick={() => {setShowSpecialty(false)}} variant='outlined' sx={{ marginLeft: 4 }}>Show All Classes</Button>}
-        table={<TableCompMainSpecialties />}
-    />
+    {(loading == true && fetching == true) ? 
+
+        <div style={{ flex: 1, alignItems: "center", textAlign: "center", justifyContent: "center", fontSize: "30", paddingTop: 50, paddingBottom: 70, paddingLeft: 60, paddingRight: 25 }}>
+            Data Loading <LinearProgress style={{ marginTop: 30, padding: 5 }}/>
+        </div>  
+
         :
 
-    <MyTableCard
-        title={"Class Section"}
-        buttonReset={<MyButtonReload fetching={fetching} reset={reset} />}
-        buttonAdd={<MyButtonAdd setAddItem={setAddSpecialtyFormModal} />}
-        extra={<Button onClick={() => {setShowSpecialty(true)}} variant='outlined' sx={{ marginLeft: 4 }}>Show All Specialties</Button>}
-        table={<TableComp />}
-    />}
+        <>
+            {showSpecialty ? 
+                <MyTableCard
+                    title={"Specialty Section"}
+                    buttonReset={<MyButtonLoader fetching={fetching} loadingText='Loading' info={specialtyMainData.length} onClick={reset} />}
+                    buttonAdd={<MyButtonAdd setAddItem={setAddSpecialtyMainFormModal} />}
+                    extra={<Button onClick={() => {setShowSpecialty(false)}} variant='outlined' sx={{ marginLeft: 4 }}>Show All Classes</Button>}
+                    table={<TableCompMainSpecialties />}
+                    loading={loading}
+                />
+                    :
 
-    <AddSpecialtyFormModal
-        showModal={addSpecialtyFormModal}
-        setShowModal={setAddSpecialtyFormModal}
-        mainSpecialty={mainSpecialties}
-        levels={levels}
-        reset={reset}
-    />
+                <MyTableCard
+                    title={"Class Section"}
+                    buttonReset={<MyButtonLoader fetching={fetching} loadingText='Loading' info={specialtyData.length} onClick={reset} />  }
+                    buttonAdd={<MyButtonAdd setAddItem={setAddSpecialtyFormModal} />}
+                    extra={<Button onClick={() => {setShowSpecialty(true)}} variant='outlined' sx={{ marginLeft: 4 }}>Show All Specialties</Button>}
+                    table={<TableComp />}
+                    loading={loading}
+                />
+            }
 
-    <EditSpecialtyFormModal
-        showModal={editSpecialtyFormModal} 
-        setShowModal={setEditSpecialtyFormModal}
-        record={record}
-        mainSpecialty={mainSpecialties}
-        reset={reset} 
-    />
+            <AddSpecialtyFormModal
+                showModal={addSpecialtyFormModal}
+                setShowModal={setAddSpecialtyFormModal}
+                mainSpecialty={mainSpecialties}
+                levels={levels}
+                reset={reset}
+            />
 
-    <AddMainSpecialtyFormModal
-        showModal={addSpecialtyMainFormModal}
-        setShowModal={setAddSpecialtyMainFormModal}
-        domains={domains}
-        reset={reset}
-    />
+            <EditSpecialtyFormModal
+                showModal={editSpecialtyFormModal} 
+                setShowModal={setEditSpecialtyFormModal}
+                record={record}
+                mainSpecialty={mainSpecialties}
+                reset={reset} 
+            />
 
-    <EditMainSpecialtyFormModal
-        showModal={editSpecialtyMainFormModal} 
-        setShowModal={setEditSpecialtyMainFormModal}
-        record={recordMain}
-        domains={domains}
-        reset={reset} 
-    />
+            <AddMainSpecialtyFormModal
+                showModal={addSpecialtyMainFormModal}
+                setShowModal={setAddSpecialtyMainFormModal}
+                domains={domains}
+                reset={reset}
+            />
 
-    <DeleteItemFormModal
-        showModal={deleteSpecialtyFormModal}
-        setShowModal={setDeleteSpecialtyFormModal}
-        record_name={record?.main_specialty?.specialty_name}
-        record={record}
-        reset={reset}
-        url={SpecialtyCRUDUrl}
-    />
+            <EditMainSpecialtyFormModal
+                showModal={editSpecialtyMainFormModal} 
+                setShowModal={setEditSpecialtyMainFormModal}
+                record={recordMain}
+                domains={domains}
+                reset={reset} 
+            />
 
-    <DeleteItemFormModal
-        showModal={deleteMainSpecialtyFormModal}
-        setShowModal={setDeleteMainSpecialtyFormModal}
-        record_name={recordMain?.specialty_name}
-        record={recordMain}
-        reset={reset}
-        url={MainSpecialtyCRUDUrl}
-    />
+            <DeleteItemFormModal
+                showModal={deleteSpecialtyFormModal}
+                setShowModal={setDeleteSpecialtyFormModal}
+                record_name={record?.main_specialty?.specialty_name}
+                record={record}
+                reset={reset}
+                url={SpecialtyCRUDUrl}
+            />
 
-  </>)
+            <DeleteItemFormModal
+                showModal={deleteMainSpecialtyFormModal}
+                setShowModal={setDeleteMainSpecialtyFormModal}
+                record_name={recordMain?.specialty_name}
+                record={recordMain}
+                reset={reset}
+                url={MainSpecialtyCRUDUrl}
+            />
+
+        </> 
+    }
+
+    
+
+    </>
+    )
 }
 
 export default Specialties

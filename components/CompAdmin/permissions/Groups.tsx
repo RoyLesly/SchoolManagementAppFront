@@ -16,7 +16,8 @@ import AddGroupFormModal from '@/Designs/Modals/AddGroupFormModal';
 import EditGroupFormModal from '@/Designs/Modals/EditGroupFormModal';
 
 const Groups = () => {
-    const [ fetching, setFetching ] = useState<boolean>(false)
+    const [ fetching, setFetching ] = useState<boolean>(true)
+    const [ loading, setLoading ] = useState<boolean>(true)
     const [ record, setRecord ] = useState<PermGroupsProps | null>(null)
     const [ items, setItems ] = useState<PermGroupsProps[]>([])
     const [ itemsData, setItemsData ] = useState<PermGroupsProps[]>([])
@@ -102,6 +103,7 @@ const Groups = () => {
         buttonReset={<MyButtonReload fetching={fetching} reset={reset} />}
         buttonAdd={<MyButtonAdd setAddItem={setAddItemFormModal} />}
         table={<TableComp />}
+        loading={loading}
     />
 
     <AddGroupFormModal

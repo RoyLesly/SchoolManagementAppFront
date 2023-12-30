@@ -9,15 +9,16 @@ import {
 import { LevelProps } from '@/Utils/types';
 import { getAllLevels } from '@/Utils/functions';
 import DeleteItemFormModal from '@/Designs/Modals/DeleteItemFormModal';
-import MyButtonReload from '@/Designs/MyButtonReload';
 import MyButtonAdd from '@/Designs/MyButtonAdd';
 import EditLevelFormModal from '@/Designs/Modals/EditLevelFormModal';
 import AddLevelFormModal from '@/Designs/Modals/AddLevelFormModal';
 import { useGetAllLevels } from '@/Utils/customHooks';
 import { LevelCRUDUrl } from '@/Utils/Config';
+import MyButtonLoader from '@/Designs/MyButtonLoader';
 
 const Levels = () => {
-    const [ fetching, setFetching ] = useState<boolean>(false)
+    const [ fetching, setFetching ] = useState<boolean>(true)
+    const [ loading, setLoading ] = useState<boolean>(true)
     const [ record, setRecord ] = useState<LevelProps | null>(null)
     const [ levels, setLevels ] = useState<LevelProps[]>([])
     const [ levelsData, setLevelsData ] = useState<LevelProps[]>([])
@@ -100,9 +101,10 @@ const Levels = () => {
 
     <MyTableCard
         title={"Levels Section"}
-        buttonReset={<MyButtonReload fetching={fetching} reset={reset} />}
+        buttonReset={<MyButtonLoader fetching={fetching} loadingText='Loading' info={levelsData.length} onClick={reset} />  }
         buttonAdd={<MyButtonAdd setAddItem={setAddLevelFormModal} />}
         table={<TableComp />}
+        loading={loading}
     />
 
     <AddLevelFormModal

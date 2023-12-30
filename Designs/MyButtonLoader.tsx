@@ -1,7 +1,6 @@
 import { Button, Fab } from '@mui/material'
 import React, { FC } from 'react';
 import { green } from '@mui/material/colors';
-import Reload from '@mui/icons-material/RestartAltTwoTone';
 import { CircularProgress } from '@mui/material';
 
 
@@ -9,8 +8,10 @@ import { CircularProgress } from '@mui/material';
 interface MyButtonLoaderProps {
     fetching: boolean
     loadingText?: string
+    info?: any
+    onClick?: any
 }
-const MyButtonLoader:FC<MyButtonLoaderProps> = ({fetching, loadingText}) => {
+const MyButtonLoader:FC<MyButtonLoaderProps> = ({fetching, loadingText, info, onClick}) => {
 
     const buttonSx = {
         ...(fetching && {
@@ -27,8 +28,9 @@ const MyButtonLoader:FC<MyButtonLoaderProps> = ({fetching, loadingText}) => {
             aria-label="save"
             color="primary"
             sx={buttonSx}
+            onClick={() => onClick()}
         >
-        {fetching ? loadingText ? loadingText : "Loading" : <></>}
+        {fetching ? loadingText ? loadingText : "Loading" : <>{info}</>}
         </Fab>
         {fetching && (
         <CircularProgress

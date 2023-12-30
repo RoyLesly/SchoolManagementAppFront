@@ -59,8 +59,6 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
         hasAuth: true,
     })
 
-    console.log(response)
-
     if (response?.data) {
       setLoginNotification(true)
       if (response?.data.errors) {
@@ -73,10 +71,9 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
       } else if (response?.data.success) {
         const userCategory = response.data.success;
         notification.success({
-          "message": "CONNECTED !!!",
+          "message": "LOGIN SUCCESSFUL !!!",
           "description": ""
         })
-
         dispatch(addAuthUser(userCategory?.authUser));
         reset();
         dispatch(addUserProfile(profiles.filter((item: UserProfile) => item.user.id == userCategory?.authUser.id)[0]))
@@ -91,14 +88,15 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
         }
       } else {
         alert(JSON.stringify(response));
+        setFetching(false)
       }
     } else {
       notification.error({
-        "message": "SERVER NOT FOUND !!!",
+        "message": "SERVER NOT REACHABLE !!!",
         "description": "Check Server !!!"
       })
+      setFetching(false)    
     }
-    setFetching(false)    
   };
 
   return (

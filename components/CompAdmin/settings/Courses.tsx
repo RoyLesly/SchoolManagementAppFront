@@ -4,24 +4,25 @@ import MyTableCard from '@/Designs/MyTableCard'
 import {
     Typography, 
     Table, TableBody, TableCell, TableHead, TableRow,
-    Button, Stack, Input,
+    Button, Stack, Input, LinearProgress,
 } from '@mui/material';
-import { CourseProps, LevelProps, MainCourseProps, SpecialtyProps, UserProfile, UserType } from '@/Utils/types';
-import { useGetAllLevels, useGetAllMainCourses, useGetAllCourses, useGetAllUserProfiles, useGetAllSpecialties, useGetAllUsers } from '@/Utils/customHooks';
-import { getAllCourses, getAllMainCourses, getAllSpecialties, getAllUsers } from '@/Utils/functions';
+import { CourseProps, LevelProps, MainCourseProps, SpecialtyProps, UserType } from '@/Utils/types';
+import { getAllCourses, getAllLevels, getAllMainCourses, getAllSpecialties, getAllUsers } from '@/Utils/functions';
 import DeleteItemFormModal from '@/Designs/Modals/DeleteItemFormModal';
-import MyButtonReload from '@/Designs/MyButtonReload';
 import MyButtonAdd from '@/Designs/MyButtonAdd';
 import EditCourseFormModal from '@/Designs/Modals/EditCourseFormModal';
 import AddCourseFormModal from '@/Designs/Modals/AddCourseFormModal';
 import { CourseCRUDUrl, MainCourseCRUDUrl } from '@/Utils/Config';
 import AddMainCourseFormModal from '@/Designs/Modals/AddMainCourseFormModal';
 import EditMainCourseFormModal from '@/Designs/Modals/EditMainCourseFormModal';
+import MyButtonLoader from '@/Designs/MyButtonLoader';
 
 const Courses = () => {
     const [ showMain, setShowMain ] = useState<boolean>(false)
-    const [ fetching, setFetching ] = useState<boolean>(false)
+    const [ fetching, setFetching ] = useState<boolean>(true)
+    const [ loading, setLoading ] = useState<boolean>(true)
     const [ record, setRecord ] = useState<CourseProps | null>(null)
+    const [ count, setCount ] = useState<number>(0)
     const [ recordMain, setRecordMain ] = useState<MainCourseProps | null>(null)
     const [ courses, setCourses ] = useState<CourseProps[]>([])
     const [ courseData, setCourseData ] = useState<CourseProps[]>([])
@@ -38,21 +39,32 @@ const Courses = () => {
     const [ userTeachers, setUserTeachers ] = useState<UserType[]>([])
     const [ specialties, setSpecialties ] = useState<SpecialtyProps[]>([])
 
-    useGetAllCourses(setCourses, setFetching);
-    useGetAllSpecialties(setSpecialties, setFetching);
-    useGetAllMainCourses(setMainCourses, setFetching);
-    useGetAllLevels(setLevels, setFetching);
-    // useGetAllUsers(setUserTeachers, setFetching)
-
     useEffect(() => {
-        setCourseData(courses)
-        getAllUsers(setUserTeachers, setFetching, { searchField: "role", value: "teacher"});
-    }, [courses])
+        if (count == 0){
+            getAllCourses(setCourses, setFetching);
+            getAllSpecialties(setSpecialties, setFetching);
+            getAllMainCourses(setMainCourses, setFetching)
+            getAllLevels(setLevels, setFetching);
+            getAllUsers(setUserTeachers, setFetching, { searchField: "role", value: "teacher"});
+            setCount(count + 1)
+        }
+        if (count == 1) {
+            if (courses.length > 0) {
+                setCourseData(courses)
+                setCount(count + 1)
+            }
+            if (mainCourses.length > 0) {
+                setMainCoursesData(mainCourses)
+            }
+        }
+        if (count == 2) {
+            if (mainCourses.length > 0) {
+                setLoading(false)
+                setCount(count + 1)
+            }
+        }
+    }, [courses, fetching, mainCourses, count])
 
-    useEffect(() => {
-        setMainCoursesData(mainCourses)
-    }, [mainCourses])
-    
     const reset = () => {
         setFetching(true)
         getAllCourses(setCourses, setFetching)
@@ -215,80 +227,92 @@ const Courses = () => {
     )
 
 
-  return (<>
+  return (
+    <>
+        {(loading == true && fetching == true) ? 
+            <div style={{ flex: 1, alignItems: "center", textAlign: "center", justifyContent: "center", fontSize: "30", paddingTop: 50, paddingBottom: 70, paddingLeft: 60, paddingRight: 25 }}>
+                Data Loading <LinearProgress style={{ marginTop: 30, padding: 5 }}/>
+            </div>  
+            : 
+            <>
 
-    { showMain ? 
-        <MyTableCard
-            title={"Courses Types Section"}
-            buttonReset={<MyButtonReload fetching={fetching} reset={reset} />}
-            buttonAdd={<MyButtonAdd setAddItem={setAddCourseMainFormModal} />}
-            extra={<Button onClick={() => {setShowMain(false)}} variant='outlined' sx={{ marginX: 1 }}>Show All Courses</Button>}
-            table={<TableCompMain />}
-            search={<Input placeholder='Search Courses ...' onChange={(e) => SearchCourse(e.target.value)}/>}
-        /> 
-            :
-        <MyTableCard
-            title={"Courses Section"}
-            buttonReset={<MyButtonReload fetching={fetching} reset={reset} />}
-            buttonAdd={<MyButtonAdd setAddItem={setAddCourseFormModal} />}
-            extra={<Button onClick={() => {setShowMain(true)}} variant='outlined' sx={{ marginX: 1 }}>Show All Courses</Button>}
-            table={<TableComp />}
-            search={<Input placeholder='Search Course Title ...' onChange={(e) => SearchMainCourse(e.target.value)}/>}
-        />
-    }
-
-    <AddCourseFormModal
-        showModal={addCourseFormModal}
-        setShowModal={setAddCourseFormModal}
-        mainCourses={mainCourses}
-        reset={reset}
-        specialty={specialties}
-        userTeachers={userTeachers}
-    />
-
-    <AddMainCourseFormModal
-        showModal={addCourseMainFormModal}
-        setShowModal={setAddCourseMainFormModal}
-        reset={reset}
-    />
-
-    <EditCourseFormModal
-        showModal={editCourseFormModal} 
-        setShowModal={setEditCourseFormModal}
-        record={record}
-        record_name={record?.main_course.course_name}
-        specialty={specialties}
-        userTeachers={userTeachers}
-        mainCoursesData={mainCourses}
-        reset={reset} 
-    />
-
-    <EditMainCourseFormModal
-        showModal={editCourseMainFormModal} 
-        setShowModal={setEditCourseMainFormModal}
-        record={recordMain}
-        reset={reset} 
-    />
-
-    <DeleteItemFormModal
-        showModal={deleteCourseFormModal}
-        setShowModal={setDeleteCourseFormModal}
-        record_name={record?.main_course.course_name}
-        record={record}
-        reset={reset}
-        url={CourseCRUDUrl}
-    />
-
-    <DeleteItemFormModal
-        showModal={deleteCourseMainFormModal}
-        setShowModal={setDeleteCourseMainFormModal}
-        record_name={recordMain?.course_name}
-        record={recordMain}
-        reset={reset}
-        url={MainCourseCRUDUrl}
-    />
-
-  </>)
+            { showMain ? 
+                <MyTableCard
+                    title={"Courses Types Section"}
+                    buttonReset={<MyButtonLoader fetching={fetching} loadingText='Loading' info={mainCoursesData.length} onClick={reset} />  }
+                    buttonAdd={<MyButtonAdd setAddItem={setAddCourseMainFormModal} />}
+                    extra={<Button onClick={() => {setShowMain(false)}} variant='outlined' sx={{ marginX: 1 }}>Show All Courses</Button>}
+                    table={<TableCompMain />}
+                    search={<Input placeholder='Search Courses ...' onChange={(e) => SearchCourse(e.target.value)}/>}
+                    loading={loading}
+                /> 
+                    :
+                <MyTableCard
+                    title={"Courses Section"}
+                    buttonReset={<MyButtonLoader fetching={fetching} loadingText='Loading' info={courseData.length} onClick={reset} />  }
+                    buttonAdd={<MyButtonAdd setAddItem={setAddCourseFormModal} />}
+                    extra={<Button onClick={() => {setShowMain(true)}} variant='outlined' sx={{ marginX: 1 }}>Show All Courses</Button>}
+                    table={<TableComp />}
+                    search={<Input placeholder='Search Course Title ...' onChange={(e) => SearchMainCourse(e.target.value)}/>}
+                    loading={loading}
+                />
+            }
+        
+            <AddCourseFormModal
+                showModal={addCourseFormModal}
+                setShowModal={setAddCourseFormModal}
+                mainCourses={mainCourses}
+                reset={reset}
+                specialty={specialties}
+                userTeachers={userTeachers}
+            />
+        
+            <AddMainCourseFormModal
+                showModal={addCourseMainFormModal}
+                setShowModal={setAddCourseMainFormModal}
+                reset={reset}
+            />
+        
+            <EditCourseFormModal
+                showModal={editCourseFormModal} 
+                setShowModal={setEditCourseFormModal}
+                record={record}
+                record_name={record?.main_course.course_name}
+                specialty={specialties}
+                userTeachers={userTeachers}
+                mainCoursesData={mainCourses}
+                reset={reset} 
+            />
+        
+            <EditMainCourseFormModal
+                showModal={editCourseMainFormModal} 
+                setShowModal={setEditCourseMainFormModal}
+                record={recordMain}
+                reset={reset} 
+            />
+        
+            <DeleteItemFormModal
+                showModal={deleteCourseFormModal}
+                setShowModal={setDeleteCourseFormModal}
+                record_name={record?.main_course.course_name}
+                record={record}
+                reset={reset}
+                url={CourseCRUDUrl}
+            />
+        
+            <DeleteItemFormModal
+                showModal={deleteCourseMainFormModal}
+                setShowModal={setDeleteCourseMainFormModal}
+                record_name={recordMain?.course_name}
+                record={recordMain}
+                reset={reset}
+                url={MainCourseCRUDUrl}
+            />
+        
+        </>
+        }
+    </>
+  )
 }
 
 export default Courses

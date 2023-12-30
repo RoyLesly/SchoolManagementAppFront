@@ -6,24 +6,25 @@ import {
     TableCell,
     TableHead,
     TableRow,
+    TablePagination,
     Button,
     Stack,
     Fab,
     Input,
 } from '@mui/material';
 import DashboardCard from '@/components/CompAdmin/shared/DashboardCard';
-import { FC, useEffect, useState } from 'react';
+import { ChangeEvent, FC, useEffect, useState } from 'react';
 import { UserProfile } from '@/Utils/types';
 import { useGetAllUserProfiles } from '@/Utils/customHooks';
 import { getAllUserProfiles } from '@/Utils/functions';
-import MyButtonReload from '@/Designs/MyButtonReload'; 
 import EditProfileFormModal from '@/Designs/Modals/EditProfileFormModal';
 import DeleteItemFormModal from '@/Designs/Modals/DeleteItemFormModal';
 import { UserProfilesUrl } from '@/Utils/Config';
 import { green } from '@mui/material/colors';
-import { useDispatch, useSelector } from 'react-redux';
-import { addChoosenUser, addChoosenUserProfile, removeChoosenUser, removeChoosenUserProfile } from '@/Redux/Reducers/sliceChoosenUserAndProfile';
+import { useDispatch } from 'react-redux';
+import { addChoosenUserProfile, removeChoosenUser, removeChoosenUserProfile } from '@/Redux/Reducers/sliceChoosenUserAndProfile';
 import { useRouter } from 'next/navigation';
+import MyButtonLoader from '@/Designs/MyButtonLoader';
 
 
 interface UserProfilesProps {
@@ -32,7 +33,9 @@ interface UserProfilesProps {
 const TableProfiles:FC<UserProfilesProps> = ({ userprofiletype }) => {
     const router = useRouter();
     const dispatch = useDispatch();    
-    const [ fetching, setFetching ] = useState<boolean>(false)
+    const [ page, setPage ] = useState<number>(0)
+    const [ rowsPerPage, setRowsPerPage ] = useState<number>(10)
+    const [ fetching, setFetching ] = useState<boolean>(true)
     const [ record, setRecord ] = useState<UserProfile | null>(null)
     const [ userProfiles, setUserProfiles ] = useState<UserProfile[]>([])
     const [ userProfilesData, setUserProfilesData ] = useState<UserProfile[]>([])
@@ -53,8 +56,6 @@ const TableProfiles:FC<UserProfilesProps> = ({ userprofiletype }) => {
         getAllUserProfiles(setUserProfiles, setFetching)
     }
 
-
-
     const buttonSx = {
         ...(fetching && {
             bgcolor: green[500], '&:hover': {
@@ -74,23 +75,22 @@ const TableProfiles:FC<UserProfilesProps> = ({ userprofiletype }) => {
         }
     }
 
+    const handleChangePage = (e: unknown, newPage: number) => {
+        setPage(newPage);
+    }
+
+    const handleChangeRowsPerPage = (e: ChangeEvent<HTMLInputElement>) => {
+        setRowsPerPage(parseInt(e.target.value, 10));
+        setPage(0);
+    }
+
     return (
 
         <DashboardCard title={`${userprofiletype == "student" ? "Student" : "Lecturer"} List`}>
             <Box sx={{ overflow: 'auto', width: { xs: '380px', sm: 'auto' } }}>
                 <Grid container spacing={0}>
                     <Grid item xs={12}>
-                        <Button sx={{ m: 0, position: 'relative' }}>
-                            <Fab
-                                aria-label="save"
-                                color="primary"
-                                sx={buttonSx}
-                                onClick={() => reset()}
-                            >
-                            {fetching ? "Loading" : <>{userProfilesData.length}</>}
-                            </Fab>
-                        </Button>
-                        
+                        <MyButtonLoader fetching={fetching} loadingText='Loading' info={userProfilesData.length} onClick={reset} />                        
                         {userprofiletype == "student" ? 
                             <Input placeholder='Search Student Name or Matricle ...' onChange={(e) => searchProfile(e.target.value)} style={{ width: 250, marginLeft: 12 }}/> 
                                 : 
@@ -223,6 +223,15 @@ const TableProfiles:FC<UserProfilesProps> = ({ userprofiletype }) => {
                                 ))}
                             </TableBody>
                         </Table>
+                        <TablePagination
+                            rowsPerPageOptions={[10, 25, 50]}
+                            component="div"
+                            count={userProfilesData.length}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            onPageChange={handleChangePage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                        />
                     </Grid>
                 </Grid>
 

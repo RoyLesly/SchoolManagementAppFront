@@ -1,16 +1,14 @@
 'use client';
-import { useGetAllCourses } from '@/Utils/customHooks'
 import { getAllCourses } from '@/Utils/functions'
 import { CourseProps, MainCourseProps, UserType } from '@/Utils/types'
 import React, { FC, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import MyButtonView from '@/Designs/MyButtonView';
-import MyButtonReload from '@/Designs/MyButtonReload';
-import FetchingDataIndicator from '@/Designs/FetchingDataIndicator';
 import PageContainer from '@/app/AdministrationPages/components/container/PageContainer';
-import { Box, Grid, Stack, Typography, Input } from '@mui/material';
+import { Box, Grid, Stack, Typography, Input, LinearProgress } from '@mui/material';
 import { addChoosenCourse, choosenSpecialty} from '@/Redux/Reducers/sliceDomainSpecialityCourse';
 import { Table } from 'antd';
+import MyButtonLoader from '@/Designs/MyButtonLoader';
 
 
 interface Page3ByCourseProps {
@@ -20,11 +18,10 @@ const Page3ByCourse:FC<Page3ByCourseProps> = ({ setSelectedNumber }) => {
   const storeSpecialty = useSelector(choosenSpecialty)
   const dispatch = useDispatch()
   const [fetching, setFetching] = useState(true)
+  const [count, setCount] = useState<number>(0)
   const [ courses, setCourses] = useState<CourseProps[]>([])
   const [ coursesData, setCoursesData] = useState<CourseProps[]>([])
   const [ coursesDataList, setCoursesDataList] = useState<CourseProps[]>([])
-
-  useGetAllCourses(setCourses, setFetching)
 
   const reset = () => {
       getAllCourses(setCourses, setFetching)
@@ -32,10 +29,23 @@ const Page3ByCourse:FC<Page3ByCourseProps> = ({ setSelectedNumber }) => {
   }
 
   useEffect(() => {
-    const filterCourses = courses.filter((item: CourseProps) => item.specialty?.id == storeSpecialty.id)
-    setCoursesData(filterCourses)
-    setCoursesDataList(filterCourses)
-  }, [storeSpecialty, courses])
+    if (count == 0) {
+        getAllCourses(setCourses, setFetching, {searchField: "specialty__id", value: storeSpecialty.id});
+        setCount(count + 1)
+    }
+    if (count == 1) {
+        if (courses.length > 0) {
+            const filterCourses = courses.filter((item: CourseProps) => item.specialty?.id == storeSpecialty.id)
+            setCoursesData(filterCourses)
+            setCoursesDataList(filterCourses)
+            setCount(count + 1)
+        }
+    }
+    if (count == 2) {
+        setCount(count + 1)
+    }
+  }, [count, storeSpecialty, courses])
+
 
   const COLUMNS_COURSES = [    
       {title: "COURSE NAME", dataIndex: "main_course", 
@@ -69,35 +79,38 @@ const Page3ByCourse:FC<Page3ByCourseProps> = ({ setSelectedNumber }) => {
                 <Grid item xs={12}>
                     <Stack direction="row" spacing={2}>
                         <Box>
-                            <MyButtonReload fetching={fetching} reset={reset} />
-                        </Box>
-                        <Box>            
-                            <div className={`bg-black rounded ${fetching ? "px-4" : ""}`}><FetchingDataIndicator fetching={fetching} /></div>
-                        </Box>
+                            <MyButtonLoader fetching={fetching} loadingText='Loading' info={coursesDataList.length} onClick={reset} />                        </Box>
                         <Box>
                             <Input onChange={(e) => {SearchResults(e.target.value)}} placeholder={`Search Courses ...`} className='text-gray-500' />
                         </Box>
                     </Stack>
                 </Grid>
 
-                <Grid item xs={12}>
-                    <Stack direction="column">
-                    <Box 
-                        marginBottom={1}
-                        display="flex"
-                        justifyContent="center"
-                        alignItems="center"
-                    >
-                        <Typography variant='h5'>COURSES FOR {storeSpecialty?.main_specialty?.specialty_name} {storeSpecialty?.academic_year} Level - {storeSpecialty?.level?.level}</Typography>
-                    </Box>
-                    <Box>
-                        <Table
-                            dataSource={coursesDataList}
-                            columns={COLUMNS_COURSES}  
-                        />
-                    </Box>
-                    </Stack>
-                </Grid>
+                {fetching ? <div style={{ flex: 1, margin: 60, fontSize: 25, alignContent: "center", alignItems: "center", textAlign: "center"}}>
+                        Data Loading <LinearProgress style={{ marginTop: 30}}/>
+                    </div>  
+                    
+                    : 
+                    
+                    <Grid item xs={12}>
+                        <Stack direction="column">
+                        <Box 
+                            marginBottom={1}
+                            display="flex"
+                            justifyContent="center"
+                            alignItems="center"
+                        >
+                            <Typography variant='h5'>COURSES FOR {storeSpecialty?.main_specialty?.specialty_name} {storeSpecialty?.academic_year} Level - {storeSpecialty?.level?.level}</Typography>
+                        </Box>
+                        <Box>
+                            <Table
+                                dataSource={coursesDataList}
+                                columns={COLUMNS_COURSES}  
+                            />
+                        </Box>
+                        </Stack>
+                    </Grid>
+                }
 
             </Grid>
         </Box>

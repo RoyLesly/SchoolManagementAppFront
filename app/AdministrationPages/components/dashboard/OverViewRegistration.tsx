@@ -4,8 +4,8 @@ import { useTheme } from '@mui/material/styles';
 import DashboardCard from '@/components/CompAdmin/shared/DashboardCard';
 import dynamic from "next/dynamic";
 import { nowYear } from '@/Utils/constants';
-import { UserProfile } from '@/Utils/types';
-import { getAllUserProfiles } from '@/Utils/functions';
+import { UserProfile, UserType } from '@/Utils/types';
+import { getAllUserProfiles, getAllUsers } from '@/Utils/functions';
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 
@@ -15,35 +15,43 @@ const OverViewRegistration = () => {
     const [month, setMonth] = React.useState('1');
     const [ count, setCount ] = useState<number>(1);
     const [ profiles, setProfiles ] = useState<UserProfile[]>([])
+    const [ users, setUsers ] = useState<UserType[]>([])
     const [ profilesRegisteredCount, setProfilesRegisteredCount ] = useState<number[]>([])
+    const [ usersRegisteredCount, setUsersRegisteredCount ] = useState<number[]>([])
 
+    console.log(count)
     useEffect(() => {
-        let data: any = []
+        let dataProfiles: any = []
+        let dataUsers: any = []
         if (count == 1) {
-            console.log(count, "count")
-            getAllUserProfiles(setProfiles, () => {}, { searchField: "created_at__year__gte", value: nowYear - 6, kpi: true});
+            getAllUserProfiles(setProfiles, () => {}, { searchField: ["created_at__year__gte", "user__role"], value: [nowYear - 6, "teacher"], kpi: true});
+            getAllUsers(setUsers, () => {}, { searchField: ["created_at__year__gte", "role"], value: [nowYear - 6, "teacher"], kpi: true});
             setCount(count + 1)
         }
         if (profiles.length > 0) {
             if (count == 2) {
-                console.log(count, "count")
                 Yaxis.forEach((year) => {
                     const fil = profiles.filter((item: UserProfile) => item.created_at.includes((year).toString())).length
-                    data.push(fil)
-                    console.log(profiles, fil, year)
+                    dataProfiles.push(fil)
                 });
                 setCount(count + 1)
-                setProfilesRegisteredCount(data)
+                setProfilesRegisteredCount(dataProfiles)
             }
+        }
+        if (users.length > 0) {
             if (count == 3) {
-                console.log(count, "count")
+                Yaxis.forEach((year) => {
+                    const fil = users.filter((item: UserType) => item.created_at.includes((year).toString())).length
+                    dataUsers.push(fil)
+                });
+                setCount(count + 1)
+                setUsersRegisteredCount(dataUsers)
+            }
+            if (count == 4) {
                 setCount(count + 1)
             }
         }
-
-
-    }, [ count, profiles, Yaxis ])
-    console.log(profiles)
+    }, [ count, profiles, users, Yaxis ])
 
 
     const handleChange = (event: any) => {
@@ -116,15 +124,15 @@ const OverViewRegistration = () => {
     const seriescolumnchart: any = [
         {
             name: 'Students Per Year',
+            data: usersRegisteredCount
+        },
+        {
+            name: 'Profiles Per Year',
             data: profilesRegisteredCount
         },
-        // {
-            // name: 'Expense this month',
-            // data: [10, 20, 5, 15, 5, 10, 20, 25],
-        // },
     ];
 
-    console.log(profilesRegisteredCount)
+    // console.log(profilesRegisteredCount)
 
     return (
 

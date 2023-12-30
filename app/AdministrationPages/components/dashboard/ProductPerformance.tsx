@@ -9,6 +9,10 @@ import {
     Chip
 } from '@mui/material';
 import DashboardCard from '@/components/CompAdmin/shared/DashboardCard';
+import { nowYear } from '@/Utils/constants';
+import { useEffect, useState } from 'react';
+import { MainSpecialtyProps, SpecialtyProps, UserProfile } from '@/Utils/types';
+import { getAllMainSpecialties, getAllSpecialties, getAllUserProfiles } from '@/Utils/functions';
 
 const products = [
     {
@@ -51,9 +55,66 @@ const products = [
 
 
 const ProductPerformance = () => {
+    const Yaxis = Array(nowYear - (nowYear - 6)).fill('').map((v, index) => nowYear - index).reverse()
+    const [ mainSpecialty, setMainSpecialty ] = useState<MainSpecialtyProps[]>([])
+    const [ profiles, setProfiles ] = useState<UserProfile[]>([])
+    const [ count, setCount ] = useState<number>(1)
+    const [ data, setData ] = useState([{
+        id: 0,
+        specialty: ""
+    }])
+
+    useEffect(() => {
+        if (count == 1) {
+            getAllMainSpecialties(setMainSpecialty, ()=>{})
+            if (mainSpecialty.length > 0) { setCount(count + 1); }
+        }
+        if (count == 2) {
+            getAllUserProfiles(setProfiles, ()=>{}, { searchField: "user__role", value: "student" })
+            if (profiles.length > 0) { setCount(count + 1); }
+        }
+        if (count == 3) {
+            const d = []
+            if (mainSpecialty.length > 0) {
+                
+                for (let index = 0; index < mainSpecialty.length; index++) {
+                    let record: any = {}
+                    const ms = mainSpecialty[index];
+                    const prof = profiles.filter((item: UserProfile) => item?.specialty?.main_specialty.id == ms.id);
+                    record["id"] = ms.id;
+                    record["specialty"] = ms.specialty_name;
+                    for (let index = 0; index < Yaxis.length; index++) {
+                        const year = Yaxis[index];
+                        record[year] = prof.filter((item: UserProfile) => item.created_at.includes(year.toString())).length;
+                    }
+                    d.push(record)
+                }
+                setData(d)
+                setCount(count + 1)
+            }
+        }
+        if (count == 4) {
+            setCount(count + 1)
+        }
+    }, [count, Yaxis, mainSpecialty, profiles])
+
+    const column = [
+        {
+            id: "Specialty",
+            name: "Specialty",
+            width: 600
+        }
+    ]
+
+    const c = Yaxis.map(item => column.push({
+        id: item.toString(),
+        name: item.toString(),
+        width: 400
+    }))
+
     return (
 
-        <DashboardCard title="Product Performance">
+        <DashboardCard title="Last 6 Year Overview">
             <Box sx={{ overflow: 'auto', width: { xs: '280px', sm: 'auto' } }}>
                 <Table
                     aria-label="simple table"
@@ -64,36 +125,18 @@ const ProductPerformance = () => {
                 >
                     <TableHead>
                         <TableRow>
-                            <TableCell>
-                                <Typography variant="subtitle2" fontWeight={600}>
-                                    Id
-                                </Typography>
-                            </TableCell>
-                            <TableCell>
-                                <Typography variant="subtitle2" fontWeight={600}>
-                                    Assigned
-                                </Typography>
-                            </TableCell>
-                            <TableCell>
-                                <Typography variant="subtitle2" fontWeight={600}>
-                                    Name
-                                </Typography>
-                            </TableCell>
-                            <TableCell>
-                                <Typography variant="subtitle2" fontWeight={600}>
-                                    Priority
-                                </Typography>
-                            </TableCell>
-                            <TableCell align="right">
-                                <Typography variant="subtitle2" fontWeight={600}>
-                                    Budget
-                                </Typography>
-                            </TableCell>
+                            {column.map((item) => (
+                                <TableCell key={item.id}>
+                                    <Typography variant="subtitle2" fontWeight={item.width}>
+                                        {item.name}
+                                    </Typography>
+                                </TableCell>
+                            ))}
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {products.map((product) => (
-                            <TableRow key={product.name}>
+                        {data.map((prof: any) => (
+                            <TableRow key={prof?.id}>
                                 <TableCell>
                                     <Typography
                                         sx={{
@@ -101,50 +144,19 @@ const ProductPerformance = () => {
                                             fontWeight: "500",
                                         }}
                                     >
-                                        {product.id}
+                                        {prof?.specialty}
                                     </Typography>
                                 </TableCell>
-                                <TableCell>
-                                    <Box
+                                {Yaxis.map(item => (<TableCell key={item}>
+                                    <Typography
                                         sx={{
-                                            display: "flex",
-                                            alignItems: "center",
+                                            fontSize: "15px",
+                                            fontWeight: "500",
                                         }}
                                     >
-                                        <Box>
-                                            <Typography variant="subtitle2" fontWeight={600}>
-                                                {product.name}
-                                            </Typography>
-                                            <Typography
-                                                color="textSecondary"
-                                                sx={{
-                                                    fontSize: "13px",
-                                                }}
-                                            >
-                                                {product.post}
-                                            </Typography>
-                                        </Box>
-                                    </Box>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                                        {product.pname}
+                                        {prof[item]}
                                     </Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Chip
-                                        sx={{
-                                            px: "4px",
-                                            backgroundColor: product.pbg,
-                                            color: "#fff",
-                                        }}
-                                        size="small"
-                                        label={product.priority}
-                                    ></Chip>
-                                </TableCell>
-                                <TableCell align="right">
-                                    <Typography variant="h6">${product.budget}k</Typography>
-                                </TableCell>
+                                </TableCell>))}
                             </TableRow>
                         ))}
                     </TableBody>

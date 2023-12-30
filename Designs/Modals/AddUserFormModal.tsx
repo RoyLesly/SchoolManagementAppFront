@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import { useForm } from "react-hook-form";
 import MyFormInputText from '../MyFormInputText';
-import { Button } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
 import MyFormSelect from '../MyFormSelect';
 import { UserCRUDUrl } from '@/Utils/Config';
 import { axiosRequest } from '@/Utils/functions';
@@ -33,15 +33,18 @@ interface AddUserFormProps {
 interface IFormInput {
   username: string;
   role: string;
+  email: string;
 }
 
 const defaultValues = {
   username: "",
   role: "",
+  email: "",
 };
   
 const AddUserFormModal:React.FC<AddUserFormProps> = ({ showModal, setShowModal, resetItems }) => {
   const storeUser = useSelector(selectAuthUser);
+  const [ loading, setLoading ] = React.useState<boolean>(false)
   const [ alertShow, setAlertShow ] = React.useState<boolean>(false)
   const [ alertMessage, setAlertMessage ] = React.useState<string>("false")
   const [ alertSeverity, setAlertSeverity ] = React.useState<string>("success")
@@ -50,10 +53,19 @@ const AddUserFormModal:React.FC<AddUserFormProps> = ({ showModal, setShowModal, 
     defaultValues: defaultValues,
   });
   const onSubmit = async (data: IFormInput) => {
+    setLoading(true)
     const payload = {
       ...data, 
       username: data["username"].toLowerCase(),
-      created_by_id: storeUser.id}
+      created_by_id: storeUser.id
+    }
+    // if (data.email == "") {
+    //   setAlertShow(true)
+    //   setAlertSeverity("error");
+    //   setAlertMessage("Email Required"); 
+    //   setLoading(false);
+    //   return;
+    // }
 
     const response = await axiosRequest<any>({
         method: "post",
@@ -62,8 +74,8 @@ const AddUserFormModal:React.FC<AddUserFormProps> = ({ showModal, setShowModal, 
         hasAuth: true,
     })
 
+    setAlertShow(true)
     if (response?.data.success) {
-      setAlertShow(true)
       setShowModal(false)
       setAlertSeverity("success");
       setAlertMessage("Operation Success")  
@@ -71,14 +83,14 @@ const AddUserFormModal:React.FC<AddUserFormProps> = ({ showModal, setShowModal, 
       reset();
     }
     if (response?.data.errors) {
-      setAlertShow(true)
       setAlertSeverity("warning");
       setAlertMessage(JSON.stringify(response?.data.errors));
     }
     if (response?.data?.error) {
-      setAlertShow(true)
       setAlertSeverity("error");
-      setAlertMessage(`${response.data.error}`);    }
+      setAlertMessage(`${response.data.error}`);    
+    }
+    setLoading(false)
   };
 
   return (
@@ -117,13 +129,15 @@ const AddUserFormModal:React.FC<AddUserFormProps> = ({ showModal, setShowModal, 
               name={"email"}
               control={control}
               label={"Email"}
+              required={true}
             />
           </Box>
 
           <Box m={2} sx={{ width: "100" }}>
-            <Button onClick={handleSubmit(onSubmit)} variant={"contained"} fullWidth>
-              Submit
+            <Button onClick={handleSubmit(onSubmit)} variant={"contained"} disabled={loading} fullWidth>
+              Submit {loading ? <CircularProgress /> : <></>}
             </Button>
+
           </Box>
         </Box>
       </Modal>

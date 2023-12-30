@@ -275,7 +275,7 @@ export const getAllCourses = async (
 export const getAllResults = async (
     setResults: (data: ResultProps[]) => void,
     setFetching: (val: boolean) => void,
-    params?: { searchField: string, value: string | number }
+    params?: { searchField: string, value: string | number | boolean }
 ) => {
 
     const response = await axiosRequest<{ results: ResultProps[] }>({

@@ -13,17 +13,17 @@ const { Option } = Select
 interface EditUserFormProps {
   showModal: any
   setShowModal: any
+  setRecord: any
   record: UserType | undefined
   reset: any
 }
 
-const EditUserFormModal:FC<EditUserFormProps> = ({ showModal, setShowModal, reset, record }: any) => {
+const EditUserFormModal:FC<EditUserFormProps> = ({ showModal, setShowModal, reset, record, setRecord }: any) => {
 
     const storeUserID = useSelector(selectAuthUser).id
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false)
 
-    
     const onSubmit = async (values: DataProps) => {
         setLoading(true)
         if (values["username"] == "" || values["username"] == undefined || values["username"] == null){
@@ -51,23 +51,23 @@ const EditUserFormModal:FC<EditUserFormProps> = ({ showModal, setShowModal, rese
             hasAuth: true,
         })
 
-        setLoading(false)
-        console.log(response)
         if (response?.data.success) {
             notification.success({
                 message: "Operation Successful",
                 description: "User Updated Successfully"
             })
+            setLoading(false)
+            form.resetFields();
+            setRecord([])
             reset()
             setShowModal(false)
-            form.resetFields();
         }
         if (response?.data.error) {
-            console.log(response.data.error)
             notification.error({
                 message: "Operation Failed",
                 description: `${JSON.stringify(response.data.error)}`
             })
+            setLoading(false)
         }
     }
 
@@ -75,7 +75,7 @@ const EditUserFormModal:FC<EditUserFormProps> = ({ showModal, setShowModal, rese
         <Modal
             title={`EDIT - ${record?.username}`}
             open={showModal}
-            onCancel={() => {setShowModal(false); reset()}}
+            onCancel={() => {setShowModal(false); setRecord(undefined); form.resetFields(); }}
             footer={false}
         >
             <Form layout='vertical' onFinish={onSubmit} form={form} className='bg-teal-700 rounded p-2'>

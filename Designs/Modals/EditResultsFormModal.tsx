@@ -71,7 +71,6 @@ const EditResultsFormModal:FC<EditResultsFormProps> = ({ showModal, setShowModal
         })
 
         setLoading(false)
-        console.log(response)
 
         if (response?.data.success) {
             notification.success({
@@ -98,10 +97,9 @@ const EditResultsFormModal:FC<EditResultsFormProps> = ({ showModal, setShowModal
         }
     }
 
-
     return (
         <Modal
-            title={`EDIT - ${record?.student?.first_name} ${record?.student?.last_name}`}
+            title={`EDIT - ${record?.student?.user?.first_name} ${record?.student?.user?.last_name}`}
             open={showModal}
             onCancel={() => setShowModal(false)}
             footer={false}

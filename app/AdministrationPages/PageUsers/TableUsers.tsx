@@ -10,9 +10,10 @@ import {
     Stack,
     Fab,
     TextField,
+    TablePagination,
 } from '@mui/material';
 import DashboardCard from '@/components/CompAdmin/shared/DashboardCard';
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { UserProfile, UserType } from '@/Utils/types';
 import { useGetAllUserProfiles, useGetAllUsers } from '@/Utils/customHooks';
 import { getAllUsers } from '@/Utils/functions';
@@ -25,12 +26,15 @@ import { green, red } from '@mui/material/colors';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
 import { addChoosenUserProfile, removeChoosenUser } from '@/Redux/Reducers/sliceChoosenUserAndProfile';
+import MyButtonLoader from '@/Designs/MyButtonLoader';
 
 
 const TableUsers = () => {
     const router = useRouter();
     const dispatch = useDispatch();
-    const [ fetching, setFetching ] = useState<boolean>(false);
+    const [ page, setPage ] = useState<number>(0)
+    const [ rowsPerPage, setRowsPerPage ] = useState<number>(10)
+    const [ fetching, setFetching ] = useState<boolean>(true);
     const [ record, setRecord ] = useState<UserType>();
     const [ userProfiles, setUserProfiles ] = useState<UserProfile[]>([]);
     const [ users, setUsers ] = useState<UserType[]>([]);
@@ -71,6 +75,15 @@ const TableUsers = () => {
         const filB = users.filter((item: UserType) => item.first_name?.toLowerCase().includes(val.toLowerCase()))
         setUsersData([...new Set([...filA, ...filB])])
     }
+  
+    const handleChangePage = (e: unknown, newPage: number) => {
+        setPage(newPage);
+    }
+
+    const handleChangeRowsPerPage = (e: ChangeEvent<HTMLInputElement>) => {
+        setRowsPerPage(parseInt(e.target.value, 10));
+        setPage(0);
+    }
 
     return (
         <DashboardCard title={`Users List`}>
@@ -78,14 +91,7 @@ const TableUsers = () => {
                 <Grid container spacing={0}>
                         <Stack direction="row" spacing={2} sx={{alignItems: "center",alignContent: "center"}}>
                             <MyButtonAdd setAddItem={setAddUserFormModal} />
-                            <Fab
-                                aria-label="save"
-                                color="primary"
-                                sx={buttonSx(true)}
-                                onClick={() => reset()}
-                            >
-                            {fetching ? "Loading" : <>{usersData.length}</>}
-                            </Fab>
+                            <MyButtonLoader fetching={fetching} loadingText='Loading' info={usersData.length} onClick={reset} />
                             <Box>
                                 <TextField label="Search" onChange={(e) => {Search(e.target.value)}} placeholder={`Search Users ...`} sx={{width: 260}} />
                             </Box>
@@ -249,6 +255,15 @@ const TableUsers = () => {
                                 ))}
                             </TableBody>
                         </Table>
+                        <TablePagination
+                            rowsPerPageOptions={[10, 25, 50]}
+                            component="div"
+                            count={usersData.length}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            onPageChange={handleChangePage}
+                            onRowsPerPageChange={handleChangeRowsPerPage}
+                        />
                     </Grid>
 
                     <Grid item xs={12}>
@@ -263,6 +278,7 @@ const TableUsers = () => {
                             setShowModal={setEditUserFormModal}
                             record={record}
                             reset={reset}
+                            setRecord={setRecord}
                         />
 
                         <DeleteItemFormModal 

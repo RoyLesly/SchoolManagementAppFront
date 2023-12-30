@@ -23,7 +23,7 @@ export const Upgrade = () => {
                     </Button>
                 </Box>
                 <Box mt="-6px">
-                    <Image alt="Remy Sharp" src={LogoLink} height={70} width={70} />
+                    <Image alt="st joan" src={LogoLink} height={70} width={70} />
                 </Box>
             </>
         </Box>

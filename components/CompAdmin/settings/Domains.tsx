@@ -2,9 +2,9 @@
 import React, { FC, useEffect, useState } from 'react';
 import MyTableCard from '@/Designs/MyTableCard'
 import {
-    Typography, Box, 
+    Typography, 
     Table, TableBody, TableCell, TableHead, TableRow,
-    Button, Fab, Modal, Stack,
+    Button, Stack,
 } from '@mui/material';
 import { DomainProps } from '@/Utils/types';
 import { useGetAllDomains } from '@/Utils/customHooks';
@@ -12,12 +12,13 @@ import { getAllDomains } from '@/Utils/functions';
 import AddDomainFormModal from '@/Designs/Modals/AddDomainFormModal';
 import EditDomainFormModal from '@/Designs/Modals/EditDomainFormModal';
 import DeleteItemFormModal from '@/Designs/Modals/DeleteItemFormModal';
-import MyButtonReload from '@/Designs/MyButtonReload';
 import MyButtonAdd from '@/Designs/MyButtonAdd';
 import { DomainCRUDUrl } from '@/Utils/Config';
+import MyButtonLoader from '@/Designs/MyButtonLoader';
 
 const Domains = () => {
-    const [ fetching, setFetching ] = useState<boolean>(false)
+    const [ fetching, setFetching ] = useState<boolean>(true)
+    const [ loading, setLoading ] = useState<boolean>(true)
     const [ record, setRecord ] = useState<DomainProps | null>(null)
     const [ domain, setDomain ] = useState<DomainProps[]>([])
     const [ domainData, setDomainData ] = useState<DomainProps[]>([])
@@ -28,6 +29,7 @@ const Domains = () => {
     useGetAllDomains(setDomain, setFetching);
     useEffect(() => {
         setDomainData(domain)
+        setLoading(false)
     }, [domain])
     const reset = () => {
         setFetching(true)
@@ -89,9 +91,10 @@ const Domains = () => {
 
     <MyTableCard
         title={"Domain Section"}
-        buttonReset={<MyButtonReload fetching={fetching} reset={reset} />}
+        buttonReset={<MyButtonLoader fetching={fetching} loadingText='Loading' info={domainData.length} onClick={reset} />  }
         buttonAdd={<MyButtonAdd setAddItem={setAddDomainFormModal} />}
         table={<TableComp />}
+        loading={loading}
     />
 
     <AddDomainFormModal

@@ -11,15 +11,13 @@ import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { addChoosenUserProfile, selectChoosenUser, selectChoosenUserProfile } from '@/Redux/Reducers/sliceChoosenUserAndProfile'
 import { DomainProps, LevelProps, SpecialtyProps, UserProfile } from '@/Utils/types'
-import { axiosRequest } from '@/Utils/functions'
+import { axiosRequest, getAllDomains, getAllLevels, getAllSpecialties, getAllUserProfiles } from '@/Utils/functions'
 import { UserProfilesUrl } from '@/Utils/Config'
 import { selectAuthUser } from '@/Redux/Reducers/sliceUser'
 import { message, notification } from 'antd'
 import { useRouter } from 'next/navigation'
 import MyButtonLoader from '@/Designs/MyButtonLoader'
-import { InputLabel, MenuItem, Select, Typography } from '@mui/material'
-import { useGetAllDomains, useGetAllLevels, useGetAllSpecialties, useGetAllUserProfiles } from '@/Utils/customHooks'
-import { useGetAllUserProfilesStudents } from '@/Utils/customHooksExtra'
+import { InputLabel, LinearProgress, MenuItem, Select, Typography } from '@mui/material'
 
 
 const Tab2Specialties = () => {
@@ -30,7 +28,8 @@ const Tab2Specialties = () => {
   const storeUser = useSelector(selectAuthUser);
 
   const [ profiles, setProfiles ] = useState<UserProfile[]>([])
-  const [ myProfiles, setMyProfiles ] = useState<UserProfile[]>([])
+  const [ loading, setLoading ] = useState<boolean>(true)
+  const [ count, setCount ] = useState<number>(0)
 
   const [ specialties, setSpecialties ] = useState<SpecialtyProps[]>([])
   const [ mySpecialtyList, setMySpecialtyList ] = useState<any[]>([])
@@ -44,20 +43,69 @@ const Tab2Specialties = () => {
   const [ levels, setLevels ] = useState<LevelProps[]>([])
   const [ level_id, setLevel_id ] = useState<number>(0)
   const [ selected_academic_year, setSelected_academic_year ] = useState<string>("")
-  const [ fetching, setFetching ] = useState<boolean>(false)
-  const [ loading, setLoading ] = useState<boolean>(false)
+  const [ fetching, setFetching ] = useState<boolean>(true)
   const [ promote, setPromote ] = useState<boolean>(false);
   const thisYear = new Date().getFullYear()
 
-  useGetAllSpecialties(setSpecialties, setFetching)
-  useGetAllUserProfilesStudents(setProfiles, setFetching)
-  useGetAllDomains(setDomains, setFetching);
-  useGetAllLevels(setLevels, setFetching);
+  console.log(count)
+  useEffect(() => {
+    if (count == 0) {
+      getAllLevels(setLevels, () => {})
+      getAllDomains(setDomains, () => {})
+      getAllSpecialties(setSpecialties, () => {});
+      getAllUserProfiles(setProfiles, () => {}, {kpi: true, searchField: "user__id", value: storeProfile?.user?.id});
+      setCount(count + 1);
+    }
+    if (count == 1) {
+      if (domains.length > 0 && specialties.length > 0 && levels.length > 0) {
+        setCount(count + 1);
+      }
+    }
+    if (count == 2) {
+      if (profiles.length > 0){
+        const fil = profiles.map((item: UserProfile) => item?.specialty)
+        if (fil[0] != null) {
+          setMySpecialtyList(fil)
+        }
+        setCount(count + 1)
+      }
+    }
+    if (count == 3) {
+      setFetching(false)
+    }
+  }, [count, profiles, storeProfile, specialties, domains.length, levels.length, specialties.length])
 
   useEffect(() => {
-    setMyProfiles(profiles.filter((item: UserProfile) => item?.user?.id == storeProfile?.user?.id))
-  }, [profiles, storeProfile])
+    if (count > 1){
+      if (domain_id > 0 && level_id > 0 && selected_academic_year != "") {
+        const filA = specialties.filter((item: SpecialtyProps) => item.main_specialty.domain.id == domain_id)
+        const filB = filA.filter((item: SpecialtyProps) => item.level.id == level_id)
+        const filC = filB.filter((item: SpecialtyProps) => item.academic_year == selected_academic_year)
+        setSpecialtiesData(filC)
+      }
+    }
+  }, [count, domain_id, level_id, specialties, selected_academic_year])
 
+useEffect(() => {
+  if (count ==  2) {
+    const levels = mySpecialtyList.map((item: SpecialtyProps) => item?.level?.level)
+    const largest_num = levels.reduce((largest, current) => (current > largest ? current : largest), levels[0]) 
+    const specWithHighestLevel = mySpecialtyList.filter((item: SpecialtyProps) => item?.level?.level == largest_num)[0]
+    const yearOfHighestSpecialty = specWithHighestLevel ? parseInt(specWithHighestLevel?.academic_year.slice(0, 4)) : 0
+    if (profiles.length > 0) {
+      const filA = specialties?.filter((item: SpecialtyProps) => item?.main_specialty?.domain?.id == profiles[0].specialty?.main_specialty?.domain.id)
+      const filB = filA?.filter((item: SpecialtyProps) => item?.level?.level == (largest_num + 100))
+      const filC = filB.filter((item: SpecialtyProps) => +item?.academic_year.slice(0, 4) == (+yearOfHighestSpecialty + 1))
+      if (filC.length > 0) {
+        setSpecialtiesDataNext(filC.reverse())
+      }
+      setCount(count + 1)
+    }
+  }
+  if (count == 3) {
+    setLoading(false)
+  }
+}, [promote, mySpecialtyList, specialties, profiles, count, setLoading])
 
   interface IFormInput {
     specialty_id: number;
@@ -71,40 +119,12 @@ const Tab2Specialties = () => {
     defaultValues: defaultValues,
   });
 
-  useEffect(() => {
-    const fil = profiles.filter((item: UserProfile) => item?.user?.id == storeProfile?.user?.id)
-    setMyProfiles(fil)
-    const filA = fil.filter((item: UserProfile) => item?.specialty != undefined)
-    const filB = filA.map((item: UserProfile) => item?.specialty)
-    if (filB.length > 0) {
-      // setMySpecialtyList(filB)
-    }
-  }, [profiles, storeProfile])
-
-  useEffect(() => {
-    const levels = mySpecialtyList.map((item: SpecialtyProps) => item?.level?.level)
-    const largest_num = levels.reduce((largest, current) => (current > largest ? current : largest), levels[0]) 
-    const specWithHighestLevel = mySpecialtyList.filter((item: SpecialtyProps) => item?.level?.level == largest_num)[0]
-    console.log(mySpecialtyList)
-    console.log(specWithHighestLevel)
-    const yearOfHighestSpecialty = specWithHighestLevel ? specWithHighestLevel?.academic_year[3] : 0
-    const filA = specialties?.filter((item: SpecialtyProps) => item?.level?.level == (largest_num + 1))
-    const filB = filA.filter((item: SpecialtyProps) => +item?.academic_year[3] == (+yearOfHighestSpecialty + 1))
-    if (filB.length > 0) {
-      setSpecialtiesDataNext(filB.reverse())
-    }
-  }, [promote, mySpecialtyList, specialties])
-
-
-  console.log(storeProfile)
-
   const onSubmit = async (data: any) => {
+    setLoading(true)
     if (specialty_id < 1) {
       message.error("Select a Specialty !!!");
       return;
     }
-
-    // setLoading(true);
 
     let values = {
       user_id: storeProfile.user.id,
@@ -112,7 +132,6 @@ const Tab2Specialties = () => {
       specialty_id: specialty_id,
       updated_by_id: storeUser.id,
     }
-
 
     // return
     const response = await axiosRequest<any>({
@@ -122,7 +141,7 @@ const Tab2Specialties = () => {
         hasAuth: true,
     })
     
-    console.log(response?.data)
+    setLoading(false)
     if (response?.data) {
       if (response.data.success) {
         dispatch(addChoosenUserProfile(response.data.success));
@@ -210,16 +229,6 @@ const Tab2Specialties = () => {
     setLevel_id(val.target.value)
   }
 
-
-  useEffect(()=> {
-    if (domain_id > 0 && level_id > 0 && selected_academic_year != "") {
-      const filA = specialties.filter((item: SpecialtyProps) => item.main_specialty.domain.id == domain_id)
-      const filB = filA.filter((item: SpecialtyProps) => item.level.id == level_id)
-      const filC = filB.filter((item: SpecialtyProps) => item.academic_year == selected_academic_year)
-      setSpecialtiesData(filC)
-    }
-  }, [domain_id, level_id, specialties, selected_academic_year])
-
   return (
     <CardContent>
       <Grid container spacing={6}>
@@ -228,170 +237,187 @@ const Tab2Specialties = () => {
 
         </Grid>
 
-        {mySpecialtyList[0] == null ? <>
-
-          <Grid item xs={12}>
-            <Typography variant='h3'>
-              Select Specialty For Student
-            </Typography>
-          </Grid>
- 
-          <Grid item xs={12} sm={6} lg={4}>
-            <InputLabel htmlFor='account-settings-confirm-new-password'>Select Field</InputLabel>
-            <Select
-              id="label_select_field"
-              labelId="label_select_field"
-              value={domain_id}
-              label="Select Field"
-              onChange={handleChangeDomain}
-              fullWidth
-            >
-              {domains.map((item: DomainProps) => (
-                <MenuItem key={item.id} value={item.id}>{item.domain_name}</MenuItem>
-              ))}
-            </Select>
-          </Grid> 
-
-          <Grid item xs={12} sm={6} lg={4}>
-            <InputLabel htmlFor='account-settings-confirm-new-password'>Academic Year</InputLabel>
-            <Select
-              id="label_select_academic_year"
-              labelId="label_select_academic_year"
-              value={selected_academic_year}
-              label="Select Academic Year"
-              onChange={handleChangeAcademicYear}
-              fullWidth
-            >
-              {[
-                (thisYear) + "/" + (thisYear + 1)
-              ].map((item: string) => (
-              <MenuItem key={item} value={item}>{item}</MenuItem>
-              ))}
-            </Select>
-          </Grid> 
-
-          <Grid item xs={12} sm={6} lg={4}>
-            <InputLabel htmlFor='account-settings-confirm-new-password'>Select Level</InputLabel>
-            <Select
-              id="label_select_level"
-              labelId="label_select_level"
-              value={level_id}
-              label="Select Level"
-              onChange={handleChangeLevel}
-              fullWidth
-            >
-              {levels.map((item: LevelProps) => (
-                <MenuItem key={item.id} value={item.id}>{item.level}</MenuItem>
-              ))}
-            </Select>
-          </Grid> 
-
-          <Grid item xs={12}>
-            <InputLabel htmlFor='account-settings-confirm-new-password'>Select Specialty</InputLabel>
-            <Select
-              id="label_select_specialty"
-              labelId="label_select_specialty"
-              value={specialty_id}
-              label="Select Specialty"
-              onChange={handleChange}
-              fullWidth
-            >
-              {specialtiesData.map((item: SpecialtyProps) => (
-                <MenuItem key={item.id} value={item.id}>{item.main_specialty?.specialty_name} {item.academic_year} Level-{item.level?.level}</MenuItem>
-              ))}
-            </Select>
-          </Grid> 
-
-          <Grid item xs={12}>
-            <Button 
-              color="primary"
-              variant="contained"
-              size="large"
-              onClick={handleSubmit(onSubmit)} 
-              sx={{ marginRight: 2, width: "70%" }}
-            >
-              Save
-            </Button>
-            <MyButtonLoader 
-              fetching={loading}
-              loadingText="Saving"
-            />
-          </Grid> 
-        </> 
-
-          :
-        <>
-          <Grid item xs={12} alignContent="center" alignItems="center" justifyItems="center">
-            <Typography variant='h3'>
-              MY LEVELS
-            </Typography>
-          </Grid>
-
-          {mySpecialtyList.map((item: UserProfile) => (
+        {fetching ? 
+          <div style={{ flex: 1, alignItems: "center", textAlign: "center", justifyContent: "center", fontSize: "30", paddingTop: 50, paddingBottom: 70, paddingLeft: 60, paddingRight: 25 }}>
+            Data Loading <LinearProgress style={{ marginTop: 30, padding: 5 }}/>
+          </div> 
+          
+          : 
+          
           <>
-            <Grid key={item?.id} item xs={12} sm={6} lg={4} spacing={2}>
-              <Grid>
-                <InputLabel htmlFor='account-settings-confirm-new-password'>Level {item?.specialty?.level?.level}</InputLabel>
-              </Grid>
-              <Grid>
-                <Select
-                  id="label_select_specialty"
-                  labelId="label_select_specialty"
-                  value={item?.id}
-                  label="Select Specialty"
-                  onChange={handleChange}
-                  fullWidth
-                  disabled
-                >
-                  {specialties?.map((item: SpecialtyProps) => (
-                    <MenuItem key={item?.id} value={item?.id}>{item?.main_specialty?.specialty_name} {item?.academic_year}</MenuItem>
-                  ))}
-                </Select>
-              </Grid>
-            </Grid>
-          </> 
-          ))}
-        </>
+            <>
+              {mySpecialtyList.length < 1 ? 
+          
+              <>
+                <Grid item xs={12}>
+                  <Typography variant='h3'>
+                    Select Specialty For Student
+                  </Typography>
+                </Grid>
+      
+                <Grid item xs={12} sm={6} lg={4}>
+                  <InputLabel htmlFor='account-settings-confirm-new-password'>Select Field</InputLabel>
+                  <Select
+                    id="label_select_field"
+                    labelId="label_select_field"
+                    value={domain_id}
+                    label="Select Field"
+                    onChange={handleChangeDomain}
+                    fullWidth
+                  >
+                    {domains.map((item: DomainProps) => (
+                      <MenuItem key={item.id} value={item.id}>{item.domain_name}</MenuItem>
+                    ))}
+                  </Select>
+                </Grid> 
+
+                <Grid item xs={12} sm={6} lg={4}>
+                  <InputLabel htmlFor='account-settings-confirm-new-password'>Academic Year</InputLabel>
+                  <Select
+                    id="label_select_academic_year"
+                    labelId="label_select_academic_year"
+                    value={selected_academic_year}
+                    label="Select Academic Year"
+                    onChange={handleChangeAcademicYear}
+                    fullWidth
+                  >
+                    {[
+                      (thisYear - 1) + "/" + (thisYear), (thisYear) + "/" + (thisYear + 1), (thisYear + 1) + "/" + (thisYear + 2)
+                    ].map((item: string) => (
+                    <MenuItem key={item} value={item}>{item}</MenuItem>
+                    ))}
+                  </Select>
+                </Grid> 
+
+                <Grid item xs={12} sm={6} lg={4}>
+                  <InputLabel htmlFor='account-settings-confirm-new-password'>Select Level</InputLabel>
+                  <Select
+                    id="label_select_level"
+                    labelId="label_select_level"
+                    value={level_id}
+                    label="Select Level"
+                    onChange={handleChangeLevel}
+                    fullWidth
+                  >
+                    {levels.map((item: LevelProps) => (
+                      <MenuItem key={item.id} value={item.id}>{item.level}</MenuItem>
+                    ))}
+                  </Select>
+                </Grid> 
+
+                <Grid item xs={12}>
+                  <InputLabel htmlFor='account-settings-confirm-new-password'>Select Specialty</InputLabel>
+                  <Select
+                    id="label_select_specialty"
+                    labelId="label_select_specialty"
+                    value={specialty_id}
+                    label="Select Specialty"
+                    onChange={handleChange}
+                    fullWidth
+                  >
+                    {specialtiesData.map((item: SpecialtyProps) => (
+                      <MenuItem key={item.id} value={item.id}>{item.main_specialty?.specialty_name} {item.academic_year} Level-{item.level?.level}</MenuItem>
+                    ))}
+                  </Select>
+                </Grid> 
+
+                <Grid item xs={12}>
+                  <Button 
+                    color="primary"
+                    variant="contained"
+                    size="large"
+                    onClick={handleSubmit(onSubmit)} 
+                    sx={{ marginRight: 2, width: "70%" }}
+                    disabled={loading}
+                  >
+                    Save
+                  </Button>
+                  {loading ? <MyButtonLoader 
+                    fetching={loading}
+                    loadingText="Saving"
+                  /> : <></>}
+                </Grid>
+              </>
+              :
+              <>
+                <Grid item xs={12} alignContent="center" alignItems="center" justifyItems="center">
+                  <Typography variant='h3'>
+                    MY LEVELS
+                  </Typography>
+                </Grid>
+
+                {mySpecialtyList.map((item: SpecialtyProps) => (
+                <>
+                  <Grid key={item?.id} item xs={12} sm={6} lg={4} spacing={2}>
+                    <Grid>
+                      <InputLabel htmlFor='account-settings-confirm-new-password'>Level {item?.level?.level}</InputLabel>
+                    </Grid>
+                    <Grid>
+                      <Select
+                        id="label_select_specialty"
+                        labelId="label_select_specialty"
+                        value={item?.id}
+                        label="Select Specialty"
+                        onChange={handleChange}
+                        fullWidth
+                        disabled
+                      >
+                        {specialties?.map((item: SpecialtyProps) => (
+                          <MenuItem key={item?.id} value={item?.id}>{item?.main_specialty?.specialty_name} {item?.academic_year}</MenuItem>
+                        ))}
+                      </Select>
+                    </Grid>
+                  </Grid>
+                </> 
+                ))}
+              </>
+              }
+            </>
+    
+            <>
+              {mySpecialtyList.length > 0 && <>
+                <Grid item xs={12}>
+                  <Button onClick={() => {setPromote(!promote)}}>Click To Promote To Next Level</Button>
+                </Grid>
+                <Grid item xs={12}>
+                  <InputLabel htmlFor='account-settings-confirm-new-password'>Next Level</InputLabel>
+                  <Select
+                    id="label_select_next_specialty"
+                    labelId="label_select_next_specialty"
+                    // value={0}
+                    label="Select Next Specialty"
+                    onChange={handleChangePromote}
+                    fullWidth
+                    disabled={!promote}
+                  >
+                    {specialtiesDataNext.map((item: SpecialtyProps) => (
+                      <MenuItem key={item.id} value={item.id}>{item.main_specialty?.specialty_name} {item.academic_year} Level-{item.level?.level}</MenuItem>
+                    ))}
+                  </Select>
+                </Grid>
+                <Grid item xs={12}>
+                  <Button 
+                    color="primary"
+                    variant="contained"
+                    size="large"
+                    onClick={handleSubmit(onPromote)} 
+                    sx={{ marginRight: 3.5 }}
+                    disabled={nextSpecialty_id < 1 ? true : false}
+                  >
+                    Promote
+                  </Button>
+                  {loading ? <MyButtonLoader 
+                    fetching={loading}
+                    loadingText="Saving"
+                  />: ""}
+                </Grid>
+                </>
+              }
+            </>
+          </>
+
         }
 
-        {mySpecialtyList[0] != null && <>
-            <Grid item xs={12}>
-              <Button onClick={() => {setPromote(!promote)}}>Click To Promote To Next Level</Button>
-            </Grid>
-            <Grid item xs={12}>
-              <InputLabel htmlFor='account-settings-confirm-new-password'>Next Level</InputLabel>
-              <Select
-                id="label_select_next_specialty"
-                labelId="label_select_next_specialty"
-                // value={0}
-                label="Select Next Specialty"
-                onChange={handleChangePromote}
-                fullWidth
-                disabled={!promote}
-              >
-                {specialtiesDataNext.map((item: SpecialtyProps) => (
-                  <MenuItem key={item.id} value={item.id}>{item.main_specialty?.specialty_name} {item.academic_year} Level-{item.level?.level}</MenuItem>
-                ))}
-              </Select>
-            </Grid>
-            <Grid item xs={12}>
-              <Button 
-                color="primary"
-                variant="contained"
-                size="large"
-                onClick={handleSubmit(onPromote)} 
-                sx={{ marginRight: 3.5 }}
-                disabled={nextSpecialty_id < 1 ? true : false}
-              >
-                Promote
-              </Button>
-              {loading ? <MyButtonLoader 
-                fetching={loading}
-                loadingText="Saving"
-              />: ""}
-            </Grid>
-          </>
-        }
       </Grid>
     </CardContent>
   )

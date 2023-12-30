@@ -11,9 +11,10 @@ const Footer = () => {
         padding: 2, 
         bottom: 0, 
         justifyContent: "center",
+        backgroundColor: "blue"
       }}
     >
-      <Typography variant='h6' color="#1a237e" sx={{ }}>Moove Student v2.0.5</Typography>
+      <Typography variant='h6' color="white" sx={{ }}>Moove Student v2.0.7</Typography>
     </Paper>
   )
 }

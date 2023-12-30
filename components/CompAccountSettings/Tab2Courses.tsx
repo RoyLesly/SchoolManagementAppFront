@@ -14,6 +14,7 @@ import { useGetAllCourses } from '@/Utils/customHooks'
 import { useRouter } from 'next/navigation'
 import { Table, TableBody, TableCell, TableHead, TableRow, Typography, styled } from '@mui/material'
 import { addChoosenCourse } from '@/Redux/Reducers/sliceDomainSpecialityCourse'
+import { getAllCourses } from '@/Utils/functions'
 
 
 interface TabCourseManagementProps {
@@ -25,20 +26,30 @@ const Tab2Courses:FC<TabCourseManagementProps> = ({ setValue }) => {
   const router = useRouter()
   const dispatch = useDispatch()
   const storeChoosenUserProfile = useSelector(selectChoosenUserProfile);
+  const [ count, setCount ] = useState<number>(0)
   const [ fetching, setFetching ] = useState<boolean>(false)
   const [ courses, setCourses ] = useState<CourseProps[]>([])
   const [ coursesData1, setCoursesData1 ] = useState<CourseProps[]>([])
   const [ coursesData2, setCoursesData2 ] = useState<CourseProps[]>([])
 
-  useGetAllCourses(setCourses, ()=>{}, { searchField: "assigned", value: "True" })
-//   useGetAllCourses(setCourses, ()=>{})
-  console.log(courses)
-
   useEffect(() => {
-    const fil = courses.filter((item: CourseProps) => item.assigned_to?.id == storeChoosenUserProfile?.user.id)
-    setCoursesData1(fil)
-    setCoursesData2(fil)
-  }, [courses, storeChoosenUserProfile])
+    if (count == 0) {
+        getAllCourses(setCourses, ()=>{}, { searchField: "assigned", value: true })
+        setCount(count + 1)
+    }
+    if (count == 1) {
+        if (courses.length > 0) {
+            const fil = courses.filter((item: CourseProps) => item.assigned_to?.id == storeChoosenUserProfile?.user.id)
+            setCoursesData1(fil)
+            setCoursesData2(fil)
+            setCount(count + 1)
+        }
+    }
+    if (count == 2) {
+        console.log("Use Effect Completed ...")
+    }
+
+  }, [courses, count, storeChoosenUserProfile])
 
 
   return (

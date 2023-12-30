@@ -9,6 +9,7 @@ import MyButtonSave from '@/Designs/MyButtonSave';
 import AddCourseTransversalSelectFormModal from './AddCourseTransversalSelectFormModal';
 import { FormatColorResetOutlined } from '@mui/icons-material';
 import { selectAuthUser } from '@/Redux/Reducers/sliceUser';
+import { listOfAcademicYears } from '@/Utils/constants';
 
 
 const { Option } = Select
@@ -31,7 +32,6 @@ const AddCourseFormModal:FC<AddCourseUserFormProps> = ({ showModal, userTeachers
     const [specialtyData, setSpecialtyData] = useState<SpecialtyProps[]>([]);
     const [userActiveTeacher, setUserActiveTeacher] = useState<UserType[]>([]);
     const [year, setYear] = useState(0)
-    const [yearList, setYearList] = useState<any>();
     const [type, setType] = useState<string>("");
     const [showAddTransversalCourses, setShowAddTransversalCourses] = useState<boolean>(false);
     const [firstSelectedID, setFirstSelectedID] = useState<any>(0);
@@ -57,7 +57,7 @@ const AddCourseFormModal:FC<AddCourseUserFormProps> = ({ showModal, userTeachers
         }
         if (values["specialty_id"]){
    
-            setLoading(true)
+            setLoading(true);
 
             const response = await axiosRequest<any>({
                 method: "post",
@@ -110,16 +110,10 @@ const AddCourseFormModal:FC<AddCourseUserFormProps> = ({ showModal, userTeachers
 
     }
 
-    const thisYear = new Date().getFullYear()
     useEffect(() => {
-        const list = []
-        for (let index = 0; index < 2; index++) {
-            list.push((thisYear + index) + "/" + (thisYear + index + 1))
-        }
-        setYearList(list)
         const fil = specialty.filter((item: SpecialtyProps) => item.academic_year.includes(year.toString()))
         setSpecialtyData(fil)
-    }, [thisYear, year, specialty])
+    }, [year, specialty])
 
     return (
         <>
@@ -144,7 +138,7 @@ const AddCourseFormModal:FC<AddCourseUserFormProps> = ({ showModal, userTeachers
                             rules={[{ required: false, message: "Please Select Academic Year" }]}
                         >
                             <Select onChange={(e) => setYear(e)}>
-                                {yearList?.map((item: any) => (<Option key={item} value={item}>{item}</Option>))}
+                                {listOfAcademicYears?.map((item: any) => (<Option key={item} value={item}>{item}</Option>))}
                             </Select>
                         </Form.Item>
 
@@ -207,19 +201,13 @@ const AddCourseFormModal:FC<AddCourseUserFormProps> = ({ showModal, userTeachers
                         rules={[{ required: true, message: "Please Select SEMESTER" }]}
                     >
                         <Select placeholder="SEMESTER">
-                            <Option key={1} value={1}>1</Option>
-                            <Option key={2} value={2}>2</Option>
-                            <Option key={3} value={3}>3</Option>
-                            <Option key={4} value={4}>4</Option>
-                            <Option key={5} value={5}>5</Option>
-                            <Option key={6} value={6}>6</Option>
-                            <Option key={7} value={7}>7</Option>
-                            <Option key={8} value={8}>8</Option>
+                            <Option key={1} value={"I"}>1</Option>
+                            <Option key={2} value={"II"}>2</Option>
                         </Select>
                     </Form.Item>
 
                     <Form.Item label="ASSIGN TO" name="assigned_to_id"
-                        rules={[{ required: false, message: "Please Select Lecturer" }]}
+                        rules={[{ required: true, message: "Please Select Lecturer" }]}
                     >
                         <Select placeholder="Assign To">
                             <Option key={0} value="">----------</Option>

@@ -6,29 +6,24 @@ import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Link from '@mui/material/Link'
 import Alert from '@mui/material/Alert'
-import TextField from '@mui/material/TextField'
 import AlertTitle from '@mui/material/AlertTitle'
 import CardContent from '@mui/material/CardContent'
-import FormControl from '@mui/material/FormControl'
 import Button, { ButtonProps } from '@mui/material/Button'
 
 // ** Icons Imports
 import Close from 'mdi-material-ui/Close'
 import MyFormInputText from '@/Designs/MyFormInputText'
-import { Controller, useForm } from 'react-hook-form'
-import { useDispatch, useSelector } from 'react-redux'
-import { selectChoosenUser, selectChoosenUserProfile } from '@/Redux/Reducers/sliceChoosenUserAndProfile'
-import { LevelProps, SpecialtyProps, UserProfile, UserType } from '@/Utils/types'
+import { useForm } from 'react-hook-form'
+import { useSelector } from 'react-redux'
+import { selectChoosenUserProfile } from '@/Redux/Reducers/sliceChoosenUserAndProfile'
+import { UserType } from '@/Utils/types'
 import { axiosRequest } from '@/Utils/functions'
-import { UserCRUDUrl, UserProfilesUrl } from '@/Utils/Config'
+import { UserCRUDUrl } from '@/Utils/Config'
 import { selectAuthUser } from '@/Redux/Reducers/sliceUser'
-import { useGetAllLevels, useGetAllSpecialties, useGetAllUsers } from '@/Utils/customHooks'
-import { Spin, notification } from 'antd'
 import { useRouter } from 'next/navigation'
-import MyButtonLoader, { MyButtonLoader2 } from '@/Designs/MyButtonLoader'
-import { CircularProgress, FormLabel, IconButton, Input, Typography, styled } from '@mui/material'
-import { ArrowCircleRight } from '@mui/icons-material'
-import { green } from '@mui/material/colors'
+import MyButtonLoader from '@/Designs/MyButtonLoader'
+import { IconButton, Typography, styled } from '@mui/material'
+import { Spin, notification } from 'antd'
 
 const ImgStyled = styled('img')(({ theme }) => ({
   width: 120,
@@ -147,7 +142,7 @@ const Tab1Account:FC<Tab1AccountProps> = ({ }) => {
   return (
     <CardContent>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+      {/* <form onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={6}>
 
           <Grid item xs={12} sx={{ marginTop: 4, marginBottom: 1 }}>
@@ -249,9 +244,9 @@ const Tab1Account:FC<Tab1AccountProps> = ({ }) => {
 
         </Grid>
 
-      </form>
+      </form> */}
 
-      {/* <form>
+      <form>
         <Grid container spacing={6}>
 
           <Grid item xs={12} sx={{ marginTop: 4, marginBottom: 1 }}>
@@ -371,7 +366,7 @@ const Tab1Account:FC<Tab1AccountProps> = ({ }) => {
             </Grid>
           </Grid>
         </Grid>
-      </form> */}
+      </form>
     </CardContent>
   )
 }

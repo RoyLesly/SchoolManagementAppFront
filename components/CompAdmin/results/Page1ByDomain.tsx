@@ -10,14 +10,14 @@ import { useDispatch } from 'react-redux';
 import { addChoosenDomain } from '@/Redux/Reducers/sliceDomainSpecialityCourse';
 import PageContainer from '@/app/AdministrationPages/components/container/PageContainer';
 import { Box, Grid, Stack, Typography, Input, TextField } from '@mui/material';
-import MyButtonReload from '@/Designs/MyButtonReload';
+import MyButtonLoader from '@/Designs/MyButtonLoader';
 
 
-interface Page1ByYearProps {
+interface Page1ByDomainProps {
     setSelectedNumber: any
 }
 
-const Page1ByYear:FC<Page1ByYearProps> = ({ setSelectedNumber }) => {
+const Page1ByDomain:FC<Page1ByDomainProps> = ({ setSelectedNumber }) => {
     const dispatch = useDispatch()
     const [fetching, setFetching] = useState(true)
     const [domains, setDomains] = useState<DomainProps[]>([])
@@ -61,7 +61,7 @@ const Page1ByYear:FC<Page1ByYearProps> = ({ setSelectedNumber }) => {
                 <Grid item xs={12}>
                     <Stack direction="row" spacing={2} sx={{alignItems: "center",alignContent: "center"}}>
                         <Box>
-                            <MyButtonReload fetching={fetching} reset={reset} />
+                            <MyButtonLoader fetching={fetching} loadingText='Loading' info={domainsData.length} onClick={reset} />
                         </Box>
                         <Box>            
                             {/* <div className={`bg-black rounded ${fetching ? "px-4" : ""}`}><FetchingDataIndicator fetching={fetching} /></div> */}
@@ -99,4 +99,4 @@ const Page1ByYear:FC<Page1ByYearProps> = ({ setSelectedNumber }) => {
   )
 }
 
-export default Page1ByYear
+export default Page1ByDomain

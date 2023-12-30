@@ -6,6 +6,7 @@ import { axiosRequest } from '@/Utils/functions';
 import { CourseProps, DataProps, MainCourseProps, SpecialtyProps, UserType } from '@/Utils/types';
 import { selectAuthUser } from '@/Redux/Reducers/sliceUser';
 import MyButtonUpdate from '@/Designs/MyButtonUpdate';
+import { listOfAcademicYears } from '@/Utils/constants';
 
 
 const { Option } = Select
@@ -28,8 +29,7 @@ const EditCourseFormModal:FC<EditCourseFormProps> = ({ showModal, mainCoursesDat
     const [loading, setLoading] = useState(false)
     const [specialtyData, setSpecialtyData] = useState<SpecialtyProps[]>([]);
     const [userActiveTeachers, setUserActiveTeachers] = useState<UserType[]>([]);
-    const [year, setYear] = useState(0)
-    const [yearList, setYearList] = useState<any>([])
+    const [year, setYear] = useState<any>(0)
     const [assignedTo, setAssignedTo] = useState<string | null>(null)
 
     useEffect(() => {
@@ -40,9 +40,6 @@ const EditCourseFormModal:FC<EditCourseFormProps> = ({ showModal, mainCoursesDat
             setAssignedTo((filB[0].first_name + " " + filB[0].last_name))
         }
     }, [record, userTeachers])
-    console.log(userActiveTeachers)
-    console.log(record)
-    console.log(userTeachers)
 
     
     const onSubmit = async (values: DataProps) => {
@@ -87,14 +84,12 @@ const EditCourseFormModal:FC<EditCourseFormProps> = ({ showModal, mainCoursesDat
             form.resetFields()
         }
         else if (response?.data.errors) {
-            console.log(response.data.errors)
             notification.error({
                 message: "Operation Failed",
                 description: JSON.stringify(response.data.errors)
             })
         }
         else if (response?.data.error) {
-            console.log(response.data.error)
             notification.error({
                 message: "Operation Failed",
                 description: JSON.stringify(response.data.error)
@@ -106,15 +101,6 @@ const EditCourseFormModal:FC<EditCourseFormProps> = ({ showModal, mainCoursesDat
         const fil = specialty?.filter((item: SpecialtyProps) => item?.academic_year.includes(year))
         setSpecialtyData(fil)
     }
-
-    const thisYear = new Date().getFullYear() - 1
-    useEffect(() => {
-        const list = []
-        for (let index = 1; index < 3; index++) {
-            list.push(`${thisYear + index}` + "/" + `${thisYear + index + 1}`)
-        }
-        setYearList(list)
-    }, [thisYear])
 
     return (
         <Modal
@@ -136,9 +122,9 @@ const EditCourseFormModal:FC<EditCourseFormProps> = ({ showModal, mainCoursesDat
                 <Form.Item label="SELECT ACADEMIC YEAR" name="n"
                     rules={[{ required: false, message: "Please Select Academic Year" }]}
                 >
-                    <Select placeholder="Select An Academic year" onChange={(year) => {setYear(year); FilterSpecialtyByYear(year)}}>
+                    <Select defaultValue={`${record?.specialty?.academic_year}`} placeholder="Select An Academic year" onChange={(e) => {setYear(e); FilterSpecialtyByYear(year)}}>
                         <Option key="" value="">----------</Option>
-                        {yearList.map((item: any) => (<Option key={item} value={item}>{item}</Option>))}
+                        {listOfAcademicYears.map((item: any) => (<Option key={item} value={item}>{item}</Option>))}
                     </Select>
                 </Form.Item>
 
@@ -154,14 +140,8 @@ const EditCourseFormModal:FC<EditCourseFormProps> = ({ showModal, mainCoursesDat
                     rules={[{ required: false, message: "Please Input Semester" }]}
                 >
                     <Select defaultValue={`${record?.semester}`}>
-                        <Option key={1} value={1}>1</Option>
-                        <Option key={2} value={2}>2</Option>
-                        <Option key={3} value={3}>3</Option>
-                        <Option key={4} value={4}>4</Option>
-                        <Option key={5} value={5}>5</Option>
-                        <Option key={6} value={6}>6</Option>
-                        <Option key={7} value={7}>7</Option>
-                        <Option key={8} value={8}>8</Option>
+                        <Option key={1} value={"I"}>1</Option>
+                        <Option key={2} value={"II"}>2</Option>
                     </Select>
                 </Form.Item>
 

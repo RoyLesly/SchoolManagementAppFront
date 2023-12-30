@@ -2,23 +2,18 @@
 import React, { FC, useEffect, useState } from 'react';
 import MyTableCard from '@/Designs/MyTableCard'
 import {
-    Typography, 
-    Table, TableBody, TableCell, TableHead, TableRow, 
-    Input,
+    Typography, Table, TableBody, TableCell, TableHead, TableRow, Input,
 } from '@mui/material';
 import { PermissionsProps } from '@/Utils/types';
 import MyButtonReload from '@/Designs/MyButtonReload';
-import MyButtonAdd from '@/Designs/MyButtonAdd';
-import AddLevelFormModal from '@/Designs/Modals/AddLevelFormModal';
 import { getPermissions } from '@/Utils/functions';
 import { useGetPermissions } from '@/Utils/customHooks';
 
 const Permissions = () => {
     const [ fetching, setFetching ] = useState<boolean>(false)
-    const [ record, setRecord ] = useState<PermissionsProps | null>(null)
+    const [ loading, setLoading ] = useState<boolean>(false)
     const [ permissions, setPermissions ] = useState<PermissionsProps[]>([])
     const [ permissionsData, setPermissionsData ] = useState<PermissionsProps[]>([])
-    const [ addPermissionFormModal, setAddPermissionFormModal ] = useState<boolean>(false)
 
     useGetPermissions(setPermissions, setFetching);
     useEffect(() => {
@@ -100,6 +95,7 @@ const Permissions = () => {
         // buttonAdd={<MyButtonAdd setAddItem={setAddPermissionFormModal} />}
         buttonAdd={<Input />}
         table={<TableComp />}
+        loading={loading}
     />
   </>)
 }

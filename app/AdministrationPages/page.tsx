@@ -2,7 +2,6 @@
 import { Grid, Box } from '@mui/material';
 import PageContainer from '@/app/AdministrationPages/components/container/PageContainer';
 // components
-import SalesOverview from '@/app/AdministrationPages/components/dashboard/SalesOverview';
 import { useDispatch } from 'react-redux';
 import { removeChoosenCourse, removeChoosenDomain, removeChoosenSpecialty } from '@/Redux/Reducers/sliceDomainSpecialityCourse';
 import { removeChoosenUser, removeChoosenUserProfile } from '@/Redux/Reducers/sliceChoosenUserAndProfile';
@@ -10,9 +9,11 @@ import DashboardCard from '@/components/CompAdmin/shared/DashboardCard';
 import { useState, useEffect } from 'react';
 import { UserType } from '@/Utils/types';
 import { getAllUsers } from '@/Utils/functions';
-import BlankCard from '@/components/CompAdmin/shared/BlankCard';
-import OverViewRegistration from './components/dashboard/OverViewRegistration';
 import { nowYear } from '@/Utils/constants';
+import RecentTransactions from '@/components/CompAdmin/dashboard/RecentTransactions';
+import YearlyBreakup from '@/components/CompAdmin/dashboard/YearlyBreakup';
+import OverViewRegistration from './components/dashboard/OverViewRegistration';
+import ProductPerformance from './components/dashboard/ProductPerformance';
 const Dashboard = () => {
 
   const dispatch = useDispatch();
@@ -55,71 +56,43 @@ const Dashboard = () => {
         <Grid container spacing={3}>
 
           <Grid item xs={12} md={3}>
-            <DashboardCard title='All Users' count={totalUsers.length} />
+            <DashboardCard title='All Users' count={totalUsers.length} cardColor='pink'/>
           </Grid>
           <Grid item xs={12} md={3}>
-            <DashboardCard title='All Lecturers' count={totalLecturers.length} />
+            <DashboardCard title='All Lecturers' count={totalLecturers.length} cardColor='pink'/>
           </Grid>
           <Grid item xs={12} md={3}>
-            <DashboardCard title='All Students' count={totalStudents.length} />
+            <DashboardCard title='All Students' count={totalStudents.length} cardColor='pink'/>
           </Grid>
           <Grid item xs={12} md={3}>
-            <DashboardCard title='Active Users' count={totalActiveUsers.length} />
+            <DashboardCard title='Active Users' count={totalActiveUsers.length} cardColor='pink'/>
           </Grid>
 
-          <Grid item xs={12} lg={8}>
+          <Grid item xs={12}>
             <OverViewRegistration />
           </Grid>
-
+{/* 
           <Grid item xs={12} lg={4}>
             <Grid container spacing={3}>
-              <Grid item xs={12} md={6} style={{ height: "100%"}}>
+              <Grid item xs={12} style={{ height: "100%"}}>
                 <DashboardCard title='Domains' />
               </Grid>
               
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12}>
                 <DashboardCard title='Domains' />
               </Grid>
             </Grid>
-          </Grid>
+          </Grid> */}
 
-          <Grid item xs={12} lg={8}>
-            <DashboardCard title='Table' />
+          <Grid item xs={12}>
+            <ProductPerformance />
           </Grid>
-          <Grid item xs={12} lg={4}>
-            <DashboardCard title='Domains' />
+          <Grid item xs={12}>
+            <DashboardCard title='Domains' cardColor='teal' />
           </Grid>
         </Grid>
       </Box>
     </PageContainer>
-    // <PageContainer title="Dashboard" description="this is Dashboard">
-    //   <Box>
-    //     <Grid container spacing={3}>
-    //       <Grid item xs={12} lg={8}>
-    //         <SalesOverview />
-    //       </Grid>
-    //       <Grid item xs={12} lg={4}>
-    //         <Grid container spacing={3}>
-    //           <Grid item xs={12}>
-    //             <YearlyBreakup />
-    //           </Grid>
-    //           <Grid item xs={12}>
-    //             <MonthlyEarnings />
-    //           </Grid>
-    //         </Grid>
-    //       </Grid>
-    //       <Grid item xs={12} lg={4}>
-    //         <RecentTransactions />
-    //       </Grid>
-    //       <Grid item xs={12} lg={8}>
-    //         <ProductPerformance />
-    //       </Grid>
-    //       <Grid item xs={12}>
-    //         <Blog />
-    //       </Grid>
-    //     </Grid>
-    //   </Box>
-    // </PageContainer>
   )
 }
 

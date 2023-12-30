@@ -7,13 +7,11 @@ const BaseUrl = "https://st-joan.com/back/"
 // const BaseUrl = "http://192.168.100.4:8000/"
 // const BaseUrl = "http://back.st-joan.com/"
 // const BaseUrl = "http://172.16.10.126:8000/"
-// const BaseUrl = "http://192.168.100.5:8000/"
+// const BaseUrl = "http://192.168.100.12:8000/"
 
 
-export const LogoLink = "https://st-joan.com/result/images/logos/stjoan.jpg";
-// export const LogoLink = "/images/logos/stjoan.jpg";
-// export const LogoLink = "/home/cp2200222p23/public_html/result/images/logos/stjoan.jpg";
-export const AvatarLink = "/images/avatars/user.jpg";
+export const AvatarLink = "/images/avatars/avatar.jpg";
+export const LogoLink = "/images/logos/logo.jpg";
 export const ActivationUrl = BaseUrl + "app/activation/activate";
 export const AdminUrl = BaseUrl + "admin";
 export const ExtendUrl = BaseUrl + "app/activation/extend";

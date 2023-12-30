@@ -10,7 +10,6 @@ const Tab3CourseManagement = () => {
 
   return (
     <>
-      <div>Details</div>
       <Page4Results />
     </>
   )

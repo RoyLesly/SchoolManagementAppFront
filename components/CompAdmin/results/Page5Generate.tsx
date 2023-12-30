@@ -9,7 +9,7 @@ import { Select, Table } from 'antd';
 import FetchingDataIndicator from '@/Designs/FetchingDataIndicator';
 import MyButtonView from '@/Designs/MyButtonView';
 import EditResultsFormModal from '@/Designs/Modals/EditResultsFormModal';
-import { getAllResults } from '@/Utils/functions';
+import { getAllResults, getAllUsers } from '@/Utils/functions';
 import PrintTranscriptModal from '@/Designs/Modals/PrintTranscriptModal';
 import { addPrintResults } from '@/Redux/Reducers/sliceResults';
 import { useGetAllStudents } from '@/Utils/customHooksExtra';
@@ -19,6 +19,7 @@ const Page5Generate = () => {
   const [fetching, setFetching] = useState(false)
   const [showPrint, setShowPrint] = useState(false)
   const [users, setUsers] = useState<UserType[]>([])
+  const [count, setCount] = useState<number>(0)
 
   const [results, setResults] = useState<ResultProps[]>([])
   const [resultsForSelectedStudent, setResultsForSelectedStudent] = useState<ResultProps[]>([])
@@ -30,19 +31,40 @@ const Page5Generate = () => {
   const [record, setRecord] = useState<ResultProps | null>(null)
   const [editResults, setEditResults] = useState<boolean>(false)
 
-  useGetAllResults(setResults, setFetching)
-  useGetAllStudents(setUsers, setFetching)
+  useEffect(() => {
+    if (count == 0) {
+      getAllUsers(setUsers, setFetching, {searchField: ["role", "is_active"], value: ["student", true]})
+      if (users.length > 0) { setCount(count + 1) }
+    }
+    if (count == 1) {
+      getAllResults(setResults, setFetching, {searchField: "student__user__is_active", value: true})
+      if (results.length > 0) {setCount(count + 1)}
+    }
+    if (count == 2) {
+      if (resultsForSelectedStudent.length > 0) {
+        const getAcadyear = resultsForSelectedStudent.map((item: ResultProps) => item.course.specialty.academic_year);
+        setSelectedStudentAcademicYear([ ...new Set(getAcadyear)]);
+        setCount(count + 1);
+      } else {
+        setSelectedStudentAcademicYear([]);
+      }
+    }
+    if (count == 3) {
+      const getLevels = resultsForSelectedStudent.map((item: ResultProps) => item.course.specialty.level.level);
+      setSelectedStudentLevels([ ...new Set(getLevels)]);
+      setCount(count + 1);
+    }
+    if (count == 4) { 
+      if (resultsForSelectedStudent.length < 1) { 
+        setSelectedStudentAcademicYear([]);
+        setCount(2);
+      }
+    }
+  }, [count, users, results, resultsForSelectedStudent])
 
   const reset = () => {
     getAllResults(setResults, setFetching)
   }
-
-  useEffect(() => {
-    const getAcadyear = resultsForSelectedStudent.map((item: ResultProps) => item.course.specialty.academic_year);
-    const getLevels = resultsForSelectedStudent.map((item: ResultProps) => item.course.specialty.level.level);
-    setSelectedStudentAcademicYear([ ...new Set(getAcadyear)])
-    setSelectedStudentLevels([ ...new Set(getLevels)])
-  }, [resultsForSelectedStudent])
 
   const COLUMNS_RESULTS = [    
     {title: "COURSE CODE", dataIndex: "course", 
@@ -128,7 +150,7 @@ const Page5Generate = () => {
                 <></>
               }
 
-              {selectedStudentAcademicYear.length > 0 ?
+              {resultsForSelectedStudent.length > 0 ?
                 <Box>
                   <Select
                     style={{ width: 200 }}
@@ -155,7 +177,7 @@ const Page5Generate = () => {
             justifyContent="center"
             alignItems="center"
           >
-            {resultsForSelectedYearStudent.length > 0 ? <>
+            {(resultsForSelectedYearStudent.length > 0 && selectedStudentAcademicYear.length > 0) ? <>
               <Typography justifyContent="center" display="flex" variant='h4'>{resultsForSelectedYearStudent[0].student.user?.first_name} {resultsForSelectedYearStudent[0].student.user?.last_name}</Typography>
               <Typography justifyContent="center" display="flex" variant='h5'>{resultsForSelectedYearStudent[0].course.specialty.main_specialty.specialty_name}</Typography>
               <Typography justifyContent="center" display="flex" variant='h6'>LEVEL-{resultsForSelectedYearStudent[0].course.specialty.level.level} Results</Typography>
@@ -177,7 +199,7 @@ const Page5Generate = () => {
           <Grid item xs={12}>
             <Stack>
               <Box>
-                {resultsForSelectedYearStudent.length > 0 ? <Table
+                {(resultsForSelectedYearStudent.length > 0 && selectedStudentAcademicYear.length > 0) ? <Table
                     dataSource={resultsForSelectedYearStudent}
                     columns={COLUMNS_RESULTS}  
                   /> 
