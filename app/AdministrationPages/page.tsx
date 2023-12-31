@@ -56,16 +56,16 @@ const Dashboard = () => {
         <Grid container spacing={3}>
 
           <Grid item xs={12} md={3}>
-            <DashboardCard title='All Users' count={totalUsers.length} cardColor='pink'/>
+            <DashboardCard loading={false} title='All Users' count={totalUsers.length} cardColor='pink'/>
           </Grid>
           <Grid item xs={12} md={3}>
-            <DashboardCard title='All Lecturers' count={totalLecturers.length} cardColor='pink'/>
+            <DashboardCard loading={false} title='All Lecturers' count={totalLecturers.length} cardColor='pink'/>
           </Grid>
           <Grid item xs={12} md={3}>
-            <DashboardCard title='All Students' count={totalStudents.length} cardColor='pink'/>
+            <DashboardCard loading={false} title='All Students' count={totalStudents.length} cardColor='pink'/>
           </Grid>
           <Grid item xs={12} md={3}>
-            <DashboardCard title='Active Users' count={totalActiveUsers.length} cardColor='pink'/>
+            <DashboardCard loading={false} title='Active Users' count={totalActiveUsers.length} cardColor='pink'/>
           </Grid>
 
           <Grid item xs={12}>
@@ -88,7 +88,7 @@ const Dashboard = () => {
             <ProductPerformance />
           </Grid>
           <Grid item xs={12}>
-            <DashboardCard title='Domains' cardColor='teal' />
+            <DashboardCard loading={false} title='Domains' cardColor='teal' />
           </Grid>
         </Grid>
       </Box>

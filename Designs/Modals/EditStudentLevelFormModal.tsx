@@ -49,8 +49,6 @@ const EditStudentLevelFormModal:FC<EditStudentLevelFormProps> = ({ showModal, se
             specialty_id: values["specialty_id"], 
             created_by_id: storeUserID
         }
-        console.log(payload)
-        // return
 
         setLoading(true)
         const response = await axiosRequest<any>({
@@ -84,6 +82,7 @@ const EditStudentLevelFormModal:FC<EditStudentLevelFormProps> = ({ showModal, se
             open={showModal}
             onCancel={() => setShowModal(false)}
             footer={false}
+            destroyOnClose={true}
         >
             <Form layout='vertical' onFinish={onSubmit} form={form} className='bg-teal-700 rounded p-2'>
 
@@ -91,7 +90,7 @@ const EditStudentLevelFormModal:FC<EditStudentLevelFormProps> = ({ showModal, se
                     <Form.Item label="PRESENT LEVEL" name="level" className='w-full'
                         rules={[{ required: false, message: "Please Input LEVEL" }]}
                     >
-                        <Input placeholder={`${record?.specialty ? `${record?.specialty?.main_specialty.specialty_name } - L${record?.specialty?.level?.level }-${record?.specialty?.academic_year}`: "None"}`} type='text' disabled />
+                        <Input defaultValue={`${record?.specialty ? `${record?.specialty?.main_specialty.specialty_name } - L${record?.specialty?.level?.level }-${record?.specialty?.academic_year}`: "None"}`} type='text' disabled />
                     </Form.Item>
                 </div>
 
@@ -103,7 +102,7 @@ const EditStudentLevelFormModal:FC<EditStudentLevelFormProps> = ({ showModal, se
                     <Form.Item label="" name="specialty_id" className=''
                         rules={[{ required: true, message: "Please Select Specialty" }]}
                     >
-                        <Select placeholder={`${record?.specialty ? `${record?.specialty?.main_specialty.specialty_name } - L${record?.specialty?.level?.level }-${record?.specialty?.academic_year}` : "None"}`}>
+                        <Select defaultValue={`${record?.specialty ? `${record?.specialty?.main_specialty.specialty_name } - L${record?.specialty?.level?.level }-${record?.specialty?.academic_year}` : "None"}`}>
                             {specialtyData.map((item: SpecialtyProps) => (
                                 <Option key={item.id} value={item.id}>{item?.main_specialty.specialty_name} - L{item?.level?.level} - {item?.academic_year}</Option>
                             ))}                            

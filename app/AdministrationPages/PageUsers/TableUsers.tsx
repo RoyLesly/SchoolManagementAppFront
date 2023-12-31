@@ -86,7 +86,7 @@ const TableUsers = () => {
     }
 
     return (
-        <DashboardCard title={`Users List`}>
+        <DashboardCard title={`Users List`} loading={false}>
             <Box sx={{ overflow: 'auto', width: { xs: '380px', sm: 'auto' } }}>
                 <Grid container spacing={0}>
                         <Stack direction="row" spacing={2} sx={{alignItems: "center",alignContent: "center"}}>

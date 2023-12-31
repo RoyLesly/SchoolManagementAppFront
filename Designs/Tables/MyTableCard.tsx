@@ -17,7 +17,7 @@ interface MyTableCardProps {
 }
 const MyTableCard:FC<MyTableCardProps> = ({ title, table, buttonAdd, buttonReset, extra, search, loading }) => {
   return (
-    <DashboardCard title={`${title}`}>
+    <DashboardCard title={`${title}`} loading={false}>
         <Box sx={{ overflow: 'auto', width: { xs: '380px', sm: 'auto' } }}>
             <Grid container spacing={0}>
                 <Grid item xs={12} spacing={1}>

@@ -14,8 +14,6 @@ import MuiTab, { TabProps } from '@mui/material/Tab'
 // ** Icons Imports
 import AccountOutline from 'mdi-material-ui/AccountOutline'
 import LockOpenOutline from 'mdi-material-ui/LockOpenOutline'
-import InformationOutline from 'mdi-material-ui/InformationOutline'
-import { useSelector } from 'react-redux';
 import Tab1SelectCourse from './Tab1SelectCourse';
 import Tab2UploadResults from './Tab2UploadResults';
 

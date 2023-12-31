@@ -59,13 +59,20 @@ const AddUserFormModal:React.FC<AddUserFormProps> = ({ showModal, setShowModal, 
       username: data["username"].toLowerCase(),
       created_by_id: storeUser.id
     }
-    // if (data.email == "") {
-    //   setAlertShow(true)
-    //   setAlertSeverity("error");
-    //   setAlertMessage("Email Required"); 
-    //   setLoading(false);
-    //   return;
-    // }
+    if (data.username.length < 4) {
+      setAlertShow(true)
+      setAlertSeverity("error");
+      setAlertMessage("Invalid Username Length"); 
+      setLoading(false);
+      return;
+    }
+    if (data.role == "") {
+      setAlertShow(true)
+      setAlertSeverity("error");
+      setAlertMessage("Role Required"); 
+      setLoading(false);
+      return;
+    }
 
     const response = await axiosRequest<any>({
         method: "post",

@@ -6,8 +6,6 @@ import { choosenCourse } from '@/Redux/Reducers/sliceDomainSpecialityCourse';
 
 const Tab3CourseManagement = () => {
   
-  const storeChoosenCourse = useSelector(choosenCourse);
-
   return (
     <>
       <Page4Results />

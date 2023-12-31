@@ -29,33 +29,41 @@ const Tab2UploadResults:FC<Tab2UploadResultsProps> = ({  }) => {
   const storeUser = useSelector(selectAuthUser);
   const storeChoosenCourse = useSelector(choosenCourse);
   const router = useRouter();
-  const [ fetching, setFetching ] = useState<boolean>(false)
+  const [ fetching, setFetching ] = useState<boolean>(true)
+  const [ loading, setLoading ] = useState<boolean>(true)
+  const [ count, setCount ] = useState<number>(0)
   const [ allResults, setAllResults ] = useState<ResultProps[]>([])
   const [ allMyResults, setAllMyResults ] = useState<ResultProps[]>([])
   const [record, setRecord] = useState<ResultProps | null>(null)
   const [editResults, setEditResults] = useState<boolean>(false)
-
-  useGetAllResults(setAllResults, setFetching);
 
   const reset = () => {
     getAllResults(setAllResults, setFetching)
   }
 
   useEffect(() => {
-      const filA = allResults.filter((item: ResultProps) => item.course.id == storeChoosenCourse.id);
-      setAllMyResults(filA)
-  }, [allResults, storeUser, storeChoosenCourse])
+    if (count == 0) {
+        if (storeChoosenCourse.id > 0) {
+            getAllResults(setAllMyResults, setFetching, { searchField: "course__id", value: storeChoosenCourse?.id});
+        }
+        setCount(count + 1);
+    }
+    if (count == 1) {
+        setCount(count + 1);
+        setLoading(false)
+    }
+  }, [allResults, count, storeUser, storeChoosenCourse])
   
 
   return (
-    <DashboardCard title={`RESULTS FOR - ${storeChoosenCourse?.main_course?.course_name}`}>
+    <DashboardCard title={`RESULTS FOR - ${storeChoosenCourse?.main_course?.course_name}`} loading={loading}>
       <Box sx={{ overflow: 'auto', width: { xs: '380px', sm: 'auto' },}}>
           <Grid container spacing={0}>
-              <Grid item xs={12}>
+              {storeChoosenCourse.id > 0 && <Grid item xs={12}>
                 <Typography variant='h5' mb="2">
-                    {storeChoosenCourse?.specialty?.academic_year}  /  Level {storeChoosenCourse?.specialty?.level.level}
+                    {storeChoosenCourse?.specialty?.main_specialty?.specialty_name} / {storeChoosenCourse?.specialty?.academic_year} /  Level {storeChoosenCourse?.specialty?.level.level}
                 </Typography>
-              </Grid>
+              </Grid>}
               <Grid item xs={12}>
                   <Table
                       aria-label="simple table"
@@ -147,6 +155,10 @@ const Tab2UploadResults:FC<Tab2UploadResultsProps> = ({  }) => {
                       </TableBody>
                   </Table>
               </Grid>
+              
+            {allMyResults.length < 1 && <div style={{ flex: 1, alignItems: "center", textAlign: "center", justifyContent: "center", fontSize: "30", paddingTop: 50, paddingBottom: 70, paddingLeft: 60, paddingRight: 25 }}>
+                No Student Found ...
+            </div>}  
           </Grid>
 
         <EditResultsFormModal

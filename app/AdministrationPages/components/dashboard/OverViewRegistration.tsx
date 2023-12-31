@@ -14,6 +14,7 @@ const OverViewRegistration = () => {
     const Yaxis = Array(nowYear - (nowYear - 6)).fill('').map((v, index) => nowYear - index).reverse()
     const [month, setMonth] = React.useState('1');
     const [ count, setCount ] = useState<number>(1);
+    const [ loading, setLoading ] = useState<boolean>(true);
     const [ profiles, setProfiles ] = useState<UserProfile[]>([])
     const [ users, setUsers ] = useState<UserType[]>([])
     const [ profilesRegisteredCount, setProfilesRegisteredCount ] = useState<number[]>([])
@@ -48,6 +49,7 @@ const OverViewRegistration = () => {
                 setUsersRegisteredCount(dataUsers)
             }
             if (count == 4) {
+                setLoading(false)
                 setCount(count + 1)
             }
         }
@@ -136,7 +138,7 @@ const OverViewRegistration = () => {
 
     return (
 
-        <DashboardCard title="Registered Students Overview" action={
+        <DashboardCard loading={loading} title="Registered Students Overview" action={
             <Select
                 labelId="month-dd"
                 id="month-dd"

@@ -114,7 +114,7 @@ const ProductPerformance = () => {
 
     return (
 
-        <DashboardCard title="Last 6 Year Overview">
+        <DashboardCard title="Last 6 Year Overview" loading={false}>
             <Box sx={{ overflow: 'auto', width: { xs: '280px', sm: 'auto' } }}>
                 <Table
                     aria-label="simple table"

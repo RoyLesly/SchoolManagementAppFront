@@ -66,6 +66,7 @@ const EditMainSpecialtyFormModal:FC<EditMainSpecialtyFormProps> = ({ showModal, 
             open={showModal}
             onCancel={() => setShowModal(false)}
             footer={false}
+            destroyOnClose={true}
         >
             <Form layout='vertical' onFinish={onSubmit} form={form} className='bg-teal-700 rounded p-2'>
 

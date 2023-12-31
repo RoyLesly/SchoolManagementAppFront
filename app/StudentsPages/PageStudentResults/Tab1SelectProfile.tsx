@@ -38,7 +38,7 @@ const Tab1SelectProfile:FC<Tab1SelectProfileProps> = ({ setSelectedNumber }) => 
   
 
   return (
-    <DashboardCard title="SELECT ACADEMIC YEAR / PROFILE">
+    <DashboardCard title="SELECT ACADEMIC YEAR / PROFILE" loading={false}>
       <Box sx={{ overflow: 'auto', width: { xs: '380px', sm: 'auto' },}}>
           <Grid container spacing={0}>
               <Grid item xs={12}>

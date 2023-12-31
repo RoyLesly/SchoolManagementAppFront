@@ -53,7 +53,7 @@ const MonthlyEarnings = () => {
   ];
 
   return (
-    <DashboardCard
+    <DashboardCard loading={false}
       title="Monthly Earnings"
       action={
         <Fab color="secondary" size="medium" sx={{color: '#ffffff'}}>

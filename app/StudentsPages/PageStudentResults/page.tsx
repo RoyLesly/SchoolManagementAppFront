@@ -73,7 +73,7 @@ const AccountSettings:FC<AccountSettingsProps> = ({ }) => {
               </Box>
             }
           />
-          <Tab
+          {/* <Tab
             value='other'
             label={
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -81,7 +81,7 @@ const AccountSettings:FC<AccountSettingsProps> = ({ }) => {
                 <TabName>Other</TabName>
               </Box>
             }
-          />
+          /> */}
         </TabList>
 
         <TabPanel sx={{ p: 1, mt: 4 }} value='profile'>

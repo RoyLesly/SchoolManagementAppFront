@@ -1,6 +1,6 @@
 'use client';
 import React, { FC, useEffect, useState } from 'react';
-import MyTableCard from '@/Designs/MyTableCard'
+import MyTableCard from '@/Designs/Tables/MyTableCard'
 import {
     Typography, 
     Table, TableBody, TableCell, TableHead, TableRow,

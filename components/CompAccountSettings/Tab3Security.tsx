@@ -29,6 +29,7 @@ import MyButtonLoader from '@/Designs/MyButtonLoader'
 import ResetPasswordFormModal from '@/Designs/Modals/RestPasswordFormModal'
 import { selectAuthUser, selectUserProfile } from '@/Redux/Reducers/sliceUser'
 import { selectChoosenUser, selectChoosenUserProfile } from '@/Redux/Reducers/sliceChoosenUserAndProfile'
+import { Z_STREAM_END } from 'zlib'
 
 interface State {
   newPassword: string
@@ -46,7 +47,6 @@ const Tab3Security = () => {
   const storeProfile = useSelector(selectUserProfile);
   const [ loading, setLoading ] = useState<boolean>(false);
   const [ resetPasswordModal, setResetPasswordModal ] = useState<boolean>(false);
-  console.log(storeChoosenUserProfile)
 
   const defaultValues = {
     currentPassword: '',

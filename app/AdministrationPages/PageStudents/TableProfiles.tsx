@@ -86,7 +86,7 @@ const TableProfiles:FC<UserProfilesProps> = ({ userprofiletype }) => {
 
     return (
 
-        <DashboardCard title={`${userprofiletype == "student" ? "Student" : "Lecturer"} List`}>
+        <DashboardCard title={`${userprofiletype == "student" ? "Student" : "Lecturer"} List`} loading={false}>
             <Box sx={{ overflow: 'auto', width: { xs: '380px', sm: 'auto' } }}>
                 <Grid container spacing={0}>
                     <Grid item xs={12}>

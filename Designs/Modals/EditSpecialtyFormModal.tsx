@@ -80,13 +80,14 @@ const EditSpecialtyFormModal:FC<EditSpecialtyFormProps> = ({ showModal, mainSpec
             open={showModal}
             onCancel={() => setShowModal(false)}
             footer={false}
+            destroyOnClose={true}
         >
             <Form layout='vertical' onFinish={onSubmit} form={form} className='bg-teal-700 rounded p-2'>
 
                 <Form.Item label="Academic Year" name="academic_year"
                     rules={[{ required: false, message: "Please Input Specialty Name" }]}
                 >
-                    <Select placeholder={`${record?.academic_year}`}>
+                    <Select defaultValue={`${record?.academic_year}`}>
                         {yearList?.map((item: any) => <Option key={item} value={item}>{item}</Option>)}
                     </Select>                
                 </Form.Item>
@@ -94,7 +95,7 @@ const EditSpecialtyFormModal:FC<EditSpecialtyFormProps> = ({ showModal, mainSpec
                 <Form.Item label="Level" name="level_id"
                     rules={[{ required: false, message: "Please Input Level" }]}
                 >
-                    <Select placeholder={`${record?.level?.level}`}>
+                    <Select defaultValue={`${record?.level?.level}`}>
                         {levels?.map((item: LevelProps) => <Option key={item.id} value={item.id}>{item.level}</Option>)}
                     </Select>
                 </Form.Item>
@@ -102,7 +103,7 @@ const EditSpecialtyFormModal:FC<EditSpecialtyFormProps> = ({ showModal, mainSpec
                 <Form.Item label="Main Specialty" name="main_specialty_id"
                     rules={[{ required: false, message: "Please Select Main Specialty" }]}
                 >
-                    <Select placeholder={`${record?.main_specialty?.specialty_name}`}>
+                    <Select defaultValue={`${record?.main_specialty?.specialty_name}`}>
                         {mainSpecialty.map((ms: MainSpecialtyProps) => <Option key={ms.id} value={ms.id}>{ms.specialty_name}</Option>)}
                     </Select>
                 </Form.Item>

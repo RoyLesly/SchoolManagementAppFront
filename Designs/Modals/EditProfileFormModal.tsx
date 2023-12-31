@@ -121,6 +121,7 @@ const EditProfileFormModal:FC<EditProfileFormProps> = ({ showModal, setShowModal
             open={showModal}
             onCancel={() => setShowModal(false)}
             footer={false}
+            destroyOnClose={true}
         >
             <>
                 <Form layout='vertical' onFinish={onSubmit} form={form} className='bg-teal-700 rounded p-2'>
@@ -128,13 +129,13 @@ const EditProfileFormModal:FC<EditProfileFormProps> = ({ showModal, setShowModal
                         <Form.Item label="First Name" name="first_name" className='w-full'
                             rules={[{ required: false, message: "Please Input First Name" }]}
                         >
-                            <Input placeholder={`${record?.first_name}`} type='text' />
+                            <Input defaultValue={`${record?.first_name}`} type='text' />
                         </Form.Item>
 
                         <Form.Item label="Last Name" name="last_name" className='w-full'
                             rules={[{ required: false, message: "Please Input Last Name" }]}
                         >
-                            <Input placeholder={`${record?.last_name}`} type='text' />
+                            <Input defaultValue={`${record?.last_name}`} type='text' />
                         </Form.Item>
                     </div>
 
@@ -142,7 +143,7 @@ const EditProfileFormModal:FC<EditProfileFormProps> = ({ showModal, setShowModal
                         <Form.Item label="Sex" name="sex" className='w-1/3'
                             rules={[{ required: false, message: "Please Input Sex" }]}
                         >
-                            <Select placeholder={`${record?.sex}`} >
+                            <Select defaultValue={`${record?.sex}`} >
                                 <Option key="male" value="Male">Male</Option>
                                 <Option key="female" value="Female">Female</Option>
                             </Select>
@@ -151,7 +152,7 @@ const EditProfileFormModal:FC<EditProfileFormProps> = ({ showModal, setShowModal
                         <Form.Item label="Place Of Birth" name="pob" className='w-2/3'
                             rules={[{ required: false, message: "Please Input POB" }]}
                         >
-                            <Input placeholder={`${record?.pob}`} type='text' />
+                            <Input defaultValue={`${record?.pob}`} type='text' />
                         </Form.Item>
 
                         <Form.Item label="Date Of Birth" name="dob" className='w-1/3'
@@ -165,13 +166,13 @@ const EditProfileFormModal:FC<EditProfileFormProps> = ({ showModal, setShowModal
                         <Form.Item label="Address" name="address" className='w-2/3'
                             rules={[{ required: false, message: "Please Input Address" }]}
                         >
-                            <Input placeholder={`${record?.address}`} type='text' />
+                            <Input defaultValue={`${record?.address}`} type='text' />
                         </Form.Item>
 
                         <Form.Item label="Email" name="email" className='w-2/3'
                             rules={[{ required: false, message: "Please Input Email Address" }]}
                         >
-                            <Input placeholder={`${record?.email}`} type='text' />
+                            <Input defaultValue={`${record?.email}`} type='text' />
                         </Form.Item>
                     </div>
 
@@ -179,14 +180,14 @@ const EditProfileFormModal:FC<EditProfileFormProps> = ({ showModal, setShowModal
                         <Form.Item label="Telephone" name="telephone" className='w-full'
                             rules={[{ required: false, message: "Please Input Telephone" }]}
                         >
-                            <Input placeholder={`${record?.telephone}`} type='number' />
+                            <Input defaultValue={`${record?.telephone}`} type='number' />
                         </Form.Item>
 
                         {userRole.includes("teacher") && <>
                             <Form.Item label="Title" name="title" className='w-full'
                                 rules={[{ required: false, message: "Please Input Title" }]}
                             >
-                                <Input placeholder={`${record?.title}`} type='text' />
+                                <Input defaultValue={`${record?.title}`} type='text' />
                             </Form.Item>
                         </>}
                     </div>
@@ -194,7 +195,7 @@ const EditProfileFormModal:FC<EditProfileFormProps> = ({ showModal, setShowModal
                     {adminRole == "teacher" && <Form.Item label="IS HOD" name="hod"
                         rules={[{ required: false, message: "Please Select Level" }]}
                     >
-                        <Select placeholder={`${record?.hod ? "YES" : "NO"}`} >
+                        <Select defaultValue={`${record?.hod ? "YES" : "NO"}`} >
                             <Option key="Yes" value={true}>YES</Option>
                             <Option key="No" value={false}>NO</Option>
                         </Select>
@@ -203,7 +204,7 @@ const EditProfileFormModal:FC<EditProfileFormProps> = ({ showModal, setShowModal
                     {userRole.includes("teacher") && <Form.Item label="About Me" name="about" className='w-full'
                         rules={[{ required: false, message: "Please Input About" }]}
                     >
-                        <TextArea placeholder={`${record?.about}`} rows={4} className='w-full rounded'/>
+                        <TextArea defaultValue={`${record?.about}`} rows={4} className='w-full rounded'/>
                     </Form.Item>}
 
                     <Form.Item>

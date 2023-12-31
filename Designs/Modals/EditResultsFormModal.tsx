@@ -103,25 +103,26 @@ const EditResultsFormModal:FC<EditResultsFormProps> = ({ showModal, setShowModal
             open={showModal}
             onCancel={() => setShowModal(false)}
             footer={false}
+            destroyOnClose={true}
         >
             <Form layout='vertical' onFinish={onSubmit} form={form} className='bg-teal-700 rounded p-2'>
 
                 <Form.Item label="CA" name="ca"
                     rules={[{ required: false, message: "Please Input CA" }]}
                 >
-                    <Input placeholder={`${record?.ca}`} type='number' max={30} />
+                    <Input defaultValue={`${record?.ca}`} type='number' max={30} />
                 </Form.Item>
 
                 <Form.Item label="EXAM" name="exam"
                     rules={[{ required: false, message: "Please Input EXAM" }]}
                 >
-                    <Input placeholder={`${record?.exam}`} type='number' max={70}/>
+                    <Input defaultValue={`${record?.exam}`} type='number' max={70}/>
                 </Form.Item>
 
                 <Form.Item label="RESIT" name="resit"
                     rules={[{ required: false, message: "Please Input RESIT" }]}
                 >
-                    <Input placeholder={`${record?.resit}`} type='number' max={60}/>
+                    <Input defaultValue={`${record?.resit}`} type='number' max={60}/>
                 </Form.Item>
 
                 <Form.Item>

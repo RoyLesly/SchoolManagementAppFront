@@ -57,7 +57,7 @@ const Tab2Results:FC<Tab2ResultsProps> = ({  }) => {
   }
 
   return (
-    <DashboardCard title={`RESULTS FOR ${storeChoosenUserProfile?.specialty?.main_specialty.specialty_name} ${storeChoosenUserProfile?.specialty?.level.level} `}>
+    <DashboardCard loading={false} title={`RESULTS FOR ${storeChoosenUserProfile?.specialty?.main_specialty.specialty_name} ${storeChoosenUserProfile?.specialty?.level.level} `}>
       <Box sx={{ overflow: 'auto', width: { xs: '380px', sm: 'auto' },}}>
           <Grid container spacing={0}>
               <Grid item xs={12}>

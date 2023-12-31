@@ -12,7 +12,6 @@ import EditResultsFormModal from '@/Designs/Modals/EditResultsFormModal';
 import { getAllResults, getAllUsers } from '@/Utils/functions';
 import PrintTranscriptModal from '@/Designs/Modals/PrintTranscriptModal';
 import { addPrintResults } from '@/Redux/Reducers/sliceResults';
-import { useGetAllStudents } from '@/Utils/customHooksExtra';
 
 const Page5Generate = () => {
   const dispatch = useDispatch()
@@ -67,12 +66,12 @@ const Page5Generate = () => {
   }
 
   const COLUMNS_RESULTS = [    
-    {title: "COURSE CODE", dataIndex: "course", 
+    {title: "CODE", dataIndex: "course", 
         render: (item: CourseProps) => <div className='italic font-semibold tracking-widest'>
             {item?.course_code}
         </div>
     },                                                                   
-    {title: "COURSE NAME", dataIndex: "course", 
+    {title: "SUBJECT", dataIndex: "course", 
         render: (item: CourseProps) => <div className='italic font-semibold tracking-widest'>
             {item?.main_course.course_name}
         </div>
@@ -96,13 +95,7 @@ const Page5Generate = () => {
         render: (item: string) =>  <div className='italic font-semibold tracking-widest'>
             {item}
         </div>
-    },                       
-    {title: "ACTION", 
-        render: (item: ResultProps) =>  <div className='italic font-semibold tracking-widest'>
-            <MyButtonView setSelNum={ () => {} } nextTabNumber={"4"} />
-            <Button onClick={() => { setRecord(item); setEditResults(true); }}>Edit</Button>
-        </div>
-    },                       
+    },                         
            
   ]
 
@@ -202,6 +195,7 @@ const Page5Generate = () => {
                 {(resultsForSelectedYearStudent.length > 0 && selectedStudentAcademicYear.length > 0) ? <Table
                     dataSource={resultsForSelectedYearStudent}
                     columns={COLUMNS_RESULTS}  
+                    pagination={false}
                   /> 
                   : 
                   <></>

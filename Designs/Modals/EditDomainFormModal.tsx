@@ -62,13 +62,14 @@ const EditDomainFormModal:FC<EditDomainFormProps> = ({ showModal, setShowModal, 
             open={showModal}
             onCancel={() => setShowModal(false)}
             footer={false}
+            destroyOnClose={true}
         >
             <Form layout='vertical' onFinish={onSubmit} form={form} className='bg-teal-700 rounded p-2'>
 
                 <Form.Item label="Domain Name" name="domain_name"
                     rules={[{ required: false, message: "Please Input Domain Name" }]}
                 >
-                    <Input placeholder={`${record?.domain_name}`} type='text' />
+                    <Input defaultValue={`${record?.domain_name}`} type='text' />
                 </Form.Item>
 
                 <Form.Item>

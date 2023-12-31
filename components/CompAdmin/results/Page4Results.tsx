@@ -22,7 +22,6 @@ const Page4Results = () => {
   const [record, setRecord] = useState<ResultProps | null>(null)
   const [editResults, setEditResults] = useState<boolean>(false)
 
-  // useGetAllResults(setResults, setFetching)
   useEffect(() => {
     if (count == 0) {
       getAllResults(setResults, setFetching, { searchField: "course__main_course__course_name", value: storeCourse?.main_course?.course_name});
@@ -41,7 +40,7 @@ const Page4Results = () => {
   const reset = () => {
     setFetching(true)
     getAllResults(setResults, setFetching, { searchField: "course__main_course__course_name", value: storeCourse?.main_course?.course_name});
-    setCount(0)
+    setCount(1)
   }
 
 
@@ -65,12 +64,7 @@ const Page4Results = () => {
         render: (item: string) =>  <div className='italic font-semibold tracking-widest'>
             {item}
         </div>
-    },                       
-    {title: "ACTION", 
-        render: (item: ResultProps) =>  <div className='italic font-semibold tracking-widest'>
-            <Button onClick={() => { setRecord(item); setEditResults(true); }}>Edit</Button>
-        </div>
-    },                       
+    },                                             
            
   ]
 

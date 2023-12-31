@@ -60,13 +60,14 @@ const EditLevelFormModal:FC<EditLevelFormProps> = ({ showModal, setShowModal, re
             open={showModal}
             onCancel={() => setShowModal(false)}
             footer={false}
+            destroyOnClose={true}
         >
             <Form layout='vertical' onFinish={onSubmit} form={form} className='bg-teal-700 rounded p-2'>
 
                 <Form.Item label="Level Nummber" name="level"
                     rules={[{ required: false, message: "Please Input Level Number" }]}
                 >
-                    <Input placeholder={`${record?.level}`} type='text' />
+                    <Input defaultValue={`${record?.level}`} type='text' />
                 </Form.Item>
 
                 <Form.Item>

@@ -1,4 +1,4 @@
-import { Form, Input, Modal, Select, notification } from 'antd';
+import { Button, Form, Input, Modal, Select, notification } from 'antd';
 import { FC, useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { CourseCRUDUrl } from '@/Utils/Config';
@@ -108,8 +108,9 @@ const EditCourseFormModal:FC<EditCourseFormProps> = ({ showModal, mainCoursesDat
             open={showModal}
             onCancel={() => {setShowModal(false); form.resetFields()} }
             footer={false}
+            destroyOnClose={true}
         >
-            <Form layout='vertical' onFinish={onSubmit} form={form}>
+            <Form layout='vertical' onFinish={onSubmit} form={form}>              
 
                 <Form.Item label="Course Name" name="main_course_id"
                     rules={[{ required: false, message: "Please Input Course Name" }]}
@@ -122,7 +123,7 @@ const EditCourseFormModal:FC<EditCourseFormProps> = ({ showModal, mainCoursesDat
                 <Form.Item label="SELECT ACADEMIC YEAR" name="n"
                     rules={[{ required: false, message: "Please Select Academic Year" }]}
                 >
-                    <Select defaultValue={`${record?.specialty?.academic_year}`} placeholder="Select An Academic year" onChange={(e) => {setYear(e); FilterSpecialtyByYear(year)}}>
+                    <Select defaultValue={`${record?.specialty?.academic_year}`} onChange={(e) => {setYear(e); FilterSpecialtyByYear(year)}}>
                         <Option key="" value="">----------</Option>
                         {listOfAcademicYears.map((item: any) => (<Option key={item} value={item}>{item}</Option>))}
                     </Select>
@@ -148,7 +149,7 @@ const EditCourseFormModal:FC<EditCourseFormProps> = ({ showModal, mainCoursesDat
                 <Form.Item label="Course Code" name="course_code"
                     rules={[{ required: false, message: "Please Input Course Code" }]}
                 >
-                    <Input defaultValue={`${record?.course_code}`} type='text' />
+                    <Input defaultValue={`${record?.course_code}`} type='text' id='course_code' />
                 </Form.Item>
 
                 <Form.Item label="Course Credit" name="course_credit"

@@ -91,7 +91,7 @@ const SalesOverview = () => {
 
     return (
 
-        <DashboardCard title="Students Overview" action={
+        <DashboardCard title="Students Overview" loading={false} action={
             <Select
                 labelId="month-dd"
                 id="month-dd"
