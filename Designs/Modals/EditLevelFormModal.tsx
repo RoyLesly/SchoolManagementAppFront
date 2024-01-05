@@ -45,11 +45,11 @@ const EditLevelFormModal:FC<EditLevelFormProps> = ({ showModal, setShowModal, re
             setShowModal(false)
             form.resetFields()
         }
-        else if (response?.data.errors) {
+        else if (response?.data.error) {
             console.log(response.data.errors)
             notification.error({
                 message: "Operation Failed",
-                description: "Level Procedure Failed"
+                description: JSON.stringify(`${response?.data.error}`)
             })
         }
     }

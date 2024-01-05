@@ -41,10 +41,10 @@ const AddLevelFormModal:FC<AddLevelFormProps> = ({ showModal, setShowModal, rese
             reset()
             form.resetFields();
         }
-        if (response?.data.errors) {
+        if (response?.data.error) {
             notification.error({
                 message: "Operation Failed",
-                description: "Level Procedure Failed"
+                description: JSON.stringify(`${response?.data.error}`)
             })
         }
     }

@@ -7,18 +7,18 @@ import {
     Button, Stack,
 } from '@mui/material';
 import { LevelProps } from '@/Utils/types';
-import { getAllLevels } from '@/Utils/functions';
-import DeleteItemFormModal from '@/Designs/Modals/DeleteItemFormModal';
 import MyButtonAdd from '@/Designs/MyButtonAdd';
 import EditLevelFormModal from '@/Designs/Modals/EditLevelFormModal';
 import AddLevelFormModal from '@/Designs/Modals/AddLevelFormModal';
-import { useGetAllLevels } from '@/Utils/customHooks';
-import { LevelCRUDUrl } from '@/Utils/Config';
+import { LevelCRUDUrl, PageLevelCRUDUrl } from '@/Utils/Config';
 import MyButtonLoader from '@/Designs/MyButtonLoader';
+import { getData } from '@/Utils/pagination';
+import DeleteItemFormModal from '@/Designs/Modals/DeleteItemFormModal';
 
 const Levels = () => {
     const [ fetching, setFetching ] = useState<boolean>(true)
     const [ loading, setLoading ] = useState<boolean>(true)
+    const [ count, setCount ] = useState<number>(0)
     const [ record, setRecord ] = useState<LevelProps | null>(null)
     const [ levels, setLevels ] = useState<LevelProps[]>([])
     const [ levelsData, setLevelsData ] = useState<LevelProps[]>([])
@@ -26,13 +26,23 @@ const Levels = () => {
     const [ editLevelFormModal, setEditLevelFormModal ] = useState<boolean>(false)
     const [ deleteLevelFormModal, setDeleteLevelFormModal ] = useState<boolean>(false)
 
-    useGetAllLevels(setLevels, setFetching);
     useEffect(() => {
-        setLevelsData(levels)
-    }, [levels])
+        if (count == 0) {
+            getData(setLevels, setFetching, ()=>{}, ()=>{}, ()=>{}, PageLevelCRUDUrl + "?page=" + 1)
+            setLevelsData(levels);
+            setCount(count + 1);
+        } 
+        if (count == 1) {
+            if (levels.length > 0) {
+                setLevelsData(levels);
+                setCount(count + 1);
+                setLoading(false)
+            }
+        }      
+    }, [levels, levelsData, count])
     const reset = () => {
         setFetching(true)
-        getAllLevels(setLevels, setFetching)
+        getData(setLevels, setFetching, ()=>{}, ()=>{}, ()=>{}, PageLevelCRUDUrl + "?page=" + 1)
     }
     const TableComp:FC = () => (
         <Table

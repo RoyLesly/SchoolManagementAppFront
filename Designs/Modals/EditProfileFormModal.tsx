@@ -38,9 +38,11 @@ const EditProfileFormModal:FC<EditProfileFormProps> = ({ showModal, setShowModal
         setSpecialtyData(specialty)
     }, [specialty])
 
+    console.log(specialty)
+
     useEffect(() => {
-        const fil = levels.filter((item: LevelProps) => item.id == record?.level?.id)
-        if (fil.length > 0){
+        const fil = levels?.filter((item: LevelProps) => item.id == record?.level?.id)
+        if (fil?.length > 0){
             setSelectedLevel(fil[0])
         }
         else { setSelectedLevel(undefined) }
@@ -100,19 +102,6 @@ const EditProfileFormModal:FC<EditProfileFormProps> = ({ showModal, setShowModal
                 description: `${JSON.stringify(response?.data.errors)}`
             })
         }
-    }
-
-    const OnSelectYear = (val: string) => {
-        const filterSpecialtyBySelectedYear = specialty.filter((item: SpecialtyProps) => item?.academic_year.includes(val))
-        setSpecialtyData(filterSpecialtyBySelectedYear)
-
-    }
-    const filterSpecialty = specialty.map((item: SpecialtyProps) => item?.academic_year)
-    const specialtyYears = filterSpecialty.filter((item, index) => filterSpecialty.indexOf(item) === index)
-
-    const OnSpecialtySelect = (val: number) => {
-        const spec = specialty.filter((item: SpecialtyProps) => item?.id == val)
-        setSelectedLevel(levels.filter((item: LevelProps) => item?.id == spec[0]?.level?.id)[0])
     }
 
     return (

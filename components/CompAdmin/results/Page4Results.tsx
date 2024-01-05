@@ -64,7 +64,7 @@ const Page4Results = () => {
         render: (item: string) =>  <div className='italic font-semibold tracking-widest'>
             {item}
         </div>
-    },                                             
+    },                      
            
   ]
 

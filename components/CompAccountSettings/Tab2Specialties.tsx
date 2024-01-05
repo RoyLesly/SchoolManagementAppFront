@@ -9,8 +9,8 @@ import Button, {  } from '@mui/material/Button'
 // ** Icons Imports
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { addChoosenUserProfile, selectChoosenUser, selectChoosenUserProfile } from '@/Redux/Reducers/sliceChoosenUserAndProfile'
-import { DomainProps, LevelProps, SpecialtyProps, UserProfile } from '@/Utils/types'
+import { addChoosenUserProfile, selectChoosenUserProfile } from '@/Redux/Reducers/sliceChoosenUserAndProfile'
+import { DomainProps, DropdownSpecialtyType, LevelProps, SpecialtyProps, UserProfile } from '@/Utils/types'
 import { axiosRequest, getAllDomains, getAllLevels, getAllSpecialties, getAllUserProfiles } from '@/Utils/functions'
 import { UserProfilesUrl } from '@/Utils/Config'
 import { selectAuthUser } from '@/Redux/Reducers/sliceUser'
@@ -18,6 +18,7 @@ import { message, notification } from 'antd'
 import { useRouter } from 'next/navigation'
 import MyButtonLoader from '@/Designs/MyButtonLoader'
 import { InputLabel, LinearProgress, MenuItem, Select, Typography } from '@mui/material'
+import { getDataDropdown } from '@/Utils/pagination'
 
 
 const Tab2Specialties = () => {
@@ -31,11 +32,11 @@ const Tab2Specialties = () => {
   const [ loading, setLoading ] = useState<boolean>(true)
   const [ count, setCount ] = useState<number>(0)
 
-  const [ specialties, setSpecialties ] = useState<SpecialtyProps[]>([])
+  const [ specialties, setSpecialties ] = useState<DropdownSpecialtyType[]>([])
   const [ mySpecialtyList, setMySpecialtyList ] = useState<any[]>([])
 
-  const [ specialtiesData, setSpecialtiesData ] = useState<SpecialtyProps[]>([])
-  const [ specialtiesDataNext, setSpecialtiesDataNext ] = useState<SpecialtyProps[]>([])
+  const [ specialtiesData, setSpecialtiesData ] = useState<DropdownSpecialtyType[]>([])
+  const [ specialtiesDataNext, setSpecialtiesDataNext ] = useState<DropdownSpecialtyType[]>([])
   const [ specialty_id, setSpecialty_id ] = useState<number>(0)
   const [ nextSpecialty_id, setNextSpecialty_id ] = useState<number>(0)
   const [ domains, setDomains ] = useState<DomainProps[]>([])
@@ -47,12 +48,11 @@ const Tab2Specialties = () => {
   const [ promote, setPromote ] = useState<boolean>(false);
   const thisYear = new Date().getFullYear()
 
-  console.log(count)
   useEffect(() => {
     if (count == 0) {
-      getAllLevels(setLevels, () => {})
-      getAllDomains(setDomains, () => {})
-      getAllSpecialties(setSpecialties, () => {});
+      getDataDropdown(setDomains, () => {}, {model: "Domain"});
+      getDataDropdown(setSpecialties, () => {}, {model: "Specialty"});
+      getDataDropdown(setLevels, () => {}, {model: "Level"});
       getAllUserProfiles(setProfiles, () => {}, {kpi: true, searchField: "user__id", value: storeProfile?.user?.id});
       setCount(count + 1);
     }
@@ -65,37 +65,38 @@ const Tab2Specialties = () => {
       if (profiles.length > 0){
         const fil = profiles.map((item: UserProfile) => item?.specialty)
         if (fil[0] != null) {
-          setMySpecialtyList(fil)
+          setMySpecialtyList(fil.reverse())
         }
         setCount(count + 1)
       }
     }
     if (count == 3) {
-      setFetching(false)
+      setFetching(false);
     }
   }, [count, profiles, storeProfile, specialties, domains.length, levels.length, specialties.length])
 
   useEffect(() => {
     if (count > 1){
       if (domain_id > 0 && level_id > 0 && selected_academic_year != "") {
-        const filA = specialties.filter((item: SpecialtyProps) => item.main_specialty.domain.id == domain_id)
-        const filB = filA.filter((item: SpecialtyProps) => item.level.id == level_id)
-        const filC = filB.filter((item: SpecialtyProps) => item.academic_year == selected_academic_year)
+        const filA = specialties.filter((item: any) => item[1] == domain_id)
+        const filB = filA.filter((item: any) => item[4] == level_id)
+        const filC = filB.filter((item: any) => item[3] == selected_academic_year)
         setSpecialtiesData(filC)
       }
     }
   }, [count, domain_id, level_id, specialties, selected_academic_year])
 
 useEffect(() => {
-  if (count ==  2) {
-    const levels = mySpecialtyList.map((item: SpecialtyProps) => item?.level?.level)
-    const largest_num = levels.reduce((largest, current) => (current > largest ? current : largest), levels[0]) 
-    const specWithHighestLevel = mySpecialtyList.filter((item: SpecialtyProps) => item?.level?.level == largest_num)[0]
-    const yearOfHighestSpecialty = specWithHighestLevel ? parseInt(specWithHighestLevel?.academic_year.slice(0, 4)) : 0
+  if (count ==  3) {
+    const levels = mySpecialtyList.map((item: SpecialtyProps) => item?.level?.level);
+    const largest_num = levels.reduce((largest, current) => (current > largest ? current : largest), levels[0]) ;
+    const specWithHighestLevel = specialties.filter((item: any) => item[4] == largest_num)
+    console.log(specWithHighestLevel)
+    const yearOfHighestSpecialty = specWithHighestLevel.length > 0 ? parseInt(specWithHighestLevel[0][3].slice(0, 4)) : 0
     if (profiles.length > 0) {
-      const filA = specialties?.filter((item: SpecialtyProps) => item?.main_specialty?.domain?.id == profiles[0].specialty?.main_specialty?.domain.id)
-      const filB = filA?.filter((item: SpecialtyProps) => item?.level?.level == (largest_num + 100))
-      const filC = filB.filter((item: SpecialtyProps) => +item?.academic_year.slice(0, 4) == (+yearOfHighestSpecialty + 1))
+      const filA = specialties?.filter((item: any) => item[1] == profiles[0].specialty?.main_specialty?.domain.id)
+      const filB = filA?.filter((item: any) => item[4]== (largest_num + 100))
+      const filC = filB.filter((item: any) => +item[3].slice(0, 4) == (+yearOfHighestSpecialty + 1))
       if (filC.length > 0) {
         setSpecialtiesDataNext(filC.reverse())
       }
@@ -229,6 +230,7 @@ useEffect(() => {
     setLevel_id(val.target.value)
   }
 
+
   return (
     <CardContent>
       <Grid container spacing={6}>
@@ -265,8 +267,8 @@ useEffect(() => {
                     onChange={handleChangeDomain}
                     fullWidth
                   >
-                    {domains.map((item: DomainProps) => (
-                      <MenuItem key={item.id} value={item.id}>{item.domain_name}</MenuItem>
+                    {domains.map((item: any) => (
+                      <MenuItem key={item[0]} value={item[0]}>{item[1]}</MenuItem>
                     ))}
                   </Select>
                 </Grid> 
@@ -299,8 +301,8 @@ useEffect(() => {
                     onChange={handleChangeLevel}
                     fullWidth
                   >
-                    {levels.map((item: LevelProps) => (
-                      <MenuItem key={item.id} value={item.id}>{item.level}</MenuItem>
+                    {levels.map((item: any) => (
+                      <MenuItem key={item[0]} value={item[1]}>{item[1]}</MenuItem>
                     ))}
                   </Select>
                 </Grid> 
@@ -315,8 +317,8 @@ useEffect(() => {
                     onChange={handleChange}
                     fullWidth
                   >
-                    {specialtiesData.map((item: SpecialtyProps) => (
-                      <MenuItem key={item.id} value={item.id}>{item.main_specialty?.specialty_name} {item.academic_year} Level-{item.level?.level}</MenuItem>
+                    {specialtiesData.map((item: any) => (
+                      <MenuItem key={item[0]} value={item[0]}>{item[2]} {item[3]} Level-{item[4]}</MenuItem>
                     ))}
                   </Select>
                 </Grid> 
@@ -348,24 +350,12 @@ useEffect(() => {
 
                 {mySpecialtyList.map((item: SpecialtyProps) => (
                 <>
-                  <Grid key={item?.id} item xs={12} sm={6} lg={4} spacing={2}>
+                  <Grid key={item.id} item xs={12} sm={6} lg={4} spacing={2}>
                     <Grid>
                       <InputLabel htmlFor='account-settings-confirm-new-password'>Level {item?.level?.level}</InputLabel>
                     </Grid>
                     <Grid>
-                      <Select
-                        id="label_select_specialty"
-                        labelId="label_select_specialty"
-                        value={item?.id}
-                        label="Select Specialty"
-                        onChange={handleChange}
-                        fullWidth
-                        disabled
-                      >
-                        {specialties?.map((item: SpecialtyProps) => (
-                          <MenuItem key={item?.id} value={item?.id}>{item?.main_specialty?.specialty_name} {item?.academic_year}</MenuItem>
-                        ))}
-                      </Select>
+                      <Typography key={item.id}>{item.main_specialty.specialty_name} - {item?.academic_year}</Typography>
                     </Grid>
                   </Grid>
                 </> 
@@ -390,11 +380,12 @@ useEffect(() => {
                     fullWidth
                     disabled={!promote}
                   >
-                    {specialtiesDataNext.map((item: SpecialtyProps) => (
-                      <MenuItem key={item.id} value={item.id}>{item.main_specialty?.specialty_name} {item.academic_year} Level-{item.level?.level}</MenuItem>
+                    {specialtiesDataNext.map((item: any) => (
+                      <MenuItem key={item[0]} value={item[0]}>{item[2]} {item[3]} Level-{item[4]}</MenuItem>
                     ))}
                   </Select>
                 </Grid>
+
                 <Grid item xs={12}>
                   <Button 
                     color="primary"

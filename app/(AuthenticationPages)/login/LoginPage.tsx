@@ -3,8 +3,9 @@ import Link from "next/link";
 import { Grid, Box, Card, Stack, Typography } from "@mui/material";
 // components
 import PageContainer from "@/components/CompAdmin/container/PageContainer";
-import AuthLogin from "../auth/AuthLogin";
 import MyProvider from "@/Redux/MyProvider";
+import AuthLogin from "../auth/AuthLogin";
+
 
 const LoginPage = () => {
   return (

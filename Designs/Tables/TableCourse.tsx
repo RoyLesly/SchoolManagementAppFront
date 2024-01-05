@@ -23,6 +23,11 @@ const TableCourse:FC<TableCourseProps> = ({ coursesData, setRecord, setEditCours
                 <TableRow>
                     <TableCell>
                         <Typography variant="subtitle2" fontWeight={600}>
+                            ID
+                        </Typography>
+                    </TableCell>
+                    <TableCell>
+                        <Typography variant="subtitle2" fontWeight={600}>
                             Code / Course Name
                         </Typography>
                     </TableCell>
@@ -51,6 +56,16 @@ const TableCourse:FC<TableCourseProps> = ({ coursesData, setRecord, setEditCours
             <TableBody>
                 {coursesData.map((item: CourseProps) => (
                     <TableRow key={item.id}>
+                        <TableCell>
+                            <Typography
+                                sx={{
+                                    fontSize: "15px",
+                                    fontWeight: "700",
+                                }}
+                            >
+                                {item.id}
+                            </Typography>
+                        </TableCell>
                         <TableCell>
                             <Typography
                                 sx={{

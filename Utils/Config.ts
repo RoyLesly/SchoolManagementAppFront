@@ -2,16 +2,10 @@
 const BaseUrl = "https://st-joan.com/back/"
 // const BaseUrl = "http://172.16.10.199:8000/"
 // const BaseUrl = "http://192.168.130.177:8000/"
-// const BaseUrl = "http://192.168.199.177:8000/"
-// const BaseUrl = "http://192.168.43.143:8000/"
-// const BaseUrl = "http://192.168.100.4:8000/"
-// const BaseUrl = "http://back.st-joan.com/"
-// const BaseUrl = "http://172.16.10.126:8000/"
-// const BaseUrl = "http://192.168.100.12:8000/"
 
 
-export const AvatarLink = "/images/avatars/avatar.jpg";
-export const LogoLink = "/images/logos/logo.jpg";
+export const AvatarLink = BaseUrl + "images/avatar.jpg";
+export const LogoLink = BaseUrl + "images/stjoanlogo.jpg";
 export const ActivationUrl = BaseUrl + "app/activation/activate";
 export const AdminUrl = BaseUrl + "admin";
 export const ExtendUrl = BaseUrl + "app/activation/extend";
@@ -34,8 +28,10 @@ export const CreateUpdateResetPasswordUrl = BaseUrl + "user/create-update-reset-
 // export const ForgotPasswordUrl = BaseUrl + "user/forgot-password";
 export const ForgotPasswordUrl = BaseUrl + "user/password_reset";
 export const UserProfilesUrl = BaseUrl + "user/user-profiles";
+export const UserProfilesStudentsUrl = BaseUrl + "user/user-profiles-students/";
+export const UserProfilesLecturersUrl = BaseUrl + "user/user-profiles-lecturers/";
 export const UserActivitiesUrl = BaseUrl + "user/activities-log";
-
+ 
 export const DomainCRUDUrl = BaseUrl + "app/domain";
 export const MainSpecialtyCRUDUrl = BaseUrl + "app/mainspecialty";
 export const SpecialtyCRUDUrl = BaseUrl + "app/specialty";
@@ -44,4 +40,39 @@ export const CourseCRUDUrl = BaseUrl + "app/course";
 export const ResultRUDUrl = BaseUrl + "app/result";
 export const LevelCRUDUrl = BaseUrl + "app/level";
 
+export const ResultAcademicYear = BaseUrl + "app/result-academic-year";
+
 export const ActivityCRUDUrl = BaseUrl + "app/activity-item";
+
+// PAGINATION
+export const PagePermGroupsUrl = BaseUrl + "user/page-groups";
+export const PagePermissionsUrl = BaseUrl + "user/page-permissions";
+export const PageUserCRUDUrl = BaseUrl + "user/page-crud-user";
+export const PageActivityCRUDUrl = BaseUrl + "app/page-activity-item";
+export const PageUserProfilesStudentsUrl = BaseUrl + "user/page-user-profiles-students/";
+export const PageUserProfilesLecturersUrl = BaseUrl + "user/page-user-profiles-lecturers/";
+export const PageUserProfilesUrl = BaseUrl + "user/page-user-profiles";
+
+export const PageDomainCRUDUrl = BaseUrl + "app/page-domain";
+export const PageMainSpecialtyCRUDUrl = BaseUrl + "app/page-mainspecialty";
+export const PageSpecialtyCRUDUrl = BaseUrl + "app/page-specialty";
+export const PageMainCourseCRUDUrl = BaseUrl + "app/page-maincourse";
+export const PageCourseCRUDUrl = BaseUrl + "app/page-course";
+export const PageResultRUDUrl = BaseUrl + "app/page-result";
+export const PageLevelCRUDUrl = BaseUrl + "app/page-level";
+
+//KPI
+export const KpiUserControlUrl = BaseUrl + "user/kpi-user";
+export const KpiCustomUserCountsUrl = BaseUrl + "user/kpi-custom-user-counts";
+export const KpiUserProfileCountsOneUrl = BaseUrl + "user/kpi-user-profile-specialty-one-counts";
+export const KpiUserProfileCountsTwoUrl = BaseUrl + "user/kpi-user-profile-specialty-two-counts";
+export const KpiYearlyModelCountList = BaseUrl + "user/kpi-yearly-model-count-list";
+
+// DROPDOWNS
+export const DropdownUrl = BaseUrl + "app/dropdowns";
+export const DropdownDomainsUrl = BaseUrl + "app/dropdowns";
+export const DropdownSpecialtiesUrl = BaseUrl + "app/dropdowns";
+export const DropdownSpecialtiesMainUrl = BaseUrl + "app/dropdowns";
+export const DropdownCourseUrl = BaseUrl + "app/dropdowns";
+
+export const KpiAppControlUrl = BaseUrl + "app/kpi-app";

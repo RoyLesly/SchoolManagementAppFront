@@ -59,7 +59,7 @@ const AddUserFormModal:React.FC<AddUserFormProps> = ({ showModal, setShowModal, 
       username: data["username"].toLowerCase(),
       created_by_id: storeUser.id
     }
-    if (data.username.length < 4) {
+    if (data.username.length < 3) {
       setAlertShow(true)
       setAlertSeverity("error");
       setAlertMessage("Invalid Username Length"); 

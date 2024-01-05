@@ -9,7 +9,11 @@ import MyButtonView from '@/Designs/MyButtonView';
 import { useDispatch, useSelector } from 'react-redux';
 import { addChoosenSpecialty, choosenDomain } from '@/Redux/Reducers/sliceDomainSpecialityCourse';
 import PageContainer from '@/app/AdministrationPages/components/container/PageContainer';
-import { Box, Grid, LinearProgress, Stack, Typography } from '@mui/material';
+import { Box, Button, Grid, LinearProgress, Stack, TextField, Typography } from '@mui/material';
+import Page2BySpecialty1ThisYear from './Page2BySpecialty1ThisYear';
+import Page2BySpecialty2OldResults from './Page2BySpecialty2OldResults';
+import { nowYear } from '@/Utils/constants';
+import ResultParameterSelectModal from './ResultParameterSelectModal';
 
 
 const { Option } = Select
@@ -29,14 +33,13 @@ const Page2BySpecialty:FC<Page2BySpecialtyProps> = ({ setSelectedNumber }) => {
     const [specialties, setSpecialties] = useState<SpecialtyProps[]>([])
     const [specialtyList, setSpecialtyList] = useState<any>([])
     const [specialtyListData, setSpecialtyListData] = useState<any>([])
+    const [showOldResult, setShowOldResult] = useState<boolean>(false)
+    const [showOldResultModal, setShowOldResultModal] = useState<boolean>(false)
 
-    useEffect(() => {
-      setResultsData(results)
-    }, [results])
 
     useEffect(() => {
       if (count == 0 ) {
-        getAllResults(setResults, setFetching, {searchField: "student__specialty__main_specialty__domain__id", value: storeChoosenDomain.id})
+        getAllResults(setResults, setFetching, {searchField: ["student__specialty__main_specialty__domain__id", "student__specialty__academic_year" ], value: [storeChoosenDomain.id, "2023/2024" ]})
         setCount(count + 1)
       }
       if (count == 1) {
@@ -45,6 +48,7 @@ const Page2BySpecialty:FC<Page2BySpecialtyProps> = ({ setSelectedNumber }) => {
       }
       if (count == 2) {
         if (results.length > 0) {
+          setResultsData(results)
           const filterSpecialty = results.map((item: ResultProps) => item.course?.specialty);
           const specialty = specialties.filter((itemA: SpecialtyProps) => filterSpecialty.some(itemB => itemA.id === itemB.id));
           setSpecialtyList(specialty);
@@ -105,77 +109,63 @@ const Page2BySpecialty:FC<Page2BySpecialtyProps> = ({ setSelectedNumber }) => {
         <Grid container spacing={3}>
 
           <Grid item xs={12}>
-            <Stack direction="row" spacing={3}>
+            <Stack direction="row" spacing={1}>
               <Box>
-                <Select placeholder="Select An Academic year" onChange={(val) => {FilterSpecialtyByYear(val)}} className='w-32'>
-                  <Option key="x" value={thisYear + "/" + (thisYear + 1)}>This year</Option>
-                    {resultYears.map((item: string) => (
-                        <Option key={item} value={item}>{item}</Option>
-                    ))}
-                  <Option key="all" value="none">All</Option>
-                </Select> 
+                <Button 
+                  onClick={ () => { setShowOldResultModal(!showOldResultModal) }} 
+                  sx={{ width: 120, marginX: 1, paddingY: 1.8 }}
+                  variant="contained" disableElevation color="primary"
+                >
+                  {showOldResult ? "This Year" : "Old Result"}
+                </Button>            
               </Box>
-              <Box>
-                <div className='cursor-pointer rounded bg-blue-100 w-full text-center hover:bg-blue-500 font-semibold italic'><Input onChange={(e) => {SearchResults(e.target.value)}} placeholder={`Search Results By Specialty ...`} className='text-gray-500' /></div>
+              <Box
+                sx={{ width: "100%"}}
+              >
+                <TextField label="Search Specialties .." onChange={(e) => {SearchResults(e.target.value)}} placeholder={`Search Results By Specialty ...`} sx={{width: "100%"}} />
               </Box>
             </Stack>
           </Grid>
 
-          <Grid 
-            item xs={12}
-            marginBottom={1}
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-          >
-            <Typography variant='h5'>SPECIALTIES FOR {storeChoosenDomain?.domain_name}</Typography>
-          </Grid>
+          {loading ? <div style={{ flex: 1, alignItems: "center", textAlign: "center", justifyContent: "center", fontSize: "30", paddingTop: 50, paddingBottom: 70, paddingLeft: 60, paddingRight: 25 }}>
+              Data Loading <LinearProgress style={{ marginTop: 30, padding: 5 }}/>
+          </div> 
+  
+          : 
+  
+          <div style={{ flex: 1, alignItems: "center", textAlign: "center", justifyContent: "center", fontSize: "30", paddingTop: 50, paddingBottom: 70, paddingLeft: 60, paddingRight: 25 }}>
+            {!showOldResult ? <Page2BySpecialty1ThisYear
+                resultsData={resultsData}
+                COLUMNS_SPECIALTIES={COLUMNS_SPECIALTIES}
+                specialtyListData={specialtyListData}
+                storeChoosenDomain={storeChoosenDomain}
+              /> : <Page2BySpecialty2OldResults />
+            }
 
-          {loading ? <div style={{ flex: 1, margin: 60, fontSize: 25, alignContent: "center", alignItems: "center", textAlign: "center"}}>
-              Data Loading <LinearProgress style={{ marginTop: 30}}/>
-            </div> 
-            : 
-          
-            <>
-              {(storeChoosenDomain.id > 0 && specialtyListData.length > 0) ? resultYears.map((item: string) => (
-                  <Grid item xs={12} md={6} lg={4} key={item}>
-                    <Stack>
-                      <Box sx={{ textAlign: "center", paddingBottom: 1, alignItems: "center", alignContent: "center" }}>
-                        <Typography variant='h5' color={"error"}>{item}</Typography>
-                      </Box>
-                      <Box>
-                        <Table
-                          dataSource={specialtyListData.filter((item2: SpecialtyProps) => {if (item2?.academic_year.includes(item.toString())) {return item2}})}
-                          columns={COLUMNS_SPECIALTIES}  
-                          className={`${resultsData.filter((item2: ResultProps) => {if (item2?.course.specialty.academic_year.includes(item.toString())) {return item2}}).length < 1 ? "hidden" : ""}`}
-                        />
-                      </Box>
-                    </Stack>
-                  </Grid>
-                )) 
-              :
-                <div style={{ flex: 1, margin: 60, fontSize: 25, alignContent: "center", alignItems: "center", textAlign: "center"}}>
-                  No Result For Domain <code><b>{storeChoosenDomain.domain_name}</b></code>
-                </div>
-              }
-            </>
+            {storeChoosenDomain.id < 1 && 
+              <Grid 
+                pt={25}
+                pb={25}
+                item xs={12}
+                marginBottom={1}
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+              >
+                <Typography variant='h6'>NO DOMAIN SELECTED</Typography>
+              </Grid>
+            }
+            </div>
           }
-
-          {storeChoosenDomain.id < 1 && 
-            <Grid 
-              pt={25}
-              pb={25}
-              item xs={12}
-              marginBottom={1}
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-            >
-              <Typography variant='h6'>NO DOMAIN SELECTED</Typography>
-            </Grid>}
 
         </Grid>
       </Box>
+      <ResultParameterSelectModal
+        showModal={showOldResultModal}
+        setShowModal={setShowOldResultModal}
+        showOldResult={showOldResult}
+        setShowOldResult={setShowOldResult}
+      />
     </PageContainer>
   )
 }

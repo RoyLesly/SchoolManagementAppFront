@@ -23,8 +23,8 @@ const MyTableCard:FC<MyTableCardProps> = ({ title, table, buttonAdd, buttonReset
                 <Grid item xs={12} spacing={1}>
                     {buttonReset}
                     {buttonAdd}
-                    {extra}
                     {search}
+                    {extra}
                 </Grid>
                 {loading ? 
                     <div style={{ flex: 1, alignItems: "center", textAlign: "center", justifyContent: "center", fontSize: "30", paddingTop: 50, paddingBottom: 70, paddingLeft: 60, paddingRight: 25 }}>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -11,7 +11,7 @@ import Link from "next/link";
 import MyFormInputText from "@/Designs/MyFormInputText";
 import { useForm } from "react-hook-form";
 import { LoginUrl } from "@/Utils/Config";
-import { axiosRequest } from "@/Utils/functions";
+import { axiosRequest, getAllUserProfiles } from "@/Utils/functions";
 import { useDispatch } from "react-redux";
 import { addAuthUser, addUserProfile } from "@/Redux/Reducers/sliceUser";
 import { useRouter } from "next/navigation";
@@ -39,11 +39,42 @@ const defaultValues = {
 const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
   const dispatch = useDispatch();
   const router = useRouter();
+  const [ count, setCount ]  = useState<number>(0)
+  const [ userUsername, setUserUsername ]  = useState<string>("")
+  const [ authInfo, setAuthInfo ]  = useState<any>()
   const [ loginNotification, setLoginNotification ]  = useState<boolean>(false)
   const [ fetching, setFetching ]  = useState<boolean>(false)
   const [ profiles, setProfiles ]  = useState<UserProfile[]>([]);
 
-  useGetAllUserProfiles(setProfiles, setFetching);
+  useEffect(() =>{
+    if (count == 0) {
+        console.log(userUsername)
+    }
+    if (count == 1) {
+        if (userUsername != "") {
+            getAllUserProfiles(setProfiles, ()=>{}, { searchField: "user__username", value: userUsername })
+        }
+        setCount(count + 1)
+    }
+    if (count == 2) {
+        if (profiles.length > 0) {
+            dispatch(addUserProfile(profiles[0]))
+            setCount(count + 1)
+        }
+    }
+    if (count == 3) {
+        console.log(authInfo)
+        if (authInfo["role"] == "teacher") {
+            router.push("/LecturersPages")
+        }
+        else if (authInfo["role"]  == "student") {
+            router.push("/StudentsPages")
+        }
+        else {
+            router.push("/AdministrationPages")
+        }
+    }
+  }, [count, authInfo, userUsername, router, profiles, dispatch])
 
   const { handleSubmit, reset, control } = useForm<IFormInput>({
     defaultValues: defaultValues,
@@ -74,18 +105,12 @@ const AuthLogin = ({ title, subtitle, subtext }: loginType) => {
           "message": "LOGIN SUCCESSFUL !!!",
           "description": ""
         })
+        console.log(userCategory)
         dispatch(addAuthUser(userCategory?.authUser));
         reset();
-        dispatch(addUserProfile(profiles.filter((item: UserProfile) => item.user.id == userCategory?.authUser.id)[0]))
-        if (userCategory?.authUser.role == "teacher") {
-          router.push("/LecturersPages")
-        }
-        else if (userCategory?.authUser.role == "student") {
-          router.push("/StudentsPages")
-        }
-        else {
-          router.push("/AdministrationPages")
-        }
+        setUserUsername(userCategory?.authUser?.username)
+        setAuthInfo(userCategory?.authUser)
+        setCount(1)
       } else {
         alert(JSON.stringify(response));
         setFetching(false)

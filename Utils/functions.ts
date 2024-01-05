@@ -1,7 +1,7 @@
 // import { notification } from "antd";
 import Axios, { AxiosResponse } from "axios";
 import { MeUrl, UserCRUDUrl, DomainCRUDUrl, SpecialtyCRUDUrl, CourseCRUDUrl, 
-    ResultRUDUrl, PermGroupsUrl, PermissionsUrl, ActivationUrl, UserProfilesUrl, MainSpecialtyCRUDUrl, MainCourseCRUDUrl, LevelCRUDUrl,
+    ResultRUDUrl, PermGroupsUrl, PermissionsUrl, ActivationUrl, UserProfilesUrl, MainSpecialtyCRUDUrl, MainCourseCRUDUrl, LevelCRUDUrl, ResultAcademicYear,
 } from './Config';
 import { CustomAxiosError, DataProps, UserType, ActivationProps, PermGroupsProps, PermissionsProps, 
     DomainProps,
@@ -37,7 +37,6 @@ interface AxiosRequestProps {
     file?: boolean
     params?: any
 }
-
 
 export const axiosRequest = async <T>({
     method = 'get',
@@ -137,7 +136,7 @@ export const getActivation = async (
 }
 
 export const getAllUsers = async (
-    setAllUsers: (data: UserType[]) => void,
+    setAllUsers: (data: any) => void,
     setFetching: (val: boolean) => void,
     params?: { kpi?: boolean, searchField: any, value: any}
 ) => {
@@ -149,41 +148,40 @@ export const getAllUsers = async (
         params
     })
     if (response) {
-        const data = response.data.results.map(item => ({
-            ...item,
-            created_at: (item.created_at)?.toString().slice(0, 10),
-            last_login: (item.last_login)?.toString().slice(0, 10) + " " + (item.last_login)?.toString().slice(11, 16),
-        }))
-        setAllUsers(data)
+        // const data = response.data.results.map(item => ({
+        //     ...item,
+        //     created_at: (item.created_at)?.toString().slice(0, 10),
+        //     last_login: (item.last_login)?.toString().slice(0, 10) + " " + (item.last_login)?.toString().slice(11, 16),
+        // }))
+        setAllUsers(response.data)
         setFetching(false)
     }
 }
 
 export const getAllUserProfiles = async (
-    setAllUserProfiles: (data: UserProfile[]) => void,
+    setAllUserProfiles: (data: any) => void,
     setFetching: (val: boolean) => void,
     params?: { kpi?: boolean, searchField: any, value: any}
 ) => {
 
-    const response = await axiosRequest<{ results: UserProfile[] }>({
+    const response = await axiosRequest<{ results: UserProfile}>({
         url: UserProfilesUrl,
         hasAuth: true,
         showError: false,
         params
     })
     if (response) {
-        const data = response.data.results.map(item => ({
-            ...item,
-            created_at: (item.created_at)?.toString().slice(0, 10),
-        }))
-        setAllUserProfiles(data)
+        // const data = response.data.map(item => ({
+        //     ...item,
+        //     created_at: (item.created_at)?.toString().slice(0, 10),
+        // }))
+        setAllUserProfiles(response.data)
         setFetching(false)
     }
 }
 
-
 export const getAllDomains = async (
-    setDomains: (data: DomainProps[]) => void,
+    setDomains: (data: any) => void,
     setFetching: (val: boolean) => void
 ) => {
 
@@ -193,14 +191,13 @@ export const getAllDomains = async (
         showError: false,
     })
     if (response) {
-        setDomains(response.data.results)
+        setDomains(response.data)
         setFetching(false)
     }
 }
 
-
 export const getAllSpecialties = async (
-    setSpecialty: (data: SpecialtyProps[]) => void,
+    setSpecialty: (data: any) => void,
     setFetching: (val: boolean) => void,
     params?: { searchField: string, value: string | number }
 ) => {
@@ -212,13 +209,13 @@ export const getAllSpecialties = async (
         params
     })
     if (response) {
-        setSpecialty(response.data.results)
+        setSpecialty(response.data)
         setFetching(false)
     }
 }
 
 export const getAllMainSpecialties = async (
-    setMainSpecialty: (data: MainSpecialtyProps[]) => void,
+    setMainSpecialty: (data: any) => void,
     setFetching: (val: boolean) => void,
     params?: { searchField: string, value: string | number }
 ) => {
@@ -235,9 +232,8 @@ export const getAllMainSpecialties = async (
     }
 }
 
-
 export const getAllMainCourses = async (
-    setMainSpecialty: (data: MainCourseProps[]) => void,
+    setMainSpecialty: (data: any) => void,
     setFetching: (val: boolean) => void
 ) => {
 
@@ -247,16 +243,15 @@ export const getAllMainCourses = async (
         showError: false,
     })
     if (response) {
-        setMainSpecialty(response.data.results)
+        setMainSpecialty(response.data)
         setFetching(false)
     }
 }
 
-
 export const getAllCourses = async (
     setCourses: (data: CourseProps[]) => void,
     setFetching: (val: boolean) => void,
-    params?: { searchField: string, value: string | number | boolean }
+    params?: { searchField: any, value: any }
 ) => {
 
     const response = await axiosRequest<{ results: CourseProps[] }>({
@@ -271,11 +266,10 @@ export const getAllCourses = async (
     }
 }
 
-
 export const getAllResults = async (
     setResults: (data: ResultProps[]) => void,
     setFetching: (val: boolean) => void,
-    params?: { searchField: string, value: string | number | boolean }
+    params?: { searchField: any, value: any }
 ) => {
 
     const response = await axiosRequest<{ results: ResultProps[] }>({
@@ -290,20 +284,38 @@ export const getAllResults = async (
     }
 }
 
-
-export const getAllLevels = async (
-    setLevels: (data: LevelProps[]) => void,
-    setFetching: (val: boolean) => void
+export const getAllAcademicYear = async (
+    setAcademicYears: (data: string[]) => void,
+    setFetching: (val: boolean) => void,
+    params?: { searchField: any, value: any }
 ) => {
 
-    const response = await axiosRequest<{ results: LevelProps[] }>({
-        url: LevelCRUDUrl,
+    const response = await axiosRequest<{ results: string[] }>({
+        url: ResultAcademicYear,
         hasAuth: true,
         showError: false,
+        params
     })
+
     if (response) {
-        setLevels(response.data.results)
+        setAcademicYears(response.data.results)
         setFetching(false)
     }
 }
 
+export const getAllLevels = async (
+    setLevels: (data: any) => void,
+    setFetching: (val: boolean) => void
+) => {
+
+    const response = await axiosRequest({
+        url: LevelCRUDUrl,
+        hasAuth: true,
+        showError: false,
+    })
+
+    if (response) {
+        setLevels(response?.data)
+        setFetching(false)
+    }
+}

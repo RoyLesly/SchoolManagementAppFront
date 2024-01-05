@@ -6,54 +6,53 @@ import dynamic from "next/dynamic";
 import { nowYear } from '@/Utils/constants';
 import { UserProfile, UserType } from '@/Utils/types';
 import { getAllUserProfiles, getAllUsers } from '@/Utils/functions';
+import { getDataListKpi } from '@/Utils/pagination';
+import { KpiYearlyModelCountList } from '@/Utils/Config';
 const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 
 const OverViewRegistration = () => {
     // select
-    const Yaxis = Array(nowYear - (nowYear - 6)).fill('').map((v, index) => nowYear - index).reverse()
+    const Yaxis = Array(nowYear - (nowYear - 6)).fill('').map((v, index) => ((nowYear - index) + "/" + (nowYear - index + 1))).reverse()
     const [month, setMonth] = React.useState('1');
-    const [ count, setCount ] = useState<number>(1);
+    const [ count, setCount ] = useState<number>(0);
     const [ loading, setLoading ] = useState<boolean>(true);
-    const [ profiles, setProfiles ] = useState<UserProfile[]>([])
-    const [ users, setUsers ] = useState<UserType[]>([])
+    const [ fetching, setFetching ] = useState<boolean>(true);
+    const [ profilesListData, setProfilesListData ] = useState<any>([])
+    const [ usersListData, setUsersListData ] = useState<any>([])
+    const [ xAxis, setXAxis ] = useState<string[]>([])
     const [ profilesRegisteredCount, setProfilesRegisteredCount ] = useState<number[]>([])
     const [ usersRegisteredCount, setUsersRegisteredCount ] = useState<number[]>([])
 
-    console.log(count)
+
     useEffect(() => {
-        let dataProfiles: any = []
-        let dataUsers: any = []
-        if (count == 1) {
-            getAllUserProfiles(setProfiles, () => {}, { searchField: ["created_at__year__gte", "user__role"], value: [nowYear - 6, "teacher"], kpi: true});
-            getAllUsers(setUsers, () => {}, { searchField: ["created_at__year__gte", "role"], value: [nowYear - 6, "teacher"], kpi: true});
+        if (count == 0) {
+            getDataListKpi(setProfilesListData, setFetching, KpiYearlyModelCountList, { model: "UserProfile" })
+            getDataListKpi(setUsersListData, setFetching, KpiYearlyModelCountList, { model: "CustomUser" })
             setCount(count + 1)
         }
-        if (profiles.length > 0) {
-            if (count == 2) {
-                Yaxis.forEach((year) => {
-                    const fil = profiles.filter((item: UserProfile) => item.created_at.includes((year).toString())).length
-                    dataProfiles.push(fil)
-                });
-                setCount(count + 1)
-                setProfilesRegisteredCount(dataProfiles)
+        if (count == 1) {
+            if (profilesListData.length > 0) {
+                setLoading(false);
+                setProfilesRegisteredCount(profilesListData[1])
+                setXAxis(profilesListData[0])
+                setCount(count + 1);
             }
         }
-        if (users.length > 0) {
-            if (count == 3) {
-                Yaxis.forEach((year) => {
-                    const fil = users.filter((item: UserType) => item.created_at.includes((year).toString())).length
-                    dataUsers.push(fil)
+        if (count == 2) {
+            let l = []
+            if (usersListData.length > 0) {
+                l = profilesListData[0].forEach((item: any, index: number) => {
+                    if (item.includes(usersListData[0][index])) {
+                        console.log(usersListData[0])
+                    }
                 });
-                setCount(count + 1)
-                setUsersRegisteredCount(dataUsers)
-            }
-            if (count == 4) {
-                setLoading(false)
-                setCount(count + 1)
+                setLoading(false);
+                setUsersRegisteredCount(usersListData[1])
+                // setCount(count + 1);
             }
         }
-    }, [ count, profiles, users, Yaxis ])
+    }, [ count, profilesListData, usersListData ])
 
 
     const handleChange = (event: any) => {
@@ -74,14 +73,14 @@ const OverViewRegistration = () => {
             toolbar: {
                 show: true,
             },
-            height: 270,
+            height: 200,
         },
         colors: [primary, secondary],
         plotOptions: {
             bar: {
                 horizontal: false,
-                barHeight: '60%',
-                columnWidth: '42%',
+                barHeight: '90%',
+                columnWidth: '22%',
                 borderRadius: [6],
                 borderRadiusApplication: 'end',
                 borderRadiusWhenStacked: 'all',
@@ -90,7 +89,7 @@ const OverViewRegistration = () => {
 
         stroke: {
             show: true,
-            width: 5,
+            width: 2,
             lineCap: "butt",
             colors: ["transparent"],
           },
@@ -110,10 +109,10 @@ const OverViewRegistration = () => {
             },
         },
         yaxis: {
-            tickAmount: 4,
+            tickAmount: 3,
         },
         xaxis: {
-            categories: Yaxis,
+            categories: xAxis,
             axisBorder: {
                 show: false,
             },
@@ -124,17 +123,19 @@ const OverViewRegistration = () => {
         },
     };
     const seriescolumnchart: any = [
+        // {
+            // name: 'Students Per Year',
+            // data: usersRegisteredCount
+        // },
         {
-            name: 'Students Per Year',
-            data: usersRegisteredCount
+            name: 'Profiles Per Year',
+            data: profilesRegisteredCount
         },
         {
             name: 'Profiles Per Year',
             data: profilesRegisteredCount
         },
     ];
-
-    // console.log(profilesRegisteredCount)
 
     return (
 

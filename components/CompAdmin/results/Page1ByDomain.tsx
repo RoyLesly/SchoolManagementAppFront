@@ -59,16 +59,17 @@ const Page1ByDomain:FC<Page1ByDomainProps> = ({ setSelectedNumber }) => {
             <Grid container spacing={3}>
 
                 <Grid item xs={12}>
-                    <Stack direction="row" spacing={2} sx={{alignItems: "center",alignContent: "center"}}>
+                    <Stack direction="row" spacing={1} sx={{alignItems: "center",alignContent: "center"}}>
                         <Box>
                             <MyButtonLoader fetching={fetching} loadingText='Loading' info={domainsData.length} onClick={reset} />
                         </Box>
                         <Box>            
-                            {/* <div className={`bg-black rounded ${fetching ? "px-4" : ""}`}><FetchingDataIndicator fetching={fetching} /></div> */}
                             <FetchingDataIndicator fetching={fetching} />
                         </Box>
-                        <Box>
-                            <TextField label="Search" onChange={(e) => {SearchResults(e.target.value)}} placeholder={`Search Domains ...`} sx={{width: 260}} />
+                        <Box
+                            sx={{ width: "100%"}}
+                        >
+                            <TextField label="Search Domain ..." onChange={(e) => {SearchResults(e.target.value)}} placeholder={`Search Domains ...`} sx={{width: "100%", paddingRight: 2}} />
                         </Box>
                     </Stack>
                 </Grid>
@@ -81,7 +82,7 @@ const Page1ByDomain:FC<Page1ByDomainProps> = ({ setSelectedNumber }) => {
                         justifyContent="center"
                         alignItems="center"
                     >
-                        <Typography variant='h4'>DOMAINS</Typography>
+                        <Typography variant='h4'>ALL DOMAINS</Typography>
                     </Box>
                     <Box>
                         <Table

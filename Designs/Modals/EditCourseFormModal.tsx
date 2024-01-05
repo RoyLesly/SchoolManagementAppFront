@@ -3,7 +3,7 @@ import { FC, useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { CourseCRUDUrl } from '@/Utils/Config';
 import { axiosRequest } from '@/Utils/functions';
-import { CourseProps, DataProps, MainCourseProps, SpecialtyProps, UserType } from '@/Utils/types';
+import { CourseProps, DataProps, DropdownSpecialtyType, MainCourseProps, UserType } from '@/Utils/types';
 import { selectAuthUser } from '@/Redux/Reducers/sliceUser';
 import MyButtonUpdate from '@/Designs/MyButtonUpdate';
 import { listOfAcademicYears } from '@/Utils/constants';
@@ -16,7 +16,7 @@ interface EditCourseFormProps {
   setShowModal: any
   mainCoursesData: MainCourseProps[] | []
   userTeachers: UserType[]
-  specialty: SpecialtyProps[]
+  specialty: DropdownSpecialtyType[]
   record: CourseProps | null
   reset: any
   record_name: any
@@ -27,14 +27,13 @@ const EditCourseFormModal:FC<EditCourseFormProps> = ({ showModal, mainCoursesDat
     const storeUserID = useSelector(selectAuthUser).id
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false)
-    const [specialtyData, setSpecialtyData] = useState<SpecialtyProps[]>([]);
+    const [specialtyData, setSpecialtyData] = useState<DropdownSpecialtyType[]>([]);
     const [userActiveTeachers, setUserActiveTeachers] = useState<UserType[]>([]);
     const [year, setYear] = useState<any>(0)
     const [assignedTo, setAssignedTo] = useState<string | null>(null)
 
     useEffect(() => {
-        const filA = userTeachers?.filter((item: UserType) => item?.is_active == true)
-        setUserActiveTeachers(filA)
+        setUserActiveTeachers(userTeachers)
         const filB = userTeachers?.filter((item: UserType) => item?.id == record?.assigned_to?.id)
         if (filB.length > 0) {
             setAssignedTo((filB[0].first_name + " " + filB[0].last_name))
@@ -98,7 +97,7 @@ const EditCourseFormModal:FC<EditCourseFormProps> = ({ showModal, mainCoursesDat
     }
 
     const FilterSpecialtyByYear = (year: any) => {
-        const fil = specialty?.filter((item: SpecialtyProps) => item?.academic_year.includes(year))
+        const fil = specialty?.filter((item: DropdownSpecialtyType) => item[3].includes(year))
         setSpecialtyData(fil)
     }
 
@@ -133,7 +132,7 @@ const EditCourseFormModal:FC<EditCourseFormProps> = ({ showModal, mainCoursesDat
                     rules={[{ required: false, message: "Please Input Course Name" }]}
                 >
                     <Select defaultValue={`${record?.specialty?.main_specialty?.specialty_name}`}>
-                        {specialtyData.map((item: SpecialtyProps) => <Option key={item.id} value={item.id}>{item?.main_specialty?.specialty_name} - {item?.academic_year} L{item?.level.level} </Option>)}
+                        {specialtyData.map((item: DropdownSpecialtyType) => <Option key={item[0]} value={item[0]}>{item[2]} - {item[3]} L{item[4]} </Option>)}
                     </Select>
                 </Form.Item>
 

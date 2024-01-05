@@ -49,12 +49,11 @@ const EditMainCourseFormModal:FC<EditMainCourseFormProps> = ({ showModal, setSho
             })
             setShowModal(false)
             form.resetFields()
-        }
-        else if (response?.data.errors) {
-            console.log(response.data.errors)
+        } else if (response?.data.error) {
+            console.log(response.data.error)
             notification.error({
                 message: "Operation Failed",
-                description: JSON.stringify(response.data.errors)
+                description: JSON.stringify(response.data.error)
             })
         }
     }

@@ -15,9 +15,11 @@ import DeleteItemFormModal from '@/Designs/Modals/DeleteItemFormModal';
 import MyButtonAdd from '@/Designs/MyButtonAdd';
 import { DomainCRUDUrl } from '@/Utils/Config';
 import MyButtonLoader from '@/Designs/MyButtonLoader';
+import { getDataDropdown } from '@/Utils/pagination';
 
 const Domains = () => {
     const [ fetching, setFetching ] = useState<boolean>(true)
+    const [ count, setCount ] = useState<number>(0)
     const [ loading, setLoading ] = useState<boolean>(true)
     const [ record, setRecord ] = useState<DomainProps | null>(null)
     const [ domain, setDomain ] = useState<DomainProps[]>([])
@@ -26,14 +28,19 @@ const Domains = () => {
     const [ editDomainFormModal, setEditDomainFormModal ] = useState<boolean>(false)
     const [ deleteDomainFormModal, setDeleteDomainFormModal ] = useState<boolean>(false)
 
-    useGetAllDomains(setDomain, setFetching);
     useEffect(() => {
-        setDomainData(domain)
-        setLoading(false)
-    }, [domain])
+        if (count == 0) {
+            getAllDomains(setDomain, setFetching);
+            setCount(count + 1);
+        }
+        if (count == 1) {
+            if (domain.length > 0) { setDomainData(domain); setCount(count + 1); }
+            setLoading(false)
+            
+        }
+    }, [domain, count])
     const reset = () => {
-        setFetching(true)
-        getAllDomains(setDomain, setFetching)
+        setCount(0)
     }
     const TableComp:FC = () => (
         <Table

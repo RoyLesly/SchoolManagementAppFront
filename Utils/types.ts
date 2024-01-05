@@ -183,3 +183,69 @@ export interface ResultProps {
     updated_at?: string
     updated_by?: UserType
 }
+
+
+
+
+// KPI COUNT TYPES
+export interface CustomUserCountsType {
+    all_users: number
+    admin_users: number
+    lecturer_users: number
+    student_users: number
+    active_users: number
+    non_active_users: number
+}
+
+export interface UserProfileCountsOneType {
+    list: [
+        specialty: [
+            academic_year: {
+                level: number
+            }
+        ]
+    ]
+    list_specialty: string[]
+    academic_years: string[]
+}
+
+export interface UserProfileCountsTwoType {
+    list: [
+        specialty: string[]
+    ]
+    list_specialty: string[]
+    academic_years: string[]
+}
+
+
+
+// DROPDOWN TYPES
+export type DropdownDomainType = [
+    id:  number,
+    domain_name: number
+]
+
+export interface DropdownSpecialtyMainType {
+    id:  number
+    specialty_name: number
+}
+
+export type DropdownSpecialtyType = [
+    id:  number,
+    domain_id: number,
+    specialty_name: string,
+    academic_year: string,
+    level: string
+]
+
+export interface DropdownCourseMainType {
+    id:  number
+    course_name: number
+}
+
+export interface DropdownCourseType {
+    id:  number
+    course_name: number
+    specialty_name: string
+    level: string
+}

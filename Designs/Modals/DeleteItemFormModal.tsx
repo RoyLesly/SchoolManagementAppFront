@@ -3,7 +3,7 @@ import { FC, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { axiosRequest } from '@/Utils/functions';
 import { selectAuthUser } from '@/Redux/Reducers/sliceUser';
-import { Box, Button, Stack } from '@mui/material';
+import { Button, Stack } from '@mui/material';
 
 
 
@@ -22,10 +22,11 @@ const DeleteItemFormModal:FC<DeleteItemFormProps> = ({ showModal, setShowModal, 
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false)
 
+    // console.log(record)
+
     
     const onSubmit = async () => {
         setLoading(true)
-        console.log(record)
 
         const response = await axiosRequest<any>({
             method: "delete",
