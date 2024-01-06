@@ -3,7 +3,7 @@ import { FC, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { MainCourseCRUDUrl } from '@/Utils/Config';
 import { axiosRequest } from '@/Utils/functions';
-import { DataProps, MainCourseProps } from '@/Utils/types';
+import { DataProps, MainCourseOptimizedType } from '@/Utils/types';
 import { selectAuthUser } from '@/Redux/Reducers/sliceUser';
 import MyButtonUpdate from '@/Designs/MyButtonUpdate';
 
@@ -11,7 +11,7 @@ import MyButtonUpdate from '@/Designs/MyButtonUpdate';
 interface EditMainCourseFormProps {
   showModal: any
   setShowModal: any
-  record: MainCourseProps | null
+  record: MainCourseOptimizedType | undefined
   reset: any
 }
 
@@ -36,7 +36,7 @@ const EditMainCourseFormModal:FC<EditMainCourseFormProps> = ({ showModal, setSho
 
         const response = await axiosRequest<any>({
             method: "put",
-            url: MainCourseCRUDUrl + "/" + record.id,
+            url: MainCourseCRUDUrl + "/" + record[0],
             payload: payload,
             hasAuth: true,
         })
@@ -47,6 +47,7 @@ const EditMainCourseFormModal:FC<EditMainCourseFormProps> = ({ showModal, setSho
                 message: "Operation Successful",
                 description: "Main Course Updated Successfully"
             })
+            reset()
             setShowModal(false)
             form.resetFields()
         } else if (response?.data.error) {
@@ -60,7 +61,7 @@ const EditMainCourseFormModal:FC<EditMainCourseFormProps> = ({ showModal, setSho
 
     return (
         <Modal
-            title={`EDIT - ${record?.course_name}`}
+            title={`EDIT - ${record && record[1]}`}
             open={showModal}
             onCancel={() => setShowModal(false)}
             footer={false}
@@ -71,7 +72,7 @@ const EditMainCourseFormModal:FC<EditMainCourseFormProps> = ({ showModal, setSho
                 <Form.Item label="Course Name" name="course_name"
                     rules={[{ required: false, message: "Please Input Course Name" }]}
                 >
-                    <Input defaultValue={`${record?.course_name}`} type='text' />
+                    <Input defaultValue={`${record && record[1]}`} type='text' />
                 </Form.Item>
 
                 <Form.Item>

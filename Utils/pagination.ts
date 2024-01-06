@@ -2,9 +2,9 @@
 import Axios, { AxiosResponse } from "axios";
 import { MeUrl, PageUserCRUDUrl, PageCourseCRUDUrl, 
     PageResultRUDUrl, PagePermGroupsUrl, PermissionsUrl, 
-    PageMainCourseCRUDUrl, PageLevelCRUDUrl, DropdownUrl,
+    PageMainCourseCRUDUrl, PageLevelCRUDUrl,
 } from './Config';
-import { CustomAxiosError, DataProps, UserType, ActivationProps, PermGroupsProps, PermissionsProps, 
+import { CustomAxiosError, DataProps, UserType, PermGroupsProps, PermissionsProps, 
     DomainProps,
     SpecialtyProps,
     CourseProps,
@@ -345,25 +345,6 @@ export const getData = async (
 }
 
 
-export const getDataDropdown = async (
-    setData: (data: any) => void,
-    setFetching: (val: boolean) => void,
-    params: { searchField?: string, model: string},
-) => {
-
-    const response = await axiosRequest<{ dropdown: any }>({
-        url: DropdownUrl,
-        hasAuth: true,
-        showError: false,
-        params
-    })
-    if (response) {
-        setData(response.data.dropdown)    
-        setFetching(false)
-    }
-}
-
-
 export const getDataKpi = async (
     setData: (data: any) => void,
     setFetching: (val: boolean) => void,
@@ -401,4 +382,30 @@ export const getDataListKpi = async (
         setData(response.data.list)    
         setFetching(false)
     }
+}
+
+
+// OPTIMIZED QUERIES
+export const getOptimizedQuery = async (
+    setData: (data: any[]) => void,
+    setFetching: (val: boolean) => void,
+    setCount: (val: number) => void,
+    setNextLink: (val: boolean) => void,
+    setPrevLink: (val: boolean) => void,
+    url: string,
+    params?: { fieldList?: any, searchField?: any, value?: any, page?: number, model: string},
+) => {
+
+const response = await axiosRequest<{ count: number, results: any[], next: boolean, previous: boolean }>({
+        url: url,
+        hasAuth: true,
+        showError: false,
+        params
+    })
+    if (response) {
+        setData(response.data.results)
+        setCount(response.data.count)
+        setNextLink(response.data.next)
+        setPrevLink(response.data.previous)
+        setFetching(false)    }
 }

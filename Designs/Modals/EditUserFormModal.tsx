@@ -3,7 +3,7 @@ import { FC, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { UserCRUDUrl } from '@/Utils/Config';
 import { axiosRequest } from '@/Utils/functions';
-import { DataProps, UserType } from '@/Utils/types';
+import { CustomUserOptimizedType, DataProps } from '@/Utils/types';
 import { selectAuthUser } from '@/Redux/Reducers/sliceUser';
 import MyButtonUpdate from '@/Designs/MyButtonUpdate';
 
@@ -14,7 +14,7 @@ interface EditUserFormProps {
   showModal: any
   setShowModal: any
   setRecord: any
-  record: UserType | undefined
+  record: CustomUserOptimizedType | undefined
   reset: any
 }
 
@@ -27,16 +27,16 @@ const EditUserFormModal:FC<EditUserFormProps> = ({ showModal, setShowModal, rese
     const onSubmit = async (values: DataProps) => {
         setLoading(true)
         if (values["username"] == "" || values["username"] == undefined || values["username"] == null){
-            values["username"] = record["username"].toLowerCase()
+            values["username"] = record[1].toLowerCase()
         }
         if (values["role"] == "" || values["role"] == undefined || values["role"] == null){
-            values["role"] = record["role"]
+            values["role"] = record[10]
         }
         if (values["email"] == "" || values["email"] == undefined || values["email"] == null){
-            values["email"] = record["email"]
+            values["email"] = record[7]
         }
         if (values["is_active"] == undefined || values["is_active"].length < 1){
-            values["is_active"] = record["is_active"]
+            values["is_active"] = record[9]
         }
         const payload = {
             ...values, 
@@ -46,7 +46,7 @@ const EditUserFormModal:FC<EditUserFormProps> = ({ showModal, setShowModal, rese
 
         const response = await axiosRequest<any>({
             method: "put",
-            url: UserCRUDUrl + "/" + record.id,
+            url: UserCRUDUrl + "/" + record[0],
             payload: payload,
             hasAuth: true,
         })
@@ -73,7 +73,7 @@ const EditUserFormModal:FC<EditUserFormProps> = ({ showModal, setShowModal, rese
 
     return (
         <Modal
-            title={`EDIT - ${record?.username}`}
+            title={`EDIT - ${record && record[1]}`}
             open={showModal}
             onCancel={() => {setShowModal(false); setRecord(undefined); form.resetFields(); }}
             footer={false}
@@ -84,13 +84,13 @@ const EditUserFormModal:FC<EditUserFormProps> = ({ showModal, setShowModal, rese
                 <Form.Item label="User Name" name="username"
                     rules={[{ required: false, message: "Please Input User Name" }]}
                 >
-                    <Input defaultValue={`${record?.username}`} type='text' />
+                    <Input defaultValue={`${record && record[1]}`} type='text' />
                 </Form.Item>
 
                 <Form.Item label="Role" name="role"
                     rules={[{ required: false, message: "Please Input Role" }]}
                 >
-                    <Select defaultValue={`${record?.role}`}>
+                    <Select defaultValue={`${record && record[10]}`}>
                         <Option value="admin">Admin</Option>
                         <Option value="teacher">Teacher</Option>
                         <Option value="student">Student</Option>
@@ -100,13 +100,13 @@ const EditUserFormModal:FC<EditUserFormProps> = ({ showModal, setShowModal, rese
                 <Form.Item label="Email" name="email"
                     rules={[{ required: false, message: "Please Input Email" }]}
                 >
-                    <Input defaultValue={`${record?.email}`} type='text' />
+                    <Input defaultValue={`${record && record[7]}`} type='text' />
                 </Form.Item>
 
                 <Form.Item label="Status" name="is_active"
                     rules={[{ required: false, message: "Please Select" }]}
                 >
-                    <Select defaultValue={"Status"}>
+                    <Select defaultValue={`${record && record[9]}`} >
                         <Option value={true}>Active</Option>
                         <Option value={false}>Inactive</Option>
                     </Select>

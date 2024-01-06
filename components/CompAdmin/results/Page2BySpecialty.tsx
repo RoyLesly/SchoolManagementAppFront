@@ -47,6 +47,7 @@ const Page2BySpecialty:FC<Page2BySpecialtyProps> = ({ setSelectedNumber }) => {
         setCount(count + 1)
       }
       if (count == 2) {
+        console.log(results)
         if (results.length > 0) {
           setResultsData(results)
           const filterSpecialty = results.map((item: ResultProps) => item.course?.specialty);
@@ -83,9 +84,9 @@ const Page2BySpecialty:FC<Page2BySpecialtyProps> = ({ setSelectedNumber }) => {
         },            
     ]
 
-    const thisYear = new Date().getFullYear()
-    const filterResults = results.map((item: ResultProps) => item?.course?.specialty?.academic_year)
-    const resultYears = filterResults.filter((item, index) => filterResults.indexOf(item) === index).reverse()
+    // const thisYear = new Date().getFullYear()
+    // const filterResults = results?.map((item: ResultProps) => item?.course?.specialty?.academic_year)
+    // const resultYears = filterResults.filter((item, index) => filterResults.indexOf(item) === index).reverse()
 
     const FilterSpecialtyByYear = (year: any) => {
         if (year == "none") {setResultsData(results); return}

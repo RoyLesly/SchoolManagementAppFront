@@ -3,7 +3,7 @@ import { FC, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { DomainCRUDUrl } from '@/Utils/Config';
 import { axiosRequest } from '@/Utils/functions';
-import { DataProps, DomainProps } from '@/Utils/types';
+import { DataProps, DomainOptimizedType, DomainProps } from '@/Utils/types';
 import { selectAuthUser } from '@/Redux/Reducers/sliceUser';
 import MyButtonUpdate from '@/Designs/MyButtonUpdate';
 
@@ -11,7 +11,7 @@ import MyButtonUpdate from '@/Designs/MyButtonUpdate';
 interface EditDomainFormProps {
   showModal: any
   setShowModal: any
-  record: DomainProps | null
+  record: DomainOptimizedType | undefined
   reset: any
 }
 
@@ -21,17 +21,15 @@ const EditDomainFormModal:FC<EditDomainFormProps> = ({ showModal, setShowModal, 
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false)
 
-    
     const onSubmit = async (values: DataProps) => {
-        setLoading(true)
         if (values["domain_name"] == "" || values["domain_name"] == undefined || values["domain_name"] == null){
-            values["domain_name"] = record["domain_name"]
+            values["domain_name"] = record[1]
         }
         const payload = {...values, domain_name: values["domain_name"].toUpperCase(), updated_by_id: storeUserID}
 
         const response = await axiosRequest<any>({
             method: "put",
-            url: DomainCRUDUrl + "/" + record.id,
+            url: DomainCRUDUrl + "/" + record[0],
             payload: payload,
             hasAuth: true,
         })
@@ -55,10 +53,9 @@ const EditDomainFormModal:FC<EditDomainFormProps> = ({ showModal, setShowModal, 
         }
     }
 
-
     return (
         <Modal
-            title={`EDIT - ${record?.domain_name}`}
+            title={`EDIT - ${record && record[1]}`}
             open={showModal}
             onCancel={() => setShowModal(false)}
             footer={false}
@@ -69,7 +66,7 @@ const EditDomainFormModal:FC<EditDomainFormProps> = ({ showModal, setShowModal, 
                 <Form.Item label="Domain Name" name="domain_name"
                     rules={[{ required: false, message: "Please Input Domain Name" }]}
                 >
-                    <Input defaultValue={`${record?.domain_name}`} type='text' />
+                    <Input defaultValue={`${record && record[1]}`} type='text' />
                 </Form.Item>
 
                 <Form.Item>

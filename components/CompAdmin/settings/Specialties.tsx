@@ -6,18 +6,17 @@ import {
     Table, TableBody, TableCell, TableHead, TableRow,
     Button, Stack, LinearProgress, TableContainer, TablePagination,
 } from '@mui/material';
-import { DomainProps, LevelProps, MainSpecialtyProps, SpecialtyProps } from '@/Utils/types';
-import { getAllDomains, getAllLevels, getAllSpecialties } from '@/Utils/functions';
-import { pageGetAllMainSpecialties } from '@/Utils/pagination';
+import { DomainOptimizedType, LevelOptimizedType, MainSpecialtyOptimizedType, SpecialtyOptimizedType } from '@/Utils/types';
+import { getOptimizedQuery } from '@/Utils/pagination';
 import AddSpecialtyFormModal from '@/Designs/Modals/AddSpecialtyFormModal';
 import EditSpecialtyFormModal from '@/Designs/Modals/EditSpecialtyFormModal';
 import DeleteItemFormModal from '@/Designs/Modals/DeleteItemFormModal';
 import MyButtonAdd from '@/Designs/MyButtonAdd';
-import { MainSpecialtyCRUDUrl, PageMainSpecialtyCRUDUrl, PageSpecialtyCRUDUrl, SpecialtyCRUDUrl } from '@/Utils/Config';
+import { AppControlOptimizedQueryUrl, MainSpecialtyCRUDUrl, PageMainSpecialtyCRUDUrl, PageSpecialtyCRUDUrl, SpecialtyCRUDUrl } from '@/Utils/Config';
 import EditMainSpecialtyFormModal from '@/Designs/Modals/EditMainSpecialtyFormModal';
 import AddMainSpecialtyFormModal from '@/Designs/Modals/AddMainSpecialtyFormModal';
 import MyButtonLoader from '@/Designs/MyButtonLoader';
-import { getData, pageGetAllSpecialties } from '@/Utils/pagination';
+
 
 const Specialties = () => {
     const [ fetching, setFetching ] = useState<boolean>(true)
@@ -27,66 +26,73 @@ const Specialties = () => {
     const [ count, setCount ] = useState<number>(0)
     const [ page, setPage ] = useState<number>(0)
     const [ rowsPerPage, setRowsPerPage ] = useState<number>(100)
-    const [ specialtyDataPrev, setSpecialtyDataPrev ] = useState<SpecialtyProps[]>([])
-    const [ specialtyDataNext, setSpecialtyDataNext ] = useState<SpecialtyProps[]>([])
-    const [ nextLink, setNextLink ] = useState<string | null>(null)
-    const [ prevLink, setPrevLink ] = useState<string | null>(null)
+    const [ specialtyDataPrev, setSpecialtyDataPrev ] = useState<SpecialtyOptimizedType[]>([])
+    const [ specialtyDataNext, setSpecialtyDataNext ] = useState<SpecialtyOptimizedType[]>([])
+    const [ nextLink, setNextLink ] = useState<boolean>(false)
+    const [ prevLink, setPrevLink ] = useState<boolean>(false)
 
     const [ showSpecialty, setShowSpecialty ] = useState<boolean>(false)
-    const [ record, setRecord ] = useState<SpecialtyProps | null>(null)
-    const [ specialties, setSpecialties ] = useState<SpecialtyProps[]>([])
-    const [ specialtyData, setSpecialtyData ] = useState<SpecialtyProps[]>([])
-    const [ mainSpecialties, setMainSpecialties ] = useState<MainSpecialtyProps[]>([])
-    const [ levels, setLevels ] = useState<LevelProps[]>([])
+    const [ record, setRecord ] = useState<SpecialtyOptimizedType>()
+    const [ specialties, setSpecialties ] = useState<SpecialtyOptimizedType[]>([])
+    const [ specialtyData, setSpecialtyData ] = useState<SpecialtyOptimizedType[]>([])
+    const [ mainSpecialties, setMainSpecialties ] = useState<MainSpecialtyOptimizedType[]>([])
+    const [ levels, setLevels ] = useState<LevelOptimizedType[]>([])
     const [ addSpecialtyFormModal, setAddSpecialtyFormModal ] = useState<boolean>(false)
     const [ editSpecialtyFormModal, setEditSpecialtyFormModal ] = useState<boolean>(false)
     const [ deleteSpecialtyFormModal, setDeleteSpecialtyFormModal ] = useState<boolean>(false)
     const [ deleteMainSpecialtyFormModal, setDeleteMainSpecialtyFormModal ] = useState<boolean>(false)
 
-    const [ domains, setDomains ] = useState<DomainProps[]>([])
-    const [ recordMain, setRecordMain ] = useState<MainSpecialtyProps | null>(null)
-    const [ specialtyMainData, setSpecialtyMainData ] = useState<MainSpecialtyProps[]>([])
+    const [ domains, setDomains ] = useState<DomainOptimizedType[]>([])
+    const [ recordMain, setRecordMain ] = useState<MainSpecialtyOptimizedType>()
+    const [ specialtyMainData, setSpecialtyMainData ] = useState<MainSpecialtyOptimizedType[]>([])
     const [ addSpecialtyMainFormModal, setAddSpecialtyMainFormModal ] = useState<boolean>(false)
     const [ editSpecialtyMainFormModal, setEditSpecialtyMainFormModal ] = useState<boolean>(false)
+
+    const [ specialtyFieldList, setSpecialtyFieldList] = useState<string[]>(["id", "main_specialty__specialty_name", "academic_year", "level__level", "main_specialty__domain__id", "main_specialty__id"])
+    const [ mainSpecialtyFieldList, setMainSpecialtyFieldList] = useState<string[]>(["id", "specialty_name", "domain__domain_name", "domain__id"])
+
 
     useEffect(() => {
         if (count == 0) {
             if (page == 0) { 
-                pageGetAllSpecialties(setSpecialties, setFetching, setCountTotal, setNextLink, setPrevLink, PageSpecialtyCRUDUrl) 
-                pageGetAllMainSpecialties(setMainSpecialties, setFetching, setCountTotal, setNextLink, setPrevLink, PageMainSpecialtyCRUDUrl) 
-                getAllDomains(setDomains, setFetching)
-                getAllLevels(setLevels, setFetching)
+                getOptimizedQuery(setSpecialties, setFetching, setCountTotal, setNextLink, setPrevLink, AppControlOptimizedQueryUrl, { model: "Specialty", fieldList: [...specialtyFieldList], page: 1}) 
+                getOptimizedQuery(setMainSpecialties, setFetching, ()=>{}, ()=>{}, ()=>{}, AppControlOptimizedQueryUrl, { model: "MainSpecialty", fieldList: [...mainSpecialtyFieldList]}) 
+                getOptimizedQuery(setLevels, setFetching, ()=>{}, ()=>{}, ()=>{}, AppControlOptimizedQueryUrl, { model: "Level", fieldList: ["id", "level"]}) 
+                getOptimizedQuery(setDomains, setFetching, ()=>{}, ()=>{}, ()=>{}, AppControlOptimizedQueryUrl, { model: "Domain", fieldList: ["id", "domain_name"]}) 
             }
             if (page != 0) { 
-                pageGetAllSpecialties(setSpecialties, setFetching, setCountTotal, setNextLink, setPrevLink, PageSpecialtyCRUDUrl + "?page=" + page)  
+                getOptimizedQuery(setSpecialties, setFetching, setCountTotal, setNextLink, setPrevLink, AppControlOptimizedQueryUrl, { model: "Specialty", fieldList: [...specialtyFieldList], page: page}) 
             }
             setCount(count + 1)
         }
         if (count == 1) {
-            if (mainSpecialties.length > 0) { setSpecialtyMainData(mainSpecialties); setCount(count + 1); }
+            if (specialties.length > 0) { setSpecialtyData(specialties); setCount(count + 1); setLoading(false); }
         }
         if (count == 2) {
-            if (specialties.length > 0) { setSpecialtyData(specialties); setCount(count + 1); setLoading(false); }
+            if (mainSpecialties.length > 0) { setSpecialtyMainData(mainSpecialties); setCount(count + 1); }
         }
         if (count == 3) {
             if (page == 0){
                 setSpecialtyDataPrev([])
-                getData(setSpecialtyData, setFetching, setCountTotal, setNextLink, setPrevLink, PageSpecialtyCRUDUrl + "?page=" + 1)
-                if (nextLink != null) { getData(setSpecialtyDataNext, setFetching, setCountTotal, setNextLink, setPrevLink, PageSpecialtyCRUDUrl + "?page=" + 2) }
+                if (nextLink) { getOptimizedQuery(setSpecialtyDataNext, setFetching, setCountTotal, setNextLink, setPrevLink, AppControlOptimizedQueryUrl, { model: "Specialty", page: 2, fieldList: [...specialtyFieldList]}) }
             }
             if (page > 0){
-                getData(setSpecialtyDataPrev, setFetching, setCountTotal, setNextLink, setPrevLink, PageSpecialtyCRUDUrl + "?page=" + page )
-                if (nextLink != null) { getData(setSpecialtyDataNext, setFetching, setCountTotal, setNextLink, setPrevLink, PageSpecialtyCRUDUrl + "?page=" + (page + 2)) }
+                getOptimizedQuery(setSpecialtyDataPrev, setFetching, setCountTotal, setNextLink, setPrevLink, AppControlOptimizedQueryUrl, { model: "Specialty", page: page, fieldList: [...specialtyFieldList]} )
+                if (nextLink) { getOptimizedQuery(setSpecialtyDataNext, setFetching, setCountTotal, setNextLink, setPrevLink, AppControlOptimizedQueryUrl, { model: "Specialty", page: page + 2, fieldList: [...specialtyFieldList]}) }
+                else { setSpecialtyDataNext([]) }
             }
             setCount(count + 1)
         }
-    }, [specialties, page, mainSpecialties, nextLink, count, domains])
+    }, [specialties, page, mainSpecialties, nextLink, count, domains, specialtyFieldList, mainSpecialtyFieldList])
 
-    const reset = () => {
+    const resetSpec = () => {
+        setCount(0)
         setFetching(true)
-        getAllSpecialties(setSpecialties, setFetching)
-        pageGetAllMainSpecialties(setMainSpecialties, setFetching, setCountTotal, setNextLink, setPrevLink, PageMainSpecialtyCRUDUrl) 
-        getAllDomains(setDomains, setFetching)
+    }
+
+    const resetMain = () => {
+        setCount(0)
+        setFetching(true)
     }
     
     const handleChangeSpecialtyPage = (e: unknown, newPage: number) => {
@@ -115,7 +121,17 @@ const Specialties = () => {
                         <TableRow>
                             <TableCell>
                                 <Typography variant="subtitle2" fontWeight={600}>
-                                    Specialty Level
+                                    ID
+                                </Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Typography variant="subtitle2" fontWeight={600}>
+                                    Specialty / Level
+                                </Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Typography variant="subtitle2" fontWeight={600}>
+                                    Level
                                 </Typography>
                             </TableCell>
                             <TableCell>
@@ -131,8 +147,18 @@ const Specialties = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {specialtyData.map((item: SpecialtyProps) => (
-                            <TableRow key={item.id}>
+                        {specialtyData.map((item: SpecialtyOptimizedType) => (
+                            <TableRow key={item[0]}>
+                                <TableCell>
+                                    <Typography
+                                        sx={{
+                                            fontSize: "15px",
+                                            fontWeight: "600",
+                                        }}
+                                    >
+                                        {item[0]}
+                                    </Typography>
+                                </TableCell>
                                 <TableCell>
                                     <Typography
                                         sx={{
@@ -140,13 +166,24 @@ const Specialties = () => {
                                             fontWeight: "500",
                                         }}
                                     >
-                                        {item.main_specialty?.specialty_name} {item.level?.level}
+                                        {item[1]}
+                                    </Typography>
+                                </TableCell>
+
+                                <TableCell>
+                                    <Typography
+                                        sx={{
+                                            fontSize: "15px",
+                                            fontWeight: "500",
+                                        }}
+                                    >
+                                        {item[3]}
                                     </Typography>
                                 </TableCell>
 
                                 <TableCell>
                                     <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                                        {item.academic_year}
+                                        {item[2]}
                                     </Typography>
                                 </TableCell>
                                 <TableCell align='center'>
@@ -191,7 +228,12 @@ const Specialties = () => {
                         <TableRow>
                             <TableCell>
                                 <Typography variant="subtitle2" fontWeight={600}>
-                                    Specialty Name
+                                    ID
+                                </Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Typography variant="subtitle2" fontWeight={600}>
+                                    Specialty Type
                                 </Typography>
                             </TableCell>
                             <TableCell>
@@ -207,8 +249,19 @@ const Specialties = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {specialtyMainData.map((item: MainSpecialtyProps) => (
-                            <TableRow key={item.id}>
+                        {specialtyMainData.map((item: MainSpecialtyOptimizedType) => (
+                            <TableRow key={item[0]}>
+                                <TableCell>
+                                    <Typography
+                                        sx={{
+                                            fontSize: "15px",
+                                            fontWeight: "600",
+                                        }}
+                                    >
+                                        {item[0]}
+                                    </Typography>
+                                </TableCell>
+
                                 <TableCell>
                                     <Typography
                                         sx={{
@@ -216,13 +269,13 @@ const Specialties = () => {
                                             fontWeight: "500",
                                         }}
                                     >
-                                        {item?.specialty_name}
+                                        {item[1]}
                                     </Typography>
                                 </TableCell>
 
                                 <TableCell>
                                     <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                                        {item.domain?.domain_name}
+                                        {item[2]}
                                     </Typography>
                                 </TableCell>
                                 <TableCell align='left'>
@@ -244,6 +297,7 @@ const Specialties = () => {
             </TableContainer>
         </>
     )
+
   return (<>
 
     {(loading == true && fetching == true) ? 
@@ -257,20 +311,20 @@ const Specialties = () => {
         <>
             {showSpecialty ? 
                 <MyTableCard
-                    title={"Specialty Section"}
-                    buttonReset={<MyButtonLoader fetching={fetching} loadingText='Loading' info={specialtyMainData.length} onClick={reset} />}
+                    title={"Specialty Type Section"}
+                    buttonReset={<MyButtonLoader fetching={fetching} loadingText='Loading' info={specialtyMainData.length} onClick={resetMain} />}
                     buttonAdd={<MyButtonAdd setAddItem={setAddSpecialtyMainFormModal} />}
-                    extra={<Button onClick={() => {setShowSpecialty(false)}} variant='outlined' sx={{ marginLeft: 4 }}>Show All Classes</Button>}
+                    extra={<Button onClick={() => {setShowSpecialty(false)}} variant='outlined' sx={{ marginLeft: 4 }}>Show All Specialties</Button>}
                     table={<TableCompMainSpecialties />}
                     loading={loading}
                 />
                     :
 
                 <MyTableCard
-                    title={"Class Section"}
-                    buttonReset={<MyButtonLoader fetching={fetching} loadingText='Loading' info={specialtyData.length} onClick={reset} />  }
+                    title={"Specialty Section"}
+                    buttonReset={<MyButtonLoader fetching={fetching} loadingText='Loading' info={specialtyData.length} onClick={resetSpec} />  }
                     buttonAdd={<MyButtonAdd setAddItem={setAddSpecialtyFormModal} />}
-                    extra={<Button onClick={() => {setShowSpecialty(true)}} variant='outlined' sx={{ marginLeft: 4 }}>Show All Specialties</Button>}
+                    extra={<Button onClick={() => {setShowSpecialty(true)}} variant='outlined' sx={{ marginLeft: 4 }}>Show All Types</Button>}
                     table={<TableComp />}
                     loading={loading}
                 />
@@ -281,7 +335,7 @@ const Specialties = () => {
                 setShowModal={setAddSpecialtyFormModal}
                 mainSpecialty={mainSpecialties}
                 levels={levels}
-                reset={reset}
+                reset={resetSpec}
             />
 
             <EditSpecialtyFormModal
@@ -289,14 +343,15 @@ const Specialties = () => {
                 setShowModal={setEditSpecialtyFormModal}
                 record={record}
                 mainSpecialty={mainSpecialties}
-                reset={reset} 
+                reset={resetSpec} 
+                levels={levels} 
             />
 
             <AddMainSpecialtyFormModal
                 showModal={addSpecialtyMainFormModal}
                 setShowModal={setAddSpecialtyMainFormModal}
                 domains={domains}
-                reset={reset}
+                reset={resetMain}
             />
 
             <EditMainSpecialtyFormModal
@@ -304,24 +359,24 @@ const Specialties = () => {
                 setShowModal={setEditSpecialtyMainFormModal}
                 record={recordMain}
                 domains={domains}
-                reset={reset} 
+                reset={resetMain} 
             />
 
             <DeleteItemFormModal
                 showModal={deleteSpecialtyFormModal}
                 setShowModal={setDeleteSpecialtyFormModal}
-                record_name={record?.main_specialty?.specialty_name}
+                record_name={record ? record[1] : null}
                 record={record}
-                reset={reset}
+                reset={resetSpec}
                 url={SpecialtyCRUDUrl}
             />
 
             <DeleteItemFormModal
                 showModal={deleteMainSpecialtyFormModal}
                 setShowModal={setDeleteMainSpecialtyFormModal}
-                record_name={recordMain?.specialty_name}
+                record_name={recordMain ? recordMain[1] : null}
                 record={recordMain}
-                reset={reset}
+                reset={resetSpec}
                 url={MainSpecialtyCRUDUrl}
             />
 

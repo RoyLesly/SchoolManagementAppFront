@@ -1,10 +1,10 @@
-import { MainCourseProps } from '@/Utils/types';
+import { MainCourseOptimizedType } from '@/Utils/types';
 import { Button, Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import React, { FC } from 'react'
 
 
 interface TableCourseMainProps {
-    coursesMainData: MainCourseProps[]
+    coursesMainData: MainCourseOptimizedType[]
     setRecordMain: any
     setEditCourseMainFormModal: any
     setDeleteCourseMainFormModal: any
@@ -34,8 +34,8 @@ const TableCourseMain:FC<TableCourseMainProps> = ({ coursesMainData, setRecordMa
                 </TableRow>
             </TableHead>
             <TableBody>
-                {coursesMainData.map((item: MainCourseProps) => (
-                    <TableRow key={item.id}>
+                {coursesMainData.map((item: MainCourseOptimizedType) => (
+                    <TableRow key={item[0]}>
                         <TableCell>
                             <Typography
                                 sx={{
@@ -43,7 +43,7 @@ const TableCourseMain:FC<TableCourseMainProps> = ({ coursesMainData, setRecordMa
                                     fontWeight: "500",
                                 }}
                             >
-                                {item?.course_name}
+                                {item[1]}
                             </Typography>
                         </TableCell>
 

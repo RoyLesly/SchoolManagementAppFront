@@ -1,10 +1,10 @@
-import { CourseProps } from '@/Utils/types';
+import { CourseOptimizedType, CourseProps, MainCourseOptimizedType } from '@/Utils/types';
 import { Button, Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import React, { FC } from 'react'
 
 
 interface TableCourseProps {
-    coursesData: CourseProps[]
+    coursesData: CourseOptimizedType[]
     setRecord: any
     setEditCourseFormModal: any
     setDeleteCourseFormModal: any
@@ -54,8 +54,8 @@ const TableCourse:FC<TableCourseProps> = ({ coursesData, setRecord, setEditCours
                 </TableRow>
             </TableHead>
             <TableBody>
-                {coursesData.map((item: CourseProps) => (
-                    <TableRow key={item.id}>
+                {coursesData.map((item: CourseOptimizedType) => (
+                    <TableRow key={item[0]}>
                         <TableCell>
                             <Typography
                                 sx={{
@@ -63,7 +63,7 @@ const TableCourse:FC<TableCourseProps> = ({ coursesData, setRecord, setEditCours
                                     fontWeight: "700",
                                 }}
                             >
-                                {item.id}
+                                {item[0]}
                             </Typography>
                         </TableCell>
                         <TableCell>
@@ -73,7 +73,7 @@ const TableCourse:FC<TableCourseProps> = ({ coursesData, setRecord, setEditCours
                                     fontWeight: "500",
                                 }}
                             >
-                                {item.course_code} - {item.main_course?.course_name}
+                                {item[4]} - {item[1]}
                             </Typography>
                         </TableCell>
     
@@ -84,19 +84,19 @@ const TableCourse:FC<TableCourseProps> = ({ coursesData, setRecord, setEditCours
                                     fontWeight: "500",
                                 }}
                             >
-                                {item.semester}
+                                {item[3]}
                             </Typography>
                         </TableCell>
     
                         <TableCell>
                             <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                                {item.specialty?.main_specialty.specialty_name} / {item.specialty?.level?.level} / {item.specialty?.academic_year}
+                                {item[2]} / {item[8]} / {item[9]}
                             </Typography>
                         </TableCell>
     
                         <TableCell>
                             <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                                {item.assigned_to?.first_name} {item.assigned_to?.last_name}
+                                {item[11]} {item[12]}
                             </Typography>
                         </TableCell>
     

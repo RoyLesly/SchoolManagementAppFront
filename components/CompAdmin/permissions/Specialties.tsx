@@ -6,7 +6,7 @@ import {
     Table, TableBody, TableCell, TableHead, TableRow,
     Button, Stack,
 } from '@mui/material';
-import { LevelProps, MainSpecialtyProps, SpecialtyProps } from '@/Utils/types';
+import { LevelOptimizedType, LevelProps, MainSpecialtyOptimizedType, MainSpecialtyProps, SpecialtyOptimizedType, SpecialtyProps } from '@/Utils/types';
 import { useGetAllLevels, useGetAllMainSpecialties, useGetAllSpecialties } from '@/Utils/customHooks';
 import { getAllSpecialties } from '@/Utils/functions';
 import AddSpecialtyFormModal from '@/Designs/Modals/AddSpecialtyFormModal';
@@ -18,18 +18,18 @@ import MyButtonAdd from '@/Designs/MyButtonAdd';
 const Specialties = () => {
     const [ fetching, setFetching ] = useState<boolean>(true)
     const [ loading, setLoading ] = useState<boolean>(true)
-    const [ record, setRecord ] = useState<SpecialtyProps | null>(null)
-    const [ specialties, setSpecialty ] = useState<SpecialtyProps[]>([])
-    const [ specialtyData, setSpecialtyData ] = useState<SpecialtyProps[]>([])
-    const [ mainSpecialties, setMainSpecialties ] = useState<MainSpecialtyProps[]>([])
-    const [ levels, setLevels ] = useState<LevelProps[]>([])
+    const [ record, setRecord ] = useState<SpecialtyOptimizedType>()
+    const [ specialties, setSpecialty ] = useState<SpecialtyOptimizedType[]>([])
+    const [ specialtyData, setSpecialtyData ] = useState<SpecialtyOptimizedType[]>([])
+    const [ mainSpecialties, setMainSpecialties ] = useState<MainSpecialtyOptimizedType[]>([])
+    const [ levels, setLevels ] = useState<LevelOptimizedType[]>([])
     const [ addSpecialtyFormModal, setAddSpecialtyFormModal ] = useState<boolean>(false)
     const [ editSpecialtyFormModal, setEditSpecialtyFormModal ] = useState<boolean>(false)
     const [ deleteSpecialtyFormModal, setDeleteSpecialtyFormModal ] = useState<boolean>(false)
 
-    useGetAllSpecialties(setSpecialty, setFetching);
-    useGetAllMainSpecialties(setMainSpecialties, setFetching);
-    useGetAllLevels(setLevels, setFetching);
+    // useGetAllSpecialties(setSpecialty, setFetching);
+    // useGetAllMainSpecialties(setMainSpecialties, setFetching);
+    // useGetAllLevels(setLevels, setFetching);
 
     useEffect(() => {
         setSpecialtyData(specialties)
@@ -65,8 +65,8 @@ const Specialties = () => {
                 </TableRow>
             </TableHead>
             <TableBody>
-                {specialtyData.map((item: SpecialtyProps) => (
-                    <TableRow key={item.id}>
+                {specialtyData.map((item: SpecialtyOptimizedType) => (
+                    <TableRow key={item[0]}>
                         <TableCell>
                             <Typography
                                 sx={{
@@ -74,13 +74,13 @@ const Specialties = () => {
                                     fontWeight: "500",
                                 }}
                             >
-                                {item.main_specialty?.specialty_name}
+                                {item[1]}
                             </Typography>
                         </TableCell>
 
                         <TableCell>
                             <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                                {item.academic_year}
+                                {item[2]}
                             </Typography>
                         </TableCell>
                         <TableCell align='center'>
@@ -122,12 +122,13 @@ const Specialties = () => {
         record={record}
         mainSpecialty={mainSpecialties}
         reset={reset} 
+        levels={levels} 
     />
 
     <DeleteItemFormModal
         showModal={deleteSpecialtyFormModal}
         setShowModal={setDeleteSpecialtyFormModal}
-        record_name={record?.main_specialty?.specialty_name}
+        record_name={record && record[1]}
         record={record}
         reset={reset}
         url={""}

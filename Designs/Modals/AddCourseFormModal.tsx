@@ -2,14 +2,14 @@
 import { Form, Input, Modal, Select, notification } from 'antd'
 import { FC, useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { CourseCRUDUrl } from '@/Utils/Config';
-import { axiosRequest, getAllSpecialties } from '@/Utils/functions';
-import { DataProps, DropdownDomainType, DropdownSpecialtyType, MainCourseProps, SpecialtyProps, UserType } from '@/Utils/types';
+import { AppControlOptimizedQueryUrl, CourseCRUDUrl } from '@/Utils/Config';
+import { axiosRequest } from '@/Utils/functions';
+import { DataProps, DomainOptimizedType, DropdownUserTeacherType, LevelOptimizedType, MainCourseOptimizedType, SpecialtyOptimizedType } from '@/Utils/types';
 import MyButtonSave from '@/Designs/MyButtonSave';
 import AddCourseTransversalSelectFormModal from './AddCourseTransversalSelectFormModal';
 import { selectAuthUser } from '@/Redux/Reducers/sliceUser';
 import { listOfAcademicYears } from '@/Utils/constants';
-import { getDataDropdown } from '@/Utils/pagination';
+import { getOptimizedQuery } from '@/Utils/pagination';
 
 
 const { Option } = Select
@@ -17,9 +17,9 @@ const { Option } = Select
 interface AddCourseUserFormProps {
     showModal: any
     setShowModal: any
-    mainCourses: MainCourseProps[]
-    userTeachers: UserType[]
-    specialty: DropdownSpecialtyType[]
+    mainCourses: MainCourseOptimizedType[]
+    userTeachers: DropdownUserTeacherType[]
+    specialty: SpecialtyOptimizedType[]
     reset: any
 }
 
@@ -29,28 +29,17 @@ const AddCourseFormModal:FC<AddCourseUserFormProps> = ({ showModal, userTeachers
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const [count, setCount] = useState<number>(0);
-    const [specialtyData, setSpecialtyData] = useState<DropdownSpecialtyType[]>([]);
-    const [domains, setDomains] = useState<DropdownDomainType[]>([]);
-    const [userActiveTeacher, setUserActiveTeacher] = useState<UserType[]>([]);
+    const [specialtyData, setSpecialtyData] = useState<SpecialtyOptimizedType[]>([]);
+    const [levels, setLevels] = useState<LevelOptimizedType[]>();
+    const [domains, setDomains] = useState<DomainOptimizedType[]>([]);
     const [selectedCourseID, setSelectedCourseID] = useState<number>(0)
     const [selectedDomainID, setSelectedDomainID] = useState<number>(0)
     const [selectedYear, setSelectedYear] = useState(0)
     const [selectedType, setSelectedType] = useState<string>("");
+    const [selectedLevel, setSelectedLevel] = useState<number>(0);
     const [showAddTransversalCourses, setShowAddTransversalCourses] = useState<boolean>(false);
     const [firstSelectedID, setFirstSelectedID] = useState<any>(0);
     const [specialtyList, setSpecialtyList] = useState<any>([]);
-
-    useEffect(() => {
-        if (count == 0) {
-            if (specialty.length > 0) {
-                setSpecialtyData(specialty); 
-                setCount(count + 1);
-            }
-            getDataDropdown(setDomains, ()=>{}, {model: "Domain"})
-            setUserActiveTeacher(userTeachers);
-        }
-        
-      }, [count, specialty, mainCourses, userTeachers])
     
     const onSubmit = async (values: DataProps) => {
         
@@ -114,18 +103,18 @@ const AddCourseFormModal:FC<AddCourseUserFormProps> = ({ showModal, userTeachers
     }
 
     useEffect(() => {
-        console.log("courseID =>", selectedCourseID, "domainID =>", selectedDomainID, "year =>", selectedYear)
-        if ( selectedCourseID > 0 && selectedDomainID > 0 && selectedYear > 0 && specialty.length > 0 ) {
-            
-                const filA = specialty.filter((item: DropdownSpecialtyType) => item[1] == selectedDomainID);
-                const filB = filA.filter((item: DropdownSpecialtyType) => item[3].includes(selectedYear.toString()))
-                setSpecialtyData(filB)
+        if (count == 0) {
+            getOptimizedQuery(setDomains, ()=>{}, ()=>{}, ()=>{}, ()=>{}, AppControlOptimizedQueryUrl, { model: "Domain", fieldList: ["id", "domain_name"]}) 
+            getOptimizedQuery(setLevels, ()=>{}, ()=>{}, ()=>{}, ()=>{}, AppControlOptimizedQueryUrl, { model: "Level", fieldList: ["id", "level"]}) 
+            setCount(count + 1); 
         }
-    }, [count, selectedCourseID, selectedDomainID, selectedYear, specialty])
-    console.log(specialty)
-    console.log(specialtyData)
-    console.log(count)
-
+        if ( selectedCourseID > 0 && selectedDomainID > 0 && selectedYear != 0 && selectedLevel != 0 && specialty.length > 0 ) {
+                const filA = specialty.filter((item: SpecialtyOptimizedType) => item[4] == selectedDomainID);
+                const filB = filA.filter((item: SpecialtyOptimizedType) => item[2].includes(selectedYear.toString()))
+                const filC = filB.filter((item: SpecialtyOptimizedType) => item[3] == selectedLevel)
+                setSpecialtyData(filC)
+        }
+    }, [count, selectedCourseID, selectedDomainID, selectedYear, selectedLevel, specialty])
 
     return (
         <>
@@ -145,7 +134,7 @@ const AddCourseFormModal:FC<AddCourseUserFormProps> = ({ showModal, userTeachers
                         rules={[{ required: true, message: "Please Input Course Name" }]}
                     >
                         {mainCourses.length > 0 ? <Select placeholder="All Courses" onChange={(e) => setSelectedCourseID(e)}>
-                            {mainCourses.map((mc: MainCourseProps) => <Option key={mc.id} value={mc.id}>{mc?.course_name}</Option>)}
+                            {mainCourses.map((mc: MainCourseOptimizedType) => <Option key={mc[0]} value={mc[0]}>{mc[1]}</Option>)}
                         </Select> : <div>No Main Courses</div>}
                     </Form.Item>
 
@@ -154,7 +143,7 @@ const AddCourseFormModal:FC<AddCourseUserFormProps> = ({ showModal, userTeachers
                                 rules={[{ required: true, message: "Select Domain" }]}
                             >
                                 <Select placeholder="Select Domain" onChange={(e) => setSelectedDomainID(e)}>
-                                {domains.map((mc: DropdownDomainType) => <Option key={mc[0]} value={mc[0]}>{mc[1]}</Option>)}
+                                {domains.map((mc: DomainOptimizedType) => <Option key={mc[0]} value={mc[0]}>{mc[1]}</Option>)}
                             </Select>
                         </Form.Item> : <></>}
 
@@ -165,8 +154,17 @@ const AddCourseFormModal:FC<AddCourseUserFormProps> = ({ showModal, userTeachers
                                 {listOfAcademicYears?.map((item: any) => (<Option key={item} value={item}>{item}</Option>))}
                             </Select>
                         </Form.Item> : <></>}
+                    
+                    
+                        {selectedYear != 0 ?<Form.Item label="Level" name="level_id"
+                            rules={[{ required: true, message: "Please Select Level" }]}
+                        >
+                            <Select placeholder="Course Type" onChange={(e) => { setSelectedLevel(e); console.log(e) }}>
+                                {levels?.map((item: LevelOptimizedType) => <Option key={item[0]} value={item[0]}>{item[1]}</Option>)}
+                            </Select>
+                        </Form.Item> : <></>}
 
-                        {selectedYear != 0 ?<Form.Item label="course TYPE" name="course_type"
+                        {selectedLevel != 0 ?<Form.Item label="course TYPE" name="course_type"
                             rules={[{ required: true, message: "Please Select Type" }]}
                         >
                             <Select placeholder="Course Type" onChange={(e) => { setSelectedType(e) }}>
@@ -182,7 +180,7 @@ const AddCourseFormModal:FC<AddCourseUserFormProps> = ({ showModal, userTeachers
                                     rules={[{ required: true, message: "Please Input Course Name" }]}
                                 >
                                     <Select placeholder="Specialty" onChange={(e) => {setFirstSelectedID(e)}}>
-                                        {specialtyData.map((item: DropdownSpecialtyType) => <Option key={item[0]} value={item[0]}>{item[2]}-L{item[4]} - {item[3]}</Option>)}
+                                        {specialtyData.map((item: SpecialtyOptimizedType) => <Option key={item[0]} value={item[0]}>{item[1]}-L{item[2]} - {item[6]}</Option>)}
                                     </Select>
                                 </Form.Item>
                             </> 
@@ -195,10 +193,9 @@ const AddCourseFormModal:FC<AddCourseUserFormProps> = ({ showModal, userTeachers
                                         mode="multiple"
                                         defaultValue={[]}
                                         style={{ width: '100%' }}
-                                        // onChange={(e) => { console.log(e) }}
-                                        options={specialtyData.map(function(elem: DropdownSpecialtyType) {
+                                        options={specialtyData.map(function(elem: SpecialtyOptimizedType) {
                                             return {
-                                                label: elem[2] + "-" + elem[4]  + " " + elem[3],
+                                                label: elem[1] + "-" + elem[2]  + " " + elem[6],
                                                 value: elem[0],
                                             }}) 
                                         } 
@@ -235,7 +232,7 @@ const AddCourseFormModal:FC<AddCourseUserFormProps> = ({ showModal, userTeachers
                         >
                             <Select placeholder="Assign To">
                                 <Option key={0} value="">----------</Option>
-                                {userActiveTeacher?.map((item: UserType) => <Option key={item.id} value={item.id}>{item?.first_name} {item?.last_name}</Option>)}
+                                {userTeachers?.map((item: DropdownUserTeacherType) => <Option key={item[0]} value={item[0]}>{item[1]} {item[2]}</Option>)}
                             </Select>
                         </Form.Item>
 

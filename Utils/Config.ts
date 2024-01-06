@@ -68,11 +68,11 @@ export const KpiUserProfileCountsOneUrl = BaseUrl + "user/kpi-user-profile-speci
 export const KpiUserProfileCountsTwoUrl = BaseUrl + "user/kpi-user-profile-specialty-two-counts";
 export const KpiYearlyModelCountList = BaseUrl + "user/kpi-yearly-model-count-list";
 
-// DROPDOWNS
-export const DropdownUrl = BaseUrl + "app/dropdowns";
-export const DropdownDomainsUrl = BaseUrl + "app/dropdowns";
-export const DropdownSpecialtiesUrl = BaseUrl + "app/dropdowns";
-export const DropdownSpecialtiesMainUrl = BaseUrl + "app/dropdowns";
-export const DropdownCourseUrl = BaseUrl + "app/dropdowns";
+
+// OPTIMIZED QUERIES
+export const UserControlOptimizedQueryUrl = BaseUrl + "user/user-queries";
+// OPTIMIZED QUERIES
+export const AppControlOptimizedQueryUrl = BaseUrl + "app/app-queries";
+
 
 export const KpiAppControlUrl = BaseUrl + "app/kpi-app";

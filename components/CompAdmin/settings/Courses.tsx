@@ -4,39 +4,38 @@ import MyTableCard from '@/Designs/Tables/MyTableCard'
 import {
     Button, Input, LinearProgress, TableContainer, TablePagination,
 } from '@mui/material';
-import { CourseProps, DropdownSpecialtyType, LevelProps, MainCourseProps, SpecialtyProps, UserType } from '@/Utils/types';
-import { getAllLevels, getAllMainCourses, getAllSpecialties, getAllUsers } from '@/Utils/functions';
+import { CourseOptimizedType, CourseProps, DropdownSpecialtyType, DropdownUserTeacherType, LevelProps, MainCourseOptimizedType, MainCourseProps, SpecialtyOptimizedType, SpecialtyProps, UserType } from '@/Utils/types';
 import DeleteItemFormModal from '@/Designs/Modals/DeleteItemFormModal';
 import MyButtonAdd from '@/Designs/MyButtonAdd';
 import EditCourseFormModal from '@/Designs/Modals/EditCourseFormModal';
 import AddCourseFormModal from '@/Designs/Modals/AddCourseFormModal';
-import { CourseCRUDUrl, MainCourseCRUDUrl, PageCourseCRUDUrl } from '@/Utils/Config';
+import { AppControlOptimizedQueryUrl, CourseCRUDUrl, MainCourseCRUDUrl, UserControlOptimizedQueryUrl } from '@/Utils/Config';
 import AddMainCourseFormModal from '@/Designs/Modals/AddMainCourseFormModal';
 import EditMainCourseFormModal from '@/Designs/Modals/EditMainCourseFormModal';
 import MyButtonLoader from '@/Designs/MyButtonLoader';
 import TableCourse from '@/Designs/Tables/TableCourse';
 import TableCourseMain from '@/Designs/Tables/TableCourseMain';
-import { getData, getDataDropdown, pageGetAllCourses } from '@/Utils/pagination';
+import { getOptimizedQuery } from '@/Utils/pagination';
 
 const Courses = () => {
     const [ showMain, setShowMain ] = useState<boolean>(false)
     const [ fetching, setFetching ] = useState<boolean>(true)
     const [ loading, setLoading ] = useState<boolean>(true)
-    const [ record, setRecord ] = useState<CourseProps | null>(null)
+    const [ record, setRecord ] = useState<CourseOptimizedType>()
     const [ count, setCount ] = useState<number>(0)
     const [ page, setPage ] = useState<number>(0)
     const [ rowsPerPage, setRowsPerPage ] = useState<number>(100)
     const [ countTotal, setCountTotal ] = useState<number>(0)
-    const [ nextLink, setNextLink ] = useState<string | null>(null)
-    const [ prevLink, setPrevLink ] = useState<string | null>(null)
-    const [ coursesDataPrev, setCoursesDataPrev ] = useState<CourseProps[]>([])
-    const [ coursesDataNext, setCoursesDataNext ] = useState<CourseProps[]>([])
+    const [ nextLink, setNextLink ] = useState<boolean>(false)
+    const [ prevLink, setPrevLink ] = useState<boolean>(false)
+    const [ coursesDataPrev, setCoursesDataPrev ] = useState<CourseOptimizedType[]>([])
+    const [ coursesDataNext, setCoursesDataNext ] = useState<CourseOptimizedType[]>([])
 
-    const [ recordMain, setRecordMain ] = useState<MainCourseProps | null>(null)
-    const [ courses, setCourses ] = useState<CourseProps[]>([])
-    const [ coursesData, setCoursesData ] = useState<CourseProps[]>([])
-    const [ coursesMain, setCoursesMain ] = useState<MainCourseProps[]>([])
-    const [ coursesMainData, setCoursesMainData ] = useState<MainCourseProps[]>([])
+    const [ recordMain, setRecordMain ] = useState<MainCourseOptimizedType>()
+    const [ courses, setCourses ] = useState<CourseOptimizedType[]>([])
+    const [ coursesData, setCoursesData ] = useState<CourseOptimizedType[]>([])
+    const [ mainCourses, setMainCourses ] = useState<MainCourseOptimizedType[]>([])
+    const [ mainCoursesData, setMainCoursesData ] = useState<MainCourseOptimizedType[]>([])
     const [ levels, setLevels ] = useState<LevelProps[]>([])
     const [ addCourseFormModal, setAddCourseFormModal ] = useState<boolean>(false)
     const [ editCourseFormModal, setEditCourseFormModal ] = useState<boolean>(false)
@@ -45,57 +44,64 @@ const Courses = () => {
     const [ addCourseMainFormModal, setAddCourseMainFormModal ] = useState<boolean>(false)
     const [ editCourseMainFormModal, setEditCourseMainFormModal ] = useState<boolean>(false)
     const [ deleteCourseMainFormModal, setDeleteCourseMainFormModal ] = useState<boolean>(false)
-    const [ userTeachers, setUserTeachers ] = useState<UserType[]>([])
-    const [ specialties, setSpecialties ] = useState<DropdownSpecialtyType[]>([])
+    const [ userTeachers, setUserTeachers ] = useState<DropdownUserTeacherType[]>([])
+    const [ specialties, setSpecialties ] = useState<SpecialtyOptimizedType[]>([])
+
+    const [ coursesFieldList, setCoursesFieldList] = useState<string[]>(["id", "main_course__course_name", "specialty__main_specialty__specialty_name", "semester", "course_code", "course_credit", "hours", "completed", 
+        "specialty__level__level", "specialty__academic_year", "assigned_to", "assigned_to__first_name", "assigned_to__last_name", "specialty__id", "main_course__id"
+    ])
+    const [ mainCoursesFieldList, setMainCoursesFieldList] = useState<string[]>(["id", "course_name"])
+    const [ specialtyFieldList, setSpecialtyFieldList] = useState<string[]>(["id", "main_specialty__specialty_name", "academic_year", "level_id", "main_specialty__domain__id", "main_specialty__id", "level__level"])
 
     useEffect(() => {
-        if (count == 0){
-            pageGetAllCourses(setCourses, setFetching, setCountTotal, setNextLink, setPrevLink) 
-            if (courses.length > 0) { setCount(count + 1); setLoading(false) }
-        }
-        if (count == 1) {
-            getDataDropdown(setSpecialties, () => {}, {model: "Specialty"});
-            getAllMainCourses(setCoursesMain, ()=>{})
-            getDataDropdown(setLevels, () => {}, {model: "Level"});
-            getAllUsers(setUserTeachers, ()=>{}, { searchField: ["role", "is_active"], value: ["teacher", true]});
-            setCoursesData(courses)
+        if (count == 0) {
+            if (page == 0) { 
+                getOptimizedQuery(setCourses, setFetching, setCountTotal, setNextLink, setPrevLink, AppControlOptimizedQueryUrl, { model: "Course", fieldList: [...coursesFieldList], page: 1}) 
+                getOptimizedQuery(setMainCourses, setFetching, ()=>{}, ()=>{}, ()=>{}, AppControlOptimizedQueryUrl, { model: "MainCourse", fieldList: [...mainCoursesFieldList]}) 
+                getOptimizedQuery(setLevels, setFetching, ()=>{}, ()=>{}, ()=>{}, AppControlOptimizedQueryUrl, { model: "Level", fieldList: ["id", "level"]}) 
+                getOptimizedQuery(setSpecialties, setFetching, ()=>{}, ()=>{}, ()=>{}, AppControlOptimizedQueryUrl, { model: "Specialty", fieldList: [...specialtyFieldList]}) 
+            }
+            if (page != 0) { 
+                getOptimizedQuery(setCourses, setFetching, setCountTotal, setNextLink, setPrevLink, AppControlOptimizedQueryUrl, { model: "Course", fieldList: [...coursesFieldList], page: page}) 
+
+            }
             setCount(count + 1)
         }
+        if (count == 1) {
+            if (courses.length > 0) { setCoursesData(courses); setCount(count + 1); setLoading(false); }
+        }
         if (count == 2) {
-            if (coursesMain.length > 0) {
-                setCoursesMainData(coursesMain)
-                setCount(count + 1)
-            }
+            if (mainCourses.length > 0) { setMainCoursesData(mainCourses); setCount(count + 1); }
         }
         if (count == 3) {
             if (page == 0){
                 setCoursesDataPrev([])
-                getData(setCoursesData, ()=>{}, setCountTotal, setNextLink, setPrevLink, PageCourseCRUDUrl + "?page=" + 1)
-                if (nextLink != null) { getData(setCoursesDataNext, setFetching, setCountTotal, setNextLink, setPrevLink, PageCourseCRUDUrl + "?page=" + 2) }
+                if (nextLink) { getOptimizedQuery(setCoursesDataNext, setFetching, setCountTotal, setNextLink, setPrevLink, AppControlOptimizedQueryUrl, { model: "Course", page: 2, fieldList: [...coursesFieldList]}) }
             }
             if (page > 0){
-                getData(setCoursesDataPrev, ()=>{}, setCountTotal, setNextLink, setPrevLink, PageCourseCRUDUrl + "?page=" + page )
-                if (nextLink != null) { getData(setCoursesDataNext, setFetching, setCountTotal, setNextLink, setPrevLink, PageCourseCRUDUrl + "?page=" + (page + 2)) }
+                getOptimizedQuery(setCoursesDataPrev, setFetching, setCountTotal, setNextLink, setPrevLink, AppControlOptimizedQueryUrl, { model: "Course", page: page, fieldList: [...coursesFieldList]} )
+                if (nextLink) { getOptimizedQuery(setCoursesDataNext, setFetching, setCountTotal, setNextLink, setPrevLink, AppControlOptimizedQueryUrl, { model: "Course", page: page + 2, fieldList: [...coursesFieldList]}) }
+                else { setCoursesDataNext([]) }
             }
             setCount(count + 1)
         }
-    }, [courses, page, nextLink, fetching, coursesMain, count])
+    }, [courses, page, mainCourses, nextLink, count, coursesFieldList, mainCoursesFieldList, specialtyFieldList])
 
-
+    useEffect(() => {
+        getOptimizedQuery(setUserTeachers, setFetching, ()=>{}, ()=>{}, ()=>{}, UserControlOptimizedQueryUrl, { model: "CustomUser", searchField: ["role", "is_active"], value: ["teacher", true], fieldList: ["id", "first_name", "last_name"]}) 
+    }, [addCourseFormModal, editCourseFormModal])
     const reset = () => {
+        setCount(0)
         setFetching(true)
-        getData(setCoursesData, setFetching, setCountTotal, setNextLink, setPrevLink, PageCourseCRUDUrl + "?page=" + 1)
-        getAllSpecialties(setSpecialties, setFetching)
-        getAllMainCourses(setCoursesMain, setFetching)
     }
 
     const SearchMainCourse = (val: string) => {
-        const filt = coursesMain.filter((item: MainCourseProps) => item.course_name.toLowerCase().includes(val.toLowerCase()))
-        setCoursesMainData(filt);
+        const filt = mainCourses.filter((item: MainCourseOptimizedType) => item[1].toLowerCase().includes(val.toLowerCase()))
+        setMainCoursesData(filt);
     }
 
     const SearchCourse = (val: string) => {        
-        const filt = courses.filter((item: CourseProps) => item.main_course.course_name.toLowerCase().includes(val.toLowerCase()))
+        const filt = courses.filter((item: CourseOptimizedType) => item[1].toLowerCase().includes(val.toLowerCase()))
         setCoursesData(filt);
     }
 
@@ -123,7 +129,7 @@ const Courses = () => {
             { showMain ? 
                 <MyTableCard
                     title={"Course Title Section"}
-                    buttonReset={<MyButtonLoader fetching={fetching} loadingText='Loading' info={coursesMainData.length} onClick={reset} />  }
+                    buttonReset={<MyButtonLoader fetching={fetching} loadingText='Loading' info={mainCoursesData.length} onClick={reset} />  }
                     search={<Input placeholder='Search Title ...' onChange={(e) => SearchCourse(e.target.value)}/>}
                     buttonAdd={<MyButtonAdd setAddItem={setAddCourseMainFormModal} />}
                     extra={<Button onClick={() => {setShowMain(false)}} variant='outlined' sx={{ marginX: 1 }}>Show All Courses</Button>}
@@ -131,7 +137,7 @@ const Courses = () => {
                         <>
                             <TableContainer>
                                 <TableCourseMain  
-                                    coursesMainData={coursesMainData}
+                                    coursesMainData={mainCoursesData}
                                     setRecordMain={setRecordMain}
                                     setEditCourseMainFormModal={setEditCourseMainFormModal}
                                     setDeleteCourseMainFormModal={setDeleteCourseMainFormModal}
@@ -178,7 +184,7 @@ const Courses = () => {
             <AddCourseFormModal
                 showModal={addCourseFormModal}
                 setShowModal={setAddCourseFormModal}
-                mainCourses={coursesMain}
+                mainCourses={mainCourses}
                 reset={reset}
                 specialty={specialties}
                 userTeachers={userTeachers}
@@ -194,10 +200,10 @@ const Courses = () => {
                 showModal={editCourseFormModal} 
                 setShowModal={setEditCourseFormModal}
                 record={record}
-                record_name={record?.main_course?.course_name}
+                record_name={record && record[1]}
                 specialty={specialties}
                 userTeachers={userTeachers}
-                mainCoursesData={coursesMain}
+                mainCoursesData={mainCourses}
                 reset={reset} 
             />
         
@@ -211,7 +217,7 @@ const Courses = () => {
             <DeleteItemFormModal
                 showModal={deleteCourseFormModal}
                 setShowModal={setDeleteCourseFormModal}
-                record_name={record?.main_course?.course_name}
+                record_name={record && record[1]}
                 record={record}
                 reset={reset}
                 url={CourseCRUDUrl}
@@ -220,7 +226,7 @@ const Courses = () => {
             <DeleteItemFormModal
                 showModal={deleteCourseMainFormModal}
                 setShowModal={setDeleteCourseMainFormModal}
-                record_name={recordMain?.course_name}
+                record_name={recordMain && recordMain[1]}
                 record={recordMain}
                 reset={reset}
                 url={MainCourseCRUDUrl}

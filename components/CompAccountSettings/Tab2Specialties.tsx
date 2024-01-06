@@ -12,13 +12,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import { addChoosenUserProfile, selectChoosenUserProfile } from '@/Redux/Reducers/sliceChoosenUserAndProfile'
 import { DomainProps, DropdownSpecialtyType, LevelProps, SpecialtyProps, UserProfile } from '@/Utils/types'
 import { axiosRequest, getAllDomains, getAllLevels, getAllSpecialties, getAllUserProfiles } from '@/Utils/functions'
-import { UserProfilesUrl } from '@/Utils/Config'
+import { AppControlOptimizedQueryUrl, UserProfilesUrl } from '@/Utils/Config'
 import { selectAuthUser } from '@/Redux/Reducers/sliceUser'
 import { message, notification } from 'antd'
 import { useRouter } from 'next/navigation'
 import MyButtonLoader from '@/Designs/MyButtonLoader'
 import { InputLabel, LinearProgress, MenuItem, Select, Typography } from '@mui/material'
-import { getDataDropdown } from '@/Utils/pagination'
+import { getOptimizedQuery } from '@/Utils/pagination'
 
 
 const Tab2Specialties = () => {
@@ -31,6 +31,8 @@ const Tab2Specialties = () => {
   const [ profiles, setProfiles ] = useState<UserProfile[]>([])
   const [ loading, setLoading ] = useState<boolean>(true)
   const [ count, setCount ] = useState<number>(0)
+  const [ nextLink, setNextLink ] = useState<boolean>(false)
+  const [ prevLink, setPrevLink ] = useState<boolean>(false)
 
   const [ specialties, setSpecialties ] = useState<DropdownSpecialtyType[]>([])
   const [ mySpecialtyList, setMySpecialtyList ] = useState<any[]>([])
@@ -50,9 +52,10 @@ const Tab2Specialties = () => {
 
   useEffect(() => {
     if (count == 0) {
-      getDataDropdown(setDomains, () => {}, {model: "Domain"});
-      getDataDropdown(setSpecialties, () => {}, {model: "Specialty"});
-      getDataDropdown(setLevels, () => {}, {model: "Level"});
+      getOptimizedQuery(setDomains, setFetching, ()=>{}, setNextLink, setPrevLink, AppControlOptimizedQueryUrl, { model: "Domain", fieldList: ["id", "domain_name"]}) 
+      getOptimizedQuery(setSpecialties, setFetching, ()=>{}, setNextLink, setPrevLink, AppControlOptimizedQueryUrl, { model: "Specialty", fieldList: ["id", "main_specialty__specialty_name"]}) 
+      getOptimizedQuery(setSpecialties, setFetching, ()=>{}, setNextLink, setPrevLink, AppControlOptimizedQueryUrl, { model: "Level", fieldList: ["id", "level"]}) 
+      
       getAllUserProfiles(setProfiles, () => {}, {kpi: true, searchField: "user__id", value: storeProfile?.user?.id});
       setCount(count + 1);
     }
@@ -73,7 +76,7 @@ const Tab2Specialties = () => {
     if (count == 3) {
       setFetching(false);
     }
-  }, [count, profiles, storeProfile, specialties, domains.length, levels.length, specialties.length])
+  }, [count, profiles, storeProfile, specialties, domains, levels])
 
   useEffect(() => {
     if (count > 1){
@@ -167,6 +170,10 @@ useEffect(() => {
       setLoading(false)
     }
   };
+
+  console.log(domains)
+  console.log(specialties)
+  console.log(levels)
   
   const onPromote = async (data: any) => {
     if (nextSpecialty_id < 1) {
@@ -267,7 +274,7 @@ useEffect(() => {
                     onChange={handleChangeDomain}
                     fullWidth
                   >
-                    {domains.map((item: any) => (
+                    {domains?.map((item: any) => (
                       <MenuItem key={item[0]} value={item[0]}>{item[1]}</MenuItem>
                     ))}
                   </Select>

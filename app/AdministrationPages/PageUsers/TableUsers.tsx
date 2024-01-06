@@ -5,19 +5,19 @@ import {
 } from '@mui/material';
 import DashboardCard from '@/components/CompAdmin/shared/DashboardCard';
 import { ChangeEvent, useEffect, useState } from 'react';
-import { UserProfile, UserType } from '@/Utils/types';
+import { CustomUserOptimizedType, UserProfile, UserProfileOptimizedType, UserType } from '@/Utils/types';
 import { getAllUserProfiles, getAllUsers } from '@/Utils/functions';
 import AddUserFormModal from '@/Designs/Modals/AddUserFormModal';
 import EditUserFormModal from '@/Designs/Modals/EditUserFormModal';
 import DeleteItemFormModal from '@/Designs/Modals/DeleteItemFormModal';
-import { PageUserCRUDUrl, UserCRUDUrl } from '@/Utils/Config';
+import { PageUserCRUDUrl, UserCRUDUrl, UserControlOptimizedQueryUrl } from '@/Utils/Config';
 import MyButtonAdd from '@/Designs/MyButtonAdd';
 import { green, red } from '@mui/material/colors';
 import { useRouter } from 'next/navigation';
 import { useDispatch } from 'react-redux';
 import { addChoosenUserProfile, removeChoosenUser } from '@/Redux/Reducers/sliceChoosenUserAndProfile';
 import MyButtonLoader from '@/Designs/MyButtonLoader';
-import { getData } from '@/Utils/pagination';
+import { getData, getOptimizedQuery } from '@/Utils/pagination';
 
 
 const TableUsers = () => {
@@ -26,27 +26,37 @@ const TableUsers = () => {
     const [ page, setPage ] = useState<number>(0)
     const [ count, setCount ] = useState<number>(0)
     const [ countTotal, setCountTotal ] = useState<number>(0)
-    const [ nextLink, setNextLink ] = useState<string | null>(null)
-    const [ prevLink, setPrevLink ] = useState<string | null>(null)
+    const [ nextLink, setNextLink ] = useState<boolean>(false)
+    const [ prevLink, setPrevLink ] = useState<boolean>(false)
+    const [ loading, setLoading ] = useState<boolean>(true)
     const [ rowsPerPage, setRowsPerPage ] = useState<number>(100)
     const [ fetching, setFetching ] = useState<boolean>(true);
-    const [ record, setRecord ] = useState<UserType>();
-    const [ userProfiles, setUserProfiles ] = useState<UserProfile[]>([]);
-    const [ users, setUsers ] = useState<UserType[]>([]);
-    const [ usersData, setUsersData ] = useState<UserType[]>([]);
-    const [ usersDataPrev, setUsersDataPrev ] = useState<UserType[]>([])
-    const [ usersDataNext, setUsersDataNext ] = useState<UserType[]>([])
+    const [ record, setRecord ] = useState<CustomUserOptimizedType>();
+    const [ userProfiles, setUserProfiles ] = useState<UserProfileOptimizedType[]>([]);
+    const [ users, setUsers ] = useState<CustomUserOptimizedType[]>([]);
+    const [ usersData, setUsersData ] = useState<CustomUserOptimizedType[]>([]);
+    const [ usersDataPrev, setUsersDataPrev ] = useState<CustomUserOptimizedType[]>([])
+    const [ usersDataNext, setUsersDataNext ] = useState<CustomUserOptimizedType[]>([])
     const [ addUserFormModal, setAddUserFormModal ] = useState<boolean>(false);
     const [ editUserFormModal, setEditUserFormModal ] = useState<boolean>(false);
     const [ deleteUserFormModal, setDeleteUserFormModal ] = useState<boolean>(false);
 
+    const [ customUserFieldList, setCustomUserFielList] = useState<string[]>([
+        "id", "username", "matricle", "first_name", "last_name",
+        "title", "telephone", "email", "address", "is_active", "role"
+    ])
+    const [ userProfileFieldList, setUserProfileFieldList] = useState<string[]>([
+        "id", "user__username", "user__matricle", "user__first_name", "user__last_name", "specialty__id", 
+        "specialty__main_specialty__specialty_name", "user__title", "user__telephone", "user__email", "user__address",
+        "user__is_active", "user__role"
+    ])
 
     useEffect(() => {
         let URL = PageUserCRUDUrl
         if (count == 0) {
-            if (page == 0) { getAllUserProfiles(setUserProfiles, setFetching); dispatch(removeChoosenUser()); }
-            if (page == 0) { getData(setUsers, setFetching, setCountTotal, setNextLink, setPrevLink, URL) }
-            if (page != 0) { getData(setUsers, setFetching, setCountTotal, setNextLink, setPrevLink, UserCRUDUrl + "/?page=" + page) }
+            if (page == 0) { getOptimizedQuery(setUserProfiles, ()=>{}, ()=>{}, ()=>{}, ()=>{}, UserControlOptimizedQueryUrl, { model: "UserProfile", fieldList: [...userProfileFieldList], page: 1}) }
+            if (page == 0) { getOptimizedQuery(setUsers, setFetching, setCountTotal, setNextLink, setPrevLink, UserControlOptimizedQueryUrl, { model: "CustomUser", fieldList: [...customUserFieldList], page: 1}) }
+            if (page != 0) { getOptimizedQuery(setUsers, setFetching, setCountTotal, setNextLink, setPrevLink, UserControlOptimizedQueryUrl, { model: "CustomUser", fieldList: [...customUserFieldList], page: page}) }
             setCount(count + 1)
         }
 
@@ -60,19 +70,22 @@ const TableUsers = () => {
         if (count == 2) {
             if (page == 0){
                 setUsersDataPrev([])
-                getData(setUsersData, setFetching, setCountTotal, setNextLink, setPrevLink, URL + "?page=" + 1)
-                if (nextLink != null) { getData(setUsersDataNext, setFetching, setCountTotal, setNextLink, setPrevLink, URL + "?page=" + 2) }
+                if (nextLink) { getOptimizedQuery(setUsersDataNext, setFetching, setCountTotal, setNextLink, setPrevLink, UserControlOptimizedQueryUrl, { model: "CustomUser", page: 2, fieldList: [...customUserFieldList]}) }
             }
             if (page > 0){
-                console.log(77)
-                getData(setUsersDataPrev, setFetching, setCountTotal, setNextLink, setPrevLink, URL + "?page=" + page )
-                if (nextLink != null) { console.log("getting..."); getData(setUsersDataNext, setFetching, setCountTotal, setNextLink, setPrevLink, URL + "?page=" + (page + 2)) }
+                getOptimizedQuery(setUsersDataPrev, setFetching, setCountTotal, setNextLink, setPrevLink, UserControlOptimizedQueryUrl, { model: "CustomUser", page: page, fieldList: [...customUserFieldList]} )
+                if (nextLink) { getOptimizedQuery(setUsersDataNext, setFetching, setCountTotal, setNextLink, setPrevLink, UserControlOptimizedQueryUrl, { model: "CustomUser", page: page + 2, fieldList: [...customUserFieldList]}) }
+                else { setUsersDataNext([]) }
             }
             setCount(count + 1)
         }
-    }, [users, usersData, nextLink, prevLink, count, page, dispatch])
+    }, [users, usersData, nextLink, prevLink, count, page, userProfileFieldList, customUserFieldList, dispatch])
 
     const reset = () => {
+        setCount(0)
+        setUsersData([]);
+        setUsersDataPrev([]);
+        setUsersDataNext([]);
         setFetching(true)
         getAllUsers(setUsers, setFetching)
     }
@@ -92,9 +105,11 @@ const TableUsers = () => {
     }};
 
     const Search = (val: any) => {
-        const filA = users.filter((item: UserType) => item.username?.toLowerCase().includes(val.toLowerCase()))
-        const filB = users.filter((item: UserType) => item.first_name?.toLowerCase().includes(val.toLowerCase()))
-        setUsersData([...new Set([...filA, ...filB])])
+        const filA = users.filter((item: CustomUserOptimizedType) => item[1]?.toLowerCase().includes(val.toLowerCase()))
+        const filB = users.filter((item: CustomUserOptimizedType) => item[3]?.toLowerCase().includes(val.toLowerCase()))
+        const filC = users.filter((item: CustomUserOptimizedType) => item[4]?.toLowerCase().includes(val.toLowerCase()))
+        const filD = users.filter((item: CustomUserOptimizedType) => item[6]?.toString().includes(val.toString()))
+        setUsersData([...new Set([...filA, ...filB, ...filC, ...filD])])
     }
   
     const handleChangePage = (e: unknown, newPage: number) => {
@@ -183,8 +198,8 @@ const TableUsers = () => {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {usersData.map((item: UserType) => (
-                                        <TableRow key={item.id}>
+                                    {usersData.map((item: CustomUserOptimizedType) => (
+                                        <TableRow key={item[0]}>
                                             <TableCell>
                                                 <Typography
                                                     sx={{
@@ -192,7 +207,7 @@ const TableUsers = () => {
                                                         fontWeight: "500",
                                                     }}
                                                 >
-                                                    {item.username}
+                                                    {item[1]}
                                                 </Typography>
                                             </TableCell>
 
@@ -203,13 +218,13 @@ const TableUsers = () => {
                                                         fontWeight: "500",
                                                     }}
                                                 >
-                                                    {item.first_name} {item.last_name}
+                                                    {item[3]} {item[4]}
                                                 </Typography>
                                             </TableCell>
 
                                             <TableCell>
                                                 <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                                                    {item.role}
+                                                    {item[10]}
                                                 </Typography>
                                             </TableCell>
 
@@ -218,34 +233,34 @@ const TableUsers = () => {
                                                     <Fab
                                                         aria-label="save"
                                                         color="primary"
-                                                        sx={buttonSx(item.password ? true : false)}
+                                                        sx={buttonSx(item[12] ? true : false)}
                                                         onClick={() => reset()}
                                                     >
-                                                    {item.password ? "OK" : <>-</>}
+                                                    {item[12] ? "OK" : <>-</>}
                                                     </Fab>
                                                 </Typography>
                                             </TableCell>
 
                                             <TableCell>
-                                                {item.email_confirmed ? 
+                                                {item[13] ? 
                                                 <Typography sx={{ backgroundColor: "lightgreen", border: 1, textAlign: "center", alignItems: "center", borderRadius: 2 }}  variant="subtitle2" fontWeight={400}>
-                                                    {item.email}
+                                                    {item[7]}
                                                 </Typography> 
                                                 : 
                                                 <Typography sx={{ backgroundColor: "lightpink", border: 1, textAlign: "center", alignItems: "center", borderRadius: 2 }}  variant="subtitle2" fontWeight={400}>
-                                                    {item.email}
+                                                    {item[7]}
                                                 </Typography>}
                                             </TableCell>
 
                                             <TableCell>
                                                 <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                                                    {item?.last_login?.includes("undefined") ? "-" : item.last_login}
+                                                    {/* {item[11].includes("undefined") ? "-" : item[11]} */}
                                                 </Typography>
                                             </TableCell>
 
                                             <TableCell>
                                                 <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                                                    {item?.is_active ? <Typography sx={{ backgroundColor: "lightgreen", border: 1, textAlign: "center", alignItems: "center", borderRadius: 2 }}  variant="subtitle2" fontWeight={400}>
+                                                    {item[9] ? <Typography sx={{ backgroundColor: "lightgreen", border: 1, textAlign: "center", alignItems: "center", borderRadius: 2 }}  variant="subtitle2" fontWeight={400}>
                                                             Active
                                                         </Typography>  : 
                                                         <Typography sx={{ backgroundColor: "lightpink", border: 1, textAlign: "center", alignItems: "center", borderRadius: 2 }}  variant="subtitle2" fontWeight={400}>
@@ -262,9 +277,8 @@ const TableUsers = () => {
                                                     </Button>
                                                     <Button 
                                                         onClick={ () => { 
-                                                            console.log(item.id);
-                                                            console.log(userProfiles.filter((item: UserProfile) => item.user.id == item.id )[0]);
-                                                            dispatch(addChoosenUserProfile( userProfiles.filter((up: UserProfile) => up.user.id == item.id )[0]) ); 
+                                                            console.log(userProfiles.filter((item: UserProfileOptimizedType) => item[15] == item[0] )[0]);
+                                                            // dispatch(addChoosenUserProfile( userProfiles.filter((up: UserProfileOptimizedType) => up.user.id == item.id )[0]) ); 
                                                             router.push(`/AdministrationPages/AccountSettings`) 
                                                         }} 
                                                         variant="contained" disableElevation color="primary">
@@ -312,7 +326,7 @@ const TableUsers = () => {
                             setShowModal={setDeleteUserFormModal}
                             record={record}
                             url={UserCRUDUrl}
-                            record_name={record?.username ? record.username : ""}
+                            record_name={record && record[1]}
                             reset={reset}
                         />
                         

@@ -10,7 +10,7 @@ import { Button, Stack } from '@mui/material';
 interface DeleteItemFormProps {
   showModal: any
   setShowModal: any
-  record_name: string | undefined
+  record_name: string | any
   record: any
   reset: any
   url: string
@@ -22,15 +22,13 @@ const DeleteItemFormModal:FC<DeleteItemFormProps> = ({ showModal, setShowModal, 
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false)
 
-    // console.log(record)
-
     
     const onSubmit = async () => {
         setLoading(true)
 
         const response = await axiosRequest<any>({
             method: "delete",
-            url: url + "/" + record.id,
+            url: url + "/" + record[0],
             payload: {"deleted_by_id": storeUserID},
             hasAuth: true,
         })

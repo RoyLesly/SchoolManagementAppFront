@@ -3,7 +3,7 @@ import { FC, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { MainSpecialtyCRUDUrl } from '@/Utils/Config';
 import { axiosRequest } from '@/Utils/functions';
-import { DataProps, DomainProps, MainSpecialtyProps } from '@/Utils/types';
+import { DataProps, DomainOptimizedType, MainSpecialtyOptimizedType } from '@/Utils/types';
 import { selectAuthUser } from '@/Redux/Reducers/sliceUser';
 import MyButtonUpdate from '@/Designs/MyButtonUpdate';
 
@@ -13,8 +13,8 @@ const { Option } = Select
 interface EditMainSpecialtyFormProps {
   showModal: any
   setShowModal: any
-  record: MainSpecialtyProps | null
-  domains: DomainProps[]
+  record: MainSpecialtyOptimizedType | undefined
+  domains: DomainOptimizedType[]
   reset: any
 }
 
@@ -27,16 +27,16 @@ const EditMainSpecialtyFormModal:FC<EditMainSpecialtyFormProps> = ({ showModal, 
     const onSubmit = async (values: DataProps) => {
         setLoading(true)
         if (values["specialty_name"] == "" || values["specialty_name"] == undefined || values["specialty_name"] == null){
-            values["specialty_name"] = record["specialty_name"]
+            values["specialty_name"] = record[1]
         }
         if (values["domain_id"] == "" || values["domain_id"] == undefined || values["domain_id"] == null){
-            values["domain_id"] = record.domain.id
+            values["domain_id"] = record[3]
         }
         const payload = {...values, specialty_name: values["specialty_name"].toUpperCase(), updated_by_id: storeUserID}
 
         const response = await axiosRequest<any>({
             method: "put",
-            url: MainSpecialtyCRUDUrl + "/" + record.id,
+            url: MainSpecialtyCRUDUrl + "/" + record[0],
             payload: payload,
             hasAuth: true,
         })
@@ -52,7 +52,6 @@ const EditMainSpecialtyFormModal:FC<EditMainSpecialtyFormProps> = ({ showModal, 
             form.resetFields()
         }
         else if (response?.data.errors) {
-            console.log(response.data.errors)
             notification.error({
                 message: "Operation Failed",
                 description: "Main Specialty Procedure Failed"
@@ -62,7 +61,7 @@ const EditMainSpecialtyFormModal:FC<EditMainSpecialtyFormProps> = ({ showModal, 
 
     return (
         <Modal
-            title={`EDIT - ${record?.specialty_name}`}
+            title={`EDIT - ${record && record[1]}`}
             open={showModal}
             onCancel={() => setShowModal(false)}
             footer={false}
@@ -73,14 +72,14 @@ const EditMainSpecialtyFormModal:FC<EditMainSpecialtyFormProps> = ({ showModal, 
                 <Form.Item label="Specialty Name" name="specialty_name"
                     rules={[{ required: false, message: "Please Input Specialty Name" }]}
                 >
-                    <Input defaultValue={`${record?.specialty_name}`} type='text' />
+                    <Input defaultValue={`${record && record[1]}`} type='text' />
                 </Form.Item>
 
                 <Form.Item label="Department" name="domain_id"
                     rules={[{ required: false, message: "Please Select Department" }]}
                 >
-                    <Select defaultValue={`${record?.domain?.domain_name}`}>
-                        {domains.map((dom: DomainProps) => <Option key={dom.id} value={dom.id}>{dom.domain_name}</Option>)}
+                    <Select defaultValue={`${record && record[2]}`}>
+                        {domains.map((dom: DomainOptimizedType) => <Option key={dom[0]} value={dom[0]}>{dom[1]}</Option>)}
                     </Select>
                 </Form.Item>
 

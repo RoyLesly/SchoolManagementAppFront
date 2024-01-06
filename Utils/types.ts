@@ -230,6 +230,7 @@ export interface DropdownSpecialtyMainType {
     specialty_name: number
 }
 
+
 export type DropdownSpecialtyType = [
     id:  number,
     domain_id: number,
@@ -244,6 +245,111 @@ export interface DropdownCourseMainType {
 }
 
 export interface DropdownCourseType {
+    id:  number
+    course_name: number
+    specialty_name: string
+    level: string
+}
+
+export type DropdownUserTeacherType = [
+    id:  number,
+    first_name: number,
+    last_name: number
+]
+
+
+
+// OPTIMIZED QUERY TYPE
+export type CustomUserOptimizedType = [
+    id:  number,
+    username: string,
+    matricle: string | number,
+    first_name: string,
+    last_name: string,
+    title: string,
+    telephone: number | string,
+    email: string,
+    address: string,
+    is_active: boolean,
+    role: string,
+    last_login: string,
+    password: string,
+    email_confirm: boolean,
+]
+
+export type UserProfileOptimizedType = [
+    id:  number,
+    username: string,
+    matricle: string | number,
+    first_name: string,
+    last_name: string,
+    specialty_id: number,
+    specialty_name: string,
+    title: string,
+    telephone: number | string,
+    email: string,
+    address: string,
+    is_active: boolean,
+    role: string,
+    academic_year: string,
+    level: string | number,
+    user_id: number,
+]
+
+
+export type DomainOptimizedType = [
+    id:  number,
+    domain_name: number
+]
+
+export type MainSpecialtyOptimizedType = [
+    id:  number,
+    specialty_name: number,
+    domain_name: string,
+    domain_id: number
+]
+
+
+export type SpecialtyOptimizedType = [
+    id:  number,
+    specialty_name: string,
+    academic_year: string,
+    level_id: number,
+    domain_id: number,
+    main_specialty_id: number,
+    level: number | string,
+
+]
+
+export type MainCourseOptimizedType = [
+    id:  number,
+    course_name: string
+]
+
+export type CourseOptimizedType = [
+    id:  number,
+    course_name: string,
+    specialty_name: string,
+    semester: string | number,
+    course_code: string | number,
+    course_credit: number,
+    hours: string,
+    completed: boolean,
+    level: string | number,
+    academic_year: string,
+    assigned_to_id: number,
+    assigned_to_first_name: string,
+    assigned_to_last_name: string,
+    specialty_id: number,
+    main_course_id: number,
+]
+
+export type LevelOptimizedType = [
+    id:  number,
+    level: number,
+]
+
+export interface ResultOptimizedType {
     id:  number
     course_name: number
     specialty_name: string

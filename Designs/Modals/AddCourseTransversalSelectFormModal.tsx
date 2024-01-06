@@ -4,7 +4,7 @@ import { FC, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { CourseCRUDUrl } from '@/Utils/Config';
 import { axiosRequest } from '@/Utils/functions';
-import { DataProps, DropdownSpecialtyType } from '@/Utils/types';
+import { DataProps, SpecialtyOptimizedType } from '@/Utils/types';
 import { selectAuthUser } from '@/Redux/Reducers/sliceUser';
 import MyButtonSave from '@/Designs/MyButtonSave';
 
@@ -12,7 +12,7 @@ import MyButtonSave from '@/Designs/MyButtonSave';
 interface AddCourseTransversalSelectFormModalProps {
   showModal: any
   setShowModal: any
-  specialtyData: DropdownSpecialtyType[]
+  specialtyData: SpecialtyOptimizedType[]
   setShowMainModal: any
   setSpecialtyList: any
   firstSelectedID: number
@@ -54,8 +54,6 @@ const AddCourseTransversalSelectFormModal:FC<AddCourseTransversalSelectFormModal
         }
     }
 
-    const thisYear = new Date().getFullYear() - 1
-
     return (
         <Modal
             title="Assign Course"
@@ -74,7 +72,7 @@ const AddCourseTransversalSelectFormModal:FC<AddCourseTransversalSelectFormModal
                         defaultValue={[firstSelectedID]}
                         style={{ width: '100%' }}
                         // onChange={(e) => { console.log(e) }}
-                        options={specialtyData.map(function(elem: DropdownSpecialtyType) {
+                        options={specialtyData.map(function(elem: SpecialtyOptimizedType) {
                             return {
                               label: elem[2] + "-" + elem[4]  + " " + elem[3] ,
                               value: elem[0],

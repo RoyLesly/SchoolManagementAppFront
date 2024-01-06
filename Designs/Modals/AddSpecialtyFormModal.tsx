@@ -3,7 +3,7 @@ import { FC, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { SpecialtyCRUDUrl } from '@/Utils/Config';
 import { axiosRequest } from '@/Utils/functions';
-import { DataProps, LevelProps, MainSpecialtyProps } from '@/Utils/types';
+import { DataProps, LevelOptimizedType, MainSpecialtyOptimizedType } from '@/Utils/types';
 import MyButtonSave from '@/Designs/MyButtonSave';
 import { selectAuthUser } from '@/Redux/Reducers/sliceUser';
 
@@ -13,8 +13,8 @@ const { Option } = Select
 interface AddSpecialtyUserFormProps {
   showModal: any
   setShowModal: any
-  mainSpecialty: MainSpecialtyProps[]
-  levels: LevelProps[]
+  mainSpecialty: MainSpecialtyOptimizedType[]
+  levels: LevelOptimizedType[]
   reset: any
 }
 
@@ -80,7 +80,7 @@ const AddSpecialtyFormModal:FC<AddSpecialtyUserFormProps> = ({ showModal, mainSp
                     rules={[{ required: true, message: "Please Input Main Specialty" }]}
                 >
                     <Select>
-                        {mainSpecialty.map((dom: MainSpecialtyProps) => <Option key={dom.id} value={dom.id}>{dom.specialty_name}</Option>)}
+                        {mainSpecialty.map((dom: MainSpecialtyOptimizedType) => <Option key={dom[0]} value={dom[0]}>{dom[1]}</Option>)}
                     </Select>
                 </Form.Item>
 
@@ -95,15 +95,15 @@ const AddSpecialtyFormModal:FC<AddSpecialtyUserFormProps> = ({ showModal, mainSp
                 <Form.Item label="Level" name="level_list_id" className='w-full bg-red-300 rounded'>
                     <Select 
                         className='bg-red-300'
-                        placeholder="Select Specialties"
+                        placeholder="Select Levels"
                         mode="multiple"
                         defaultValue={[]}
                         style={{ width: '100%' }}
                         // onChange={(e) => { console.log(e) }}
-                        options={levels.map(function(elem: LevelProps) {
+                        options={levels.map(function(elem: LevelOptimizedType) {
                             return {
-                                label: "Level - " + elem?.level,
-                                value: elem?.id,
+                                label: "Level - " + elem[1],
+                                value: elem[0],
                             }}) 
                         } 
                     />

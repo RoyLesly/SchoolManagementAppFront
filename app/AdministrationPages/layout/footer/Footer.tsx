@@ -14,7 +14,7 @@ const Footer = () => {
         backgroundColor: "blue"
       }}
     >
-      <Typography variant='h6' color="white" sx={{ }}>Moove Student v2.1.0</Typography>
+      <Typography variant='h6' color="white" sx={{ }}>Moove Student v2.1.2</Typography>
     </Paper>
   )
 }

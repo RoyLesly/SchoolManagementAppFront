@@ -3,8 +3,7 @@ import { FC, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { MainSpecialtyCRUDUrl } from '@/Utils/Config';
 import { axiosRequest } from '@/Utils/functions';
-import { DataProps, DomainProps } from '@/Utils/types';
-import { useGetAllDomains } from '@/Utils/customHooks';
+import { DataProps, DomainOptimizedType } from '@/Utils/types';
 import MyButtonSave from '@//Designs/MyButtonSave';
 import { selectAuthUser } from '@/Redux/Reducers/sliceUser';
 
@@ -14,7 +13,7 @@ const { Option } = Select
 interface AddSpecialtyUserFormProps {
   showModal: any
   setShowModal: any
-  domains: DomainProps[]
+  domains: DomainOptimizedType[]
   reset: any
 }
 
@@ -72,7 +71,7 @@ const AddMainSpecialtyFormModal:FC<AddSpecialtyUserFormProps> = ({ showModal, do
                     rules={[{ required: true, message: "Please Input Department Name" }]}
                 >
                     <Select>
-                        {domains.map((dom: DomainProps) => <Option key={dom.id} value={dom.id}>{dom.domain_name}</Option>)}
+                        {domains.map((dom: DomainOptimizedType) => <Option key={dom[0]} value={dom[0]}>{dom[1]}</Option>)}
                     </Select>
                 </Form.Item>
 
