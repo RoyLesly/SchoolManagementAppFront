@@ -35,7 +35,6 @@ const Domains = () => {
         if (count == 1) {
             if (countTotal > 0) { setDomainData(domain); setCount(count + 1); }
             setLoading(false)
-            
         }
     }, [domain, count, countTotal])
 

@@ -9,14 +9,13 @@ import Button, { ButtonProps } from '@mui/material/Button'
 // ** Icons Imports
 import { useDispatch, useSelector } from 'react-redux'
 import { selectChoosenUserProfile } from '@/Redux/Reducers/sliceChoosenUserAndProfile'
-import { CourseProps } from '@/Utils/types'
-import { useGetAllCourses } from '@/Utils/customHooks'
+import { CourseOptimizedType, CourseProps } from '@/Utils/types'
 import { useRouter } from 'next/navigation'
-import { Table, TableBody, TableCell, TableHead, TableRow, Typography, styled } from '@mui/material'
-import { addChoosenCourse } from '@/Redux/Reducers/sliceDomainSpecialityCourse'
-import { getAllCourses } from '@/Utils/functions'
-
-
+import { Box, CircularProgress, LinearProgress, Table, TableBody, TableCell, TableHead, TableRow, Typography, styled } from '@mui/material'
+import { addChoosenCourse, removeChoosenCourse } from '@/Redux/Reducers/sliceDomainSpecialityCourse'
+import { AppControlOptimizedQueryUrl } from '@/Utils/Config'
+import { getOptimizedQuery } from '@/Utils/pagination'
+import { CourseFieldList } from '@/Utils/constants'
 interface TabCourseManagementProps {
     setValue: any
 }
@@ -26,121 +25,146 @@ const Tab2Courses:FC<TabCourseManagementProps> = ({ setValue }) => {
   const router = useRouter()
   const dispatch = useDispatch()
   const storeChoosenUserProfile = useSelector(selectChoosenUserProfile);
+  const [ fetching, setFetching ] = useState<boolean>(true)
   const [ count, setCount ] = useState<number>(0)
-  const [ fetching, setFetching ] = useState<boolean>(false)
-  const [ courses, setCourses ] = useState<CourseProps[]>([])
-  const [ coursesData1, setCoursesData1 ] = useState<CourseProps[]>([])
-  const [ coursesData2, setCoursesData2 ] = useState<CourseProps[]>([])
+  const [ myCourses, setMyCourses ] = useState<CourseOptimizedType[]>()
+  const [ myCoursesData, setMyCoursesData ] = useState<CourseOptimizedType[]>()
 
   useEffect(() => {
     if (count == 0) {
-        getAllCourses(setCourses, ()=>{}, { searchField: "assigned", value: true })
-        setCount(count + 1)
+        dispatch(removeChoosenCourse())
+        getOptimizedQuery(setMyCourses, setFetching, ()=>{}, ()=>{}, ()=>{}, AppControlOptimizedQueryUrl, { 
+            model: "Course", 
+            searchField: "assigned_to__id",
+            value: storeChoosenUserProfile[15],
+            fieldList: [...CourseFieldList]
+          });
+          if (myCourses) { 
+            setMyCoursesData(myCourses)
+            setCount(count + 1)
+          }
     }
     if (count == 1) {
-        if (courses.length > 0) {
-            const fil = courses.filter((item: CourseProps) => item.assigned_to?.id == storeChoosenUserProfile?.user.id)
-            setCoursesData1(fil)
-            setCoursesData2(fil)
-            setCount(count + 1)
-        }
-    }
-    if (count == 2) {
         console.log("Use Effect Completed ...")
     }
 
-  }, [courses, count, storeChoosenUserProfile])
-
+  }, [myCourses, dispatch, count, storeChoosenUserProfile])
 
   return (
     <CardContent>
-      <Grid item xs={12}>
-        <Table
-            aria-label="simple table"
-            sx={{
-                whiteSpace: "nowrap",
-                mt: 0
-            }}
-        >
-            <TableHead>
-                <TableRow>
+        {fetching ? 
+
+            <div className="flex mx-auto px-10 sm:px-40" style={{ margin: 40, fontSize: 14 }}>
+                <Typography style={{ marginTop: 20 }} variant="h2">Courses Loading ... </Typography>
+                <div style={{ marginTop: 20 }}>
+                    <LinearProgress
+                        color="info"
+                        // fourColor
+                        variant="indeterminate"
+                    />
+                </div>
+            </div> 
+            
+            :
+
+            myCoursesData && myCoursesData?.length > 0 ? 
+            
+            <Grid item xs={12}>
+                <Table
+                    aria-label="simple table"
+                    sx={{
+                        whiteSpace: "nowrap",
+                        mt: 0
+                    }}
+                >
+                    <TableHead>
+                        <TableRow>
+                        
+                            <TableCell>
+                                <Typography variant="subtitle2" fontWeight={600}>
+                                    COURSE NAME
+                                </Typography>
+                            </TableCell>
+
+                            <TableCell>
+                                <Typography variant="subtitle2" fontWeight={600}>
+                                    SPECIALTY / ACADEMIC YEAR
+                                </Typography>
+                            </TableCell>
+
+                            <TableCell>
+                                <Typography variant="subtitle2" fontWeight={600}>
+                                    LEVEL
+                                </Typography>
+                            </TableCell>
+
+                            <TableCell align="center">
+                                <Typography variant="subtitle2" fontWeight={600}>
+                                    ACTION
+                                </Typography>
+                            </TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {myCoursesData?.map((item: CourseOptimizedType) => (
+                            <TableRow key={item[0]}>
+                                <TableCell>
+                                    <Typography
+                                        sx={{
+                                            fontSize: "15px",
+                                            fontWeight: "500",
+                                        }}
+                                    >
+                                        {item[1]}
+                                    </Typography>
+                                </TableCell>
+
+                                <TableCell>
+                                    <Typography
+                                        sx={{
+                                            fontSize: "15px",
+                                            fontWeight: "500",
+                                        }}
+                                    >
+                                        <code><b>{item[2]}</b></code> - {item[3]}
+                                    </Typography>
+                                </TableCell>
                 
-                    <TableCell>
-                        <Typography variant="subtitle2" fontWeight={600}>
-                            COURSE NAME
-                        </Typography>
-                    </TableCell>
+                                <TableCell>
+                                    <Typography
+                                        sx={{
+                                            fontSize: "15px",
+                                            fontWeight: "500",
+                                        }}
+                                    >
+                                        {item[4]}
+                                    </Typography>
+                                </TableCell>
 
-                    <TableCell>
-                        <Typography variant="subtitle2" fontWeight={600}>
-                            SPECIALTY
-                        </Typography>
-                    </TableCell>
+                                <TableCell align='center'>
+                                    <Button 
+                                        onClick={ () => { 
+                                            dispatch(addChoosenCourse(item)); 
+                                            setValue("coursemanagement")
+                                        }} 
+                                        variant="contained" disableElevation color="primary">
+                                        Manage
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </Grid>
+            
+            : 
+            
+            <div className="flex mx-auto px-10 sm:px-40" style={{ margin: 40, fontSize: 14 }}>
+                <Typography style={{ marginTop: 20 }} variant="h2">No Courses For {storeChoosenUserProfile[3]} {storeChoosenUserProfile[4]} !!!</Typography>
+            </div> 
 
-                    <TableCell>
-                        <Typography variant="subtitle2" fontWeight={600}>
-                            LEVEL
-                        </Typography>
-                    </TableCell>
-
-                    <TableCell align="center">
-                        <Typography variant="subtitle2" fontWeight={600}>
-                            ACTION
-                        </Typography>
-                    </TableCell>
-                </TableRow>
-            </TableHead>
-            <TableBody>
-                {coursesData2.map((item: CourseProps) => (
-                    <TableRow key={item.id}>
-                        <TableCell>
-                            <Typography
-                                sx={{
-                                    fontSize: "15px",
-                                    fontWeight: "500",
-                                }}
-                            >
-                                {item.main_course.course_name}
-                            </Typography>
-                        </TableCell>
-
-                        <TableCell>
-                            <Typography
-                                sx={{
-                                    fontSize: "15px",
-                                    fontWeight: "500",
-                                }}
-                            >
-                                {item.specialty?.main_specialty?.specialty_name} {item.specialty?.academic_year}
-                            </Typography>
-                        </TableCell>
-
-                        <TableCell>
-                            <Typography
-                                sx={{
-                                    fontSize: "15px",
-                                    fontWeight: "500",
-                                }}
-                            >
-                                {item.specialty?.level?.level}
-                            </Typography>
-                        </TableCell>
-
-                        <TableCell align='center'>
-                            <Button 
-                                onClick={ () => { 
-                                    dispatch(addChoosenCourse(item)); 
-                                    setValue("coursemanagement")
-                                }} 
-                                variant="contained" disableElevation color="primary">
-                                Manage
-                            </Button>
-                        </TableCell>
-                    </TableRow>
-                ))}
-            </TableBody>
-        </Table>
-      </Grid>
+        }
+      
     </CardContent>
   )
 }

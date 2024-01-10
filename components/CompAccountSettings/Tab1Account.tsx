@@ -14,16 +14,20 @@ import Button, { ButtonProps } from '@mui/material/Button'
 import Close from 'mdi-material-ui/Close'
 import MyFormInputText from '@/Designs/MyFormInputText'
 import { useForm } from 'react-hook-form'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { selectChoosenUserProfile } from '@/Redux/Reducers/sliceChoosenUserAndProfile'
-import { UserType } from '@/Utils/types'
+import { CustomUserOptimizedType, UserType } from '@/Utils/types'
 import { axiosRequest } from '@/Utils/functions'
-import { UserCRUDUrl } from '@/Utils/Config'
+import { UserCRUDUrl, UserControlOptimizedQueryUrl } from '@/Utils/Config'
 import { selectAuthUser } from '@/Redux/Reducers/sliceUser'
 import { useRouter } from 'next/navigation'
 import MyButtonLoader from '@/Designs/MyButtonLoader'
-import { IconButton, Typography, styled } from '@mui/material'
+import { IconButton, InputLabel, Typography, styled } from '@mui/material'
 import { Spin, notification } from 'antd'
+import { getOptimizedQuery } from '@/Utils/pagination'
+import { CustomUserFieldList, currentAcademicYear } from '@/Utils/constants'
+import { FlashOffOutlined } from '@mui/icons-material'
+import { removeChoosenCourse } from '@/Redux/Reducers/sliceDomainSpecialityCourse'
 
 const ImgStyled = styled('img')(({ theme }) => ({
   width: 120,
@@ -55,13 +59,31 @@ interface Tab1AccountProps {
 const Tab1Account:FC<Tab1AccountProps> = ({ }) => {
 
   const router = useRouter()
+  const dispatch = useDispatch();
   const storeUser = useSelector(selectAuthUser)
   const storeChoosenUserProfile = useSelector(selectChoosenUserProfile);
+  const [ customUser, setCustomUser ] = useState<CustomUserOptimizedType[]>()
+  const [ count, setCount ] = useState<number>(0)
   const [ loading, setLoading ] = useState<boolean>(false)
 
 
-  const defaultValues = {...storeChoosenUserProfile.user};
-  const { handleSubmit, reset, control } = useForm<UserType>({
+  useEffect(() => {
+    if (count == 0) {
+      dispatch(removeChoosenCourse())
+      getOptimizedQuery(setCustomUser, ()=>{}, ()=>{}, ()=>{}, ()=>{}, UserControlOptimizedQueryUrl, { 
+        model: "CustomUser", 
+        searchField: "id",
+        value: storeChoosenUserProfile[15],
+        fieldList: [...CustomUserFieldList]
+      });
+      if (customUser) { 
+        setCount(count + 1)
+      }
+    }
+  }, [count, dispatch, customUser, storeChoosenUserProfile])
+
+  const defaultValues = customUser ? [...customUser[0]] : [];
+  const { handleSubmit, reset, control } = useForm<any>({
     defaultValues: defaultValues,
   });
 
@@ -78,21 +100,46 @@ const Tab1Account:FC<Tab1AccountProps> = ({ }) => {
   }
 
   const onSubmit = async (data: UserType) => {
-    setLoading(true)
 
-    if ( (data["first_name"] == null) || (data["last_name"] == null)  || (data['telephone'].toString().length < 9) || (data["email"].length < 1) ) {
-      notification.error({
-        "message": "EMPTY FIELDS",
-        description: "Some Fields Are Empty !!!"
-      })
-      return
-    } else if ( (data["first_name"].length < 1) || (data["last_name"].length < 1)  || (data['telephone'].toString().length < 9) || (data["email"].length < 1) ) {
-      notification.error({
-        "message": "EMPTY FIELDS",
-        description: "Some Fields Are Empty !!!"
-      })
-      return
+    const EmptyFieldChecker = (a: any, b: any) => {
+      if ((a == undefined && b == undefined) || (a == '' && b == '') || (a == null && b == null)) {
+        notification.error({
+          "message": "EMPTY FIELDS",
+          description: "Some Fields Are Empty !!!"
+        })
+        return true
+      }
+      return false
     }
+    const AssignValueToEmptyField = (a: any, b: any, c: string) => {
+      
+      if ((a == undefined && b != undefined) || (a == '' && b != '') || (a == null && b != null)) {
+        console.log("HERE", a, b, c)
+        if (c == "id") { data["id"] = b}
+        if (c == "username") { data["username"] = b}
+        if (c == "matricle") { data["matricle"] = b}
+        if (c == "first_name") { data["first_name"] = b}
+        if (c == "last_name") { data["last_name"] = b}
+        if (c == "telephone") { data["telephone"] = b}
+        if (c == "email") { data["email"] = b}
+      }
+      return false
+    }
+
+    if (EmptyFieldChecker(data["first_name"] , defaultValues[3])) return;
+    if (EmptyFieldChecker(data["last_name"] , defaultValues[4])) return;
+    if (EmptyFieldChecker(data["telephone"] , defaultValues[6])) return;
+    if (EmptyFieldChecker(data["email"] , defaultValues[7])) return;
+
+    if (AssignValueToEmptyField(data["id"], defaultValues[0], "id")) return;
+    if (AssignValueToEmptyField(data["username"], defaultValues[1], "username")) return;
+    if (AssignValueToEmptyField(data["matricle"], defaultValues[2], "matricle")) return;
+    if (AssignValueToEmptyField(data["first_name"], defaultValues[3], "first_name")) return;
+    if (AssignValueToEmptyField(data["last_name"], defaultValues[4], "last_name")) return;
+    if (AssignValueToEmptyField(data["telephone"], defaultValues[6], "telephone")) return;
+    if (AssignValueToEmptyField(data["email"], defaultValues[7], "email")) return;
+
+    setLoading(true)
 
     let values = { 
       id: data.id,
@@ -100,13 +147,10 @@ const Tab1Account:FC<Tab1AccountProps> = ({ }) => {
       last_name: data.last_name.toUpperCase(),
       email: data.email,
       telephone: data.telephone,
-      username: defaultValues.username,
-      role: defaultValues.role,
+      username: defaultValues[1],
+      role: defaultValues[10],
       updated_by_id: storeUser.id,
     }
-    console.log(values)
-    // return
-
 
     const response = await axiosRequest<any>({
         method: "put",
@@ -119,7 +163,7 @@ const Tab1Account:FC<Tab1AccountProps> = ({ }) => {
       if (response.data.success) {
         notification.success({
           "message": "OK",
-          "description": "Successfully Updated User"
+          "description": "Successfully Updated User Account"
         });
         router.back();
       }
@@ -141,110 +185,6 @@ const Tab1Account:FC<Tab1AccountProps> = ({ }) => {
 
   return (
     <CardContent>
-
-      {/* <form onSubmit={handleSubmit(onSubmit)}>
-        <Grid container spacing={6}>
-
-          <Grid item xs={12} sx={{ marginTop: 4, marginBottom: 1 }}>
-            <FormControl component="fieldset">
-              <FormLabel component="legend">Username</FormLabel>
-              <Controller
-                rules={{ }}
-                control={control}
-                name="username"
-                render={( {field} ) => {
-                  console.log(field)
-                  return (
-                    <Input {...field} />
-                  )
-                }}
-              ></Controller>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={12} md={6} sx={{ width: 300 }}>
-            <FormControl component="fieldset">
-              <FormLabel component="legend">First Name</FormLabel>
-              <Controller
-                rules={{ }}
-                control={control}
-                name="first_name"
-                render={( {field} ) => {
-                  console.log(field)
-                  return (
-                    <Input {...field} />
-                  )
-                }}
-              ></Controller>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={12} md={6} sx={{ width: 300 }}>
-            <FormControl component="fieldset">
-              <FormLabel component="legend">Last Name</FormLabel>
-              <Controller
-                rules={{ }}
-                control={control}
-                name="last_name"
-                render={( {field} ) => {
-                  console.log(field)
-                  return (
-                    <Input {...field} />
-                  )
-                }}
-              ></Controller>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={12} md={6} sx={{ width: 300 }}>
-            <FormControl component="fieldset">
-              <FormLabel component="legend">TELEPHONE</FormLabel>
-              <Controller
-                rules={{ }}
-                control={control}
-                name="telephone"
-                render={( {field} ) => {
-                  console.log(field)
-                  return (
-                    <Input {...field} />
-                  )
-                }}
-              ></Controller>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={12} md={6} sx={{ width: 300 }}>
-            <FormControl component="fieldset">
-              <FormLabel component="legend">EMAIL</FormLabel>
-              <Controller
-                rules={{ }}
-                control={control}
-                name="email"
-                render={( {field} ) => {
-                  console.log(field)
-                  return (
-                    <Input {...field} />
-                  )
-                }}
-              ></Controller>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={12} md={6} sx={{ width: 300 }}>
-            <Button
-              color="primary"
-              variant="contained"
-              size="large"
-              onClick={handleSubmit(onSubmit)} 
-              sx={{ marginRight: 3.5 }}
-            >
-              Save Changes
-            </Button>
-          </Grid>
-
-        </Grid>
-
-      </form> */}
 
       <form>
         <Grid container spacing={6}>
@@ -274,7 +214,8 @@ const Tab1Account:FC<Tab1AccountProps> = ({ }) => {
             </Box>
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
+            <InputLabel>Username</InputLabel>
             <MyFormInputText 
               name={"username"}
               control={control}
@@ -282,49 +223,65 @@ const Tab1Account:FC<Tab1AccountProps> = ({ }) => {
               size={"large"}
               required={true}
               disabled={true}
-              defaultValue={defaultValues?.username}
+              defaultValue={defaultValues[1]}
             />  
           </Grid>     
           <Grid item xs={12} sm={6}>
+            <InputLabel>Matricle</InputLabel>
+            <MyFormInputText 
+              name={"matricle"}
+              control={control}
+              label={""}
+              size={"large"}
+              required={true}
+              disabled={true}
+              defaultValue={defaultValues[2]}
+            />  
+          </Grid>     
+          <Grid item xs={12} sm={6}>
+            <InputLabel>First Name</InputLabel>
             <MyFormInputText 
               name={"first_name"}
               control={control}
-              label={"First Name"}
+              label={""}
               size={"large"}
               required={true}
-              defaultValue={defaultValues.first_name}
+              defaultValue={defaultValues[3]}
             />       
           </Grid>
           <Grid item xs={12} sm={6}>
+            <InputLabel>Last Name</InputLabel>
             <MyFormInputText 
               name={"last_name"}
               control={control}
-              label={"Last Name"}
+              label={""}
               size={"large"}
               required={true}
-              defaultValue={defaultValues.last_name}
+              defaultValue={defaultValues[4]}
             />       
           </Grid> 
 
           <Grid item xs={12} sm={6}>
+            <InputLabel>Telephone</InputLabel>
             <MyFormInputText 
               name={"telephone"}
               control={control}
-              label={"Telephone"}
+              label={""}
               size={"large"}
               required={true}
-              defaultValue={defaultValues.telephone}
+              defaultValue={defaultValues[6]}
             />       
           </Grid>
           
           <Grid item xs={12} sm={6}>
+            <InputLabel>Email</InputLabel>
             <MyFormInputText 
               name={"email"}
               control={control}
-              label={"Email"}
+              label={""}
               size={"large"}
               required={true}
-              defaultValue={defaultValues.email}
+              defaultValue={defaultValues[7]}
             />       
           </Grid>
 

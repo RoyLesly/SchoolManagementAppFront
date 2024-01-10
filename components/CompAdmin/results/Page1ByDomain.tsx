@@ -1,16 +1,15 @@
 'use client';
-import { useGetAllDomains } from '@/Utils/customHooks';
-import { DomainProps } from '@/Utils/types';
+import { DomainOptimizedType, DomainProps } from '@/Utils/types';
 import { Table } from 'antd'
 import React, { useState, useEffect, FC } from 'react'
-import { getAllDomains } from '@/Utils/functions';
-import FetchingDataIndicator from '@/Designs/FetchingDataIndicator';
 import MyButtonView from '@/Designs/MyButtonView';
 import { useDispatch } from 'react-redux';
-import { addChoosenDomain } from '@/Redux/Reducers/sliceDomainSpecialityCourse';
+import { addChoosenDomain, removeChoosenCourse, removeChoosenDomain, removeChoosenSpecialty } from '@/Redux/Reducers/sliceDomainSpecialityCourse';
 import PageContainer from '@/app/AdministrationPages/components/container/PageContainer';
-import { Box, Grid, Stack, Typography, Input, TextField } from '@mui/material';
+import { Box, Grid, Stack, Typography, TextField } from '@mui/material';
 import MyButtonLoader from '@/Designs/MyButtonLoader';
+import { getOptimizedQuery } from '@/Utils/pagination';
+import { AppControlOptimizedQueryUrl } from '@/Utils/Config';
 
 
 interface Page1ByDomainProps {
@@ -20,38 +19,37 @@ interface Page1ByDomainProps {
 const Page1ByDomain:FC<Page1ByDomainProps> = ({ setSelectedNumber }) => {
     const dispatch = useDispatch()
     const [fetching, setFetching] = useState(true)
-    const [domains, setDomains] = useState<DomainProps[]>([])
-    const [domainsData, setDomainsData] = useState<DomainProps[]>([])
+    const [ count, setCount ] = useState<number>(0)
+    const [domains, setDomains] = useState<DomainOptimizedType[]>([])
 
-    useGetAllDomains(setDomains, setFetching)
     useEffect(() => {
-      setDomainsData(domains)
-    }, [domains])
+        if (count == 0) {         
+            getOptimizedQuery(setDomains, setFetching, ()=>{}, ()=>{}, ()=>{}, AppControlOptimizedQueryUrl, { model: "Domain", fieldList: ["id", "domain_name"]}) 
+            setCount(count + 1)
+        }
+    }, [domains, count, dispatch])
 
     const reset = () => {
-        getAllDomains(setDomains, setFetching)
-        setFetching(true)
+        getOptimizedQuery(setDomains, setFetching, ()=>{}, ()=>{}, ()=>{}, AppControlOptimizedQueryUrl, { model: "Domain", fieldList: ["id", "domain_name"]}) 
     }
   
     const COLUMNS_DOMAINS = [    
-        {title: "DOMAIN NAME", dataIndex: "domain_name", 
-            render: (item: string) => <div className='italic font-semibold tracking-widest'>
-                {item}
+        {title: "ID", 
+            render: (item: DomainOptimizedType) => <div className='italic font-semibold tracking-widest'>
+                {item[0]}
+            </div>
+        },                       
+        {title: "DOMAIN NAME", 
+            render: (item: DomainOptimizedType) => <div className='italic font-semibold tracking-widest'>
+                {item[1]}
             </div>
         },                       
         {title: "ACTION",
-            render: (item: DomainProps) => <div onClick={() => dispatch(addChoosenDomain(item))} className='flex gap-2 italic font-semibold tracking-widest'>
+            render: (item: DomainOptimizedType) => <div onClick={() => dispatch(addChoosenDomain(item))} className='flex gap-2 italic font-semibold tracking-widest'>
                 <MyButtonView setSelNum={ setSelectedNumber } nextTabNumber={"2"} />
             </div>
         },            
     ]
-
-    const SearchResults = (val: string) => {
-        if (val.length < 1) { setDomainsData(domains); return }
-        const filterDomain = domains.filter((item: DomainProps) => item.domain_name.toLowerCase().includes(val?.toLowerCase()))
-        setDomainsData(filterDomain);
-    }
-
 
   return (
     <PageContainer title="Dashboard" description="this is Dashboard">
@@ -61,15 +59,7 @@ const Page1ByDomain:FC<Page1ByDomainProps> = ({ setSelectedNumber }) => {
                 <Grid item xs={12}>
                     <Stack direction="row" spacing={1} sx={{alignItems: "center",alignContent: "center"}}>
                         <Box>
-                            <MyButtonLoader fetching={fetching} loadingText='Loading' info={domainsData.length} onClick={reset} />
-                        </Box>
-                        <Box>            
-                            <FetchingDataIndicator fetching={fetching} />
-                        </Box>
-                        <Box
-                            sx={{ width: "100%"}}
-                        >
-                            <TextField label="Search Domain ..." onChange={(e) => {SearchResults(e.target.value)}} placeholder={`Search Domains ...`} sx={{width: "100%", paddingRight: 2}} />
+                            <MyButtonLoader fetching={fetching} loadingText='Loading' info={domains.length} onClick={reset} />
                         </Box>
                     </Stack>
                 </Grid>
@@ -86,7 +76,7 @@ const Page1ByDomain:FC<Page1ByDomainProps> = ({ setSelectedNumber }) => {
                     </Box>
                     <Box>
                         <Table
-                            dataSource={domainsData}
+                            dataSource={domains}
                             columns={COLUMNS_DOMAINS}
                             pagination={false}  
                         />

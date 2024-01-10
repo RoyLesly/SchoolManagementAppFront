@@ -275,6 +275,8 @@ export type CustomUserOptimizedType = [
     last_login: string,
     password: string,
     email_confirm: boolean,
+    sex: string,
+    hod: boolean,
 ]
 
 export type UserProfileOptimizedType = [
@@ -294,6 +296,8 @@ export type UserProfileOptimizedType = [
     academic_year: string,
     level: string | number,
     user_id: number,
+    domain_id: number,
+    hod: boolean,
 ]
 
 
@@ -317,7 +321,7 @@ export type SpecialtyOptimizedType = [
     level_id: number,
     domain_id: number,
     main_specialty_id: number,
-    level: number | string,
+    level: number,
 
 ]
 
@@ -330,18 +334,21 @@ export type CourseOptimizedType = [
     id:  number,
     course_name: string,
     specialty_name: string,
-    semester: string | number,
-    course_code: string | number,
-    course_credit: number,
-    hours: string,
-    completed: boolean,
-    level: string | number,
     academic_year: string,
-    assigned_to_id: number,
-    assigned_to_first_name: string,
-    assigned_to_last_name: string,
+    level: number,
+    course_code: string | number,
+    course_type: string,
+    semester: string,
+    course_credit: number,
+    completed: boolean,
+    assigned: boolean,
+    paid: boolean,
+    hours: number,
+    assigned_first_name: string,
+    assigned_last_name: string,
+    assigned_id: number,
     specialty_id: number,
-    main_course_id: number,
+    date_assigned: string,
 ]
 
 export type LevelOptimizedType = [
@@ -349,9 +356,22 @@ export type LevelOptimizedType = [
     level: number,
 ]
 
-export interface ResultOptimizedType {
-    id:  number
-    course_name: number
-    specialty_name: string
-    level: string
-}
+export type ResultOptimizedType = [
+    id:  number,
+    course_name: string,
+    student_first_name: string,
+    student_last_name: string,
+    ca: number,
+    exam: number,
+    resit: number,
+    validated: boolean,
+    closed: boolean,
+    paid: boolean,
+    updated_by__first_name: string,
+    student__id: number,
+    course__id: number,
+    academic_year: string,
+    updated_at: string,
+    specialty_id: string,
+    course_name: string,
+]

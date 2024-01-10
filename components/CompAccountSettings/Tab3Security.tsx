@@ -87,7 +87,7 @@ const Tab3Security = () => {
 
     let value = {
       ...values,
-      user_id: storeChoosenUserProfile.id,
+      user_id: storeChoosenUserProfile[0],
       password: values["currentPassword"],
       updating_password: true,
       updated_by_id: storeUser.id,
@@ -169,7 +169,7 @@ const Tab3Security = () => {
               <Grid container spacing={4}>
                 
                 <Grid item xs={12} sx={{ marginTop: 3 }} container justifyContent="center">
-                  <Typography>Change Password For - {storeChoosenUserProfile.user.first_name} {storeChoosenUserProfile.user.last_name}</Typography>
+                  <Typography>Change Password For - {storeChoosenUserProfile[3]} {storeChoosenUserProfile[4]}</Typography>
                 </Grid>
 
                 <Grid item xs={12} sx={{ marginTop: 1 }}>

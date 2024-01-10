@@ -85,7 +85,7 @@ const TabSecurityStudentLecturer = () => {
 
     let value = {
       ...values,
-      user_id: storeProfile.user.id,
+      user_id: storeProfile[15],
       password: values["currentPassword"],
       updating_password: true,
       updated_by_id: storeUser.id,
@@ -166,7 +166,7 @@ const TabSecurityStudentLecturer = () => {
               <Grid container spacing={4}>
                 
                 <Grid item xs={12} sx={{ marginTop: 3 }} container justifyContent="center">
-                  <Typography>Change Password For - {storeProfile.user.first_name} {storeProfile.user.last_name}</Typography>
+                  <Typography>Change Password For - {storeProfile[3]} {storeProfile[4]}</Typography>
                 </Grid>
 
                 <Grid item xs={12} sx={{ marginTop: 1 }}>

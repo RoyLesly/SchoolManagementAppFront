@@ -1,6 +1,6 @@
 'use client';
 import { useGetAllCourses } from '@/Utils/customHooks';
-import { CourseProps } from '@/Utils/types';
+import { CourseOptimizedType, CourseProps } from '@/Utils/types';
 import {
     Typography, Box, Grid,
     Table,
@@ -18,6 +18,9 @@ import DashboardCard from '@/components/CompAdmin/shared/DashboardCard';
 import { selectAuthUser } from '@/Redux/Reducers/sliceUser';
 import { addChoosenCourse, removeChoosenCourse } from '@/Redux/Reducers/sliceDomainSpecialityCourse';
 import { getAllCourses } from '@/Utils/functions';
+import { getOptimizedQuery } from '@/Utils/pagination';
+import { AppControlOptimizedQueryUrl } from '@/Utils/Config';
+import { CourseFieldList } from '@/Utils/constants';
 
 
 interface Tab1SelectProfileProps {
@@ -30,13 +33,14 @@ const Tab1SelectCourse:FC<Tab1SelectProfileProps> = ({ setSelectedNumber }) => {
   const [ fetching, setFetching ] = useState<boolean>(true)
   const [ loading, setLoading ] = useState<boolean>(true)
   const [ count, setCount ] = useState<number>(0)
-  const [ allCourses, setAllCourses ] = useState<CourseProps[]>([])
-  const [ myCourses, setMyCourses ] = useState<CourseProps[]>([])
+  const [ allCourses, setAllCourses ] = useState<CourseOptimizedType[]>([])
+  const [ myCourses, setMyCourses ] = useState<CourseOptimizedType[]>([])
 
   useEffect(() => {
     if (count == 0) {
         dispatch(removeChoosenCourse())
-        getAllCourses(setMyCourses, setFetching, { searchField: "assigned_to__id", value: storeUser?.id})
+        getOptimizedQuery(setMyCourses, setFetching, ()=>{}, ()=>{}, ()=>{}, AppControlOptimizedQueryUrl, { model: "Course", searchField: "assigned_to__id", value: storeUser?.id, fieldList: [...CourseFieldList]} )
+        // getAllCourses(setMyCourses, setFetching, { searchField: "assigned_to__id", value: storeUser?.id})
         setCount(count + 1)
     }
     if (count == 1) {
@@ -93,8 +97,8 @@ const Tab1SelectCourse:FC<Tab1SelectProfileProps> = ({ setSelectedNumber }) => {
                           </TableRow>
                       </TableHead>
                       <TableBody>
-                          {myCourses.map((item: CourseProps) => (
-                              <TableRow key={item.id}>
+                          {myCourses.map((item: CourseOptimizedType) => (
+                              <TableRow key={item[0]}>
 
                                   <TableCell>
                                       <Typography
@@ -103,7 +107,7 @@ const Tab1SelectCourse:FC<Tab1SelectProfileProps> = ({ setSelectedNumber }) => {
                                               fontWeight: "500",
                                           }}
                                       >
-                                          {item?.main_course?.course_name}
+                                          {item[1]}
                                       </Typography>
                                   </TableCell>
 
@@ -114,13 +118,13 @@ const Tab1SelectCourse:FC<Tab1SelectProfileProps> = ({ setSelectedNumber }) => {
                                               fontWeight: "500",
                                           }}
                                       >
-                                          {item.specialty?.main_specialty.specialty_name} - {item.specialty?.level.level}
+                                          {item[2]} - {item[4]}
                                       </Typography>
                                   </TableCell>
 
                                   <TableCell>
                                       <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                                          {item.specialty?.academic_year}
+                                          {item[3]}
                                       </Typography>
                                   </TableCell>
 

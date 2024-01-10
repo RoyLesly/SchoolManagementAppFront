@@ -1,21 +1,28 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppState } from '../store';
 import { HYDRATE } from "next-redux-wrapper";
-import { CustomUserOptimizedType, UserProfileOptimizedType, UserType } from '../../Utils/types';
+import { UserProfile, UserType } from '../../Utils/types';
 
-const initChoosenUser = [0, '', '', '', '', '', '', '', '', false, '', '', '', false]
+const initChoosenUser = { 
+    id: 0, username: '', role: "", first_name: "", last_name: "", created_at: "", 
+    last_login: "", is_active: false, dept: null, matricle: "", about: "", sex: "",
+    telephone: 0, pob: "", dob: "", email: "", email_confirmed: false,
+}
 
-const initChoosenUserProfile = [0, '', '', '', '', 0, '', '', '', '', '', false, '', '', 0, 0]
+const initChoosenUserProfile = {
+    id: 0, user: initChoosenUser, first_name: "", last_name: "", about: "", telephone: 0, sex: "",
+    pob: "", dob: "", email: "", title: "", updated_at: "", created_at: "", email_confirmed: false,
+}
 
-export const initialChoosenUserState = initChoosenUser
-export const initialChoosenUserProfileState = initChoosenUserProfile
+export const initialChoosenUserState: UserType = initChoosenUser
+export const initialChoosenUserProfileState: UserProfile = initChoosenUserProfile
 
 
 export const choosenUserSlice = createSlice({
     name: 'choosedUser',
     initialState: initialChoosenUserState,
     reducers: {
-        addChoosenUser: (state, action: PayloadAction<CustomUserOptimizedType>) => {
+        addChoosenUser: (state, action: PayloadAction<UserType>) => {
             const choosedUser = action.payload;
             return choosedUser
         },
@@ -29,7 +36,7 @@ export const choosenUserProfileSlice = createSlice({
     name: 'choosenUserProfile',
     initialState: initialChoosenUserProfileState,
     reducers: {
-        addChoosenUserProfile: (state, action: PayloadAction<UserProfileOptimizedType>) => {
+        addChoosenUserProfile: (state, action: PayloadAction<UserProfile>) => {
             const userProfile = action.payload;
             return userProfile
         },

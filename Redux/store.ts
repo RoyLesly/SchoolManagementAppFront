@@ -6,7 +6,7 @@ import { activationColorSlice, activationFrequencySlice, activationSlice } from 
 import { choosenUserProfileSlice, choosenUserSlice } from "./Reducers/sliceChoosenUserAndProfile";
 import { choosenCourseSlice, choosenSpecialtySlice, choosenDomainSlice } from "./Reducers/sliceDomainSpecialityCourse";
 import { darkModeSlice } from "./Reducers/sliceTheme";
-import { printResultsSlice } from "./Reducers/sliceResults";
+import { printResultsSlice, resultsSlice } from "./Reducers/sliceResults";
 
 
 const persistConfig = {
@@ -22,6 +22,7 @@ const persistedChoosenUserReducer = persistReducer(persistConfig, choosenUserSli
 const persistedChoosenUserProfileReducer = persistReducer(persistConfig, choosenUserProfileSlice.reducer)
 const persistedChoosenCourseReducer = persistReducer(persistConfig, choosenCourseSlice.reducer)
 const persistedChoosenDomainReducer = persistReducer(persistConfig, choosenDomainSlice.reducer)
+const persistedResultsReducer = persistReducer(persistConfig, resultsSlice.reducer)
 const persistedPrintResultsReducer = persistReducer(persistConfig, printResultsSlice.reducer)
 
 
@@ -36,6 +37,7 @@ const makeStore = () => configureStore({
         choosenCourse: persistedChoosenCourseReducer,
         choosenSpecialty: choosenSpecialtySlice.reducer,
         choosenDomain: choosenDomainSlice.reducer,
+        results: resultsSlice.reducer,
         printResults: printResultsSlice.reducer,
 
 
@@ -58,6 +60,7 @@ const store = configureStore({
         choosenCourse: persistedChoosenCourseReducer,
         choosenSpecialty: choosenSpecialtySlice.reducer,
         choosenDomain: choosenDomainSlice.reducer,
+        results: persistedResultsReducer,
         printResults: persistedPrintResultsReducer,
 
         activation: activationSlice.reducer,

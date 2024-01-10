@@ -5,12 +5,12 @@ import {
 } from '@mui/material';
 import DashboardCard from '@/components/CompAdmin/shared/DashboardCard';
 import { ChangeEvent, useEffect, useState } from 'react';
-import { CustomUserOptimizedType, UserProfile, UserProfileOptimizedType, UserType } from '@/Utils/types';
-import { getAllUserProfiles, getAllUsers } from '@/Utils/functions';
+import { CustomUserOptimizedType, UserProfileOptimizedType, UserType } from '@/Utils/types';
+import { getAllUsers } from '@/Utils/functions';
 import AddUserFormModal from '@/Designs/Modals/AddUserFormModal';
 import EditUserFormModal from '@/Designs/Modals/EditUserFormModal';
 import DeleteItemFormModal from '@/Designs/Modals/DeleteItemFormModal';
-import { PageUserCRUDUrl, UserCRUDUrl, UserControlOptimizedQueryUrl } from '@/Utils/Config';
+import { UserCRUDUrl, UserControlOptimizedQueryUrl } from '@/Utils/Config';
 import MyButtonAdd from '@/Designs/MyButtonAdd';
 import { green, red } from '@mui/material/colors';
 import { useRouter } from 'next/navigation';
@@ -18,6 +18,7 @@ import { useDispatch } from 'react-redux';
 import { addChoosenUserProfile, removeChoosenUser } from '@/Redux/Reducers/sliceChoosenUserAndProfile';
 import MyButtonLoader from '@/Designs/MyButtonLoader';
 import { getData, getOptimizedQuery } from '@/Utils/pagination';
+import { CustomUserFieldList, UserProfileFieldList } from '@/Utils/constants';
 
 
 const TableUsers = () => {
@@ -32,7 +33,8 @@ const TableUsers = () => {
     const [ rowsPerPage, setRowsPerPage ] = useState<number>(100)
     const [ fetching, setFetching ] = useState<boolean>(true);
     const [ record, setRecord ] = useState<CustomUserOptimizedType>();
-    const [ userProfiles, setUserProfiles ] = useState<UserProfileOptimizedType[]>([]);
+    const [ selectedUser, setSelectedUser ] = useState<CustomUserOptimizedType>();
+    const [ userProfiles, setUserProfiles ] = useState<UserProfileOptimizedType[]>();
     const [ users, setUsers ] = useState<CustomUserOptimizedType[]>([]);
     const [ usersData, setUsersData ] = useState<CustomUserOptimizedType[]>([]);
     const [ usersDataPrev, setUsersDataPrev ] = useState<CustomUserOptimizedType[]>([])
@@ -41,20 +43,12 @@ const TableUsers = () => {
     const [ editUserFormModal, setEditUserFormModal ] = useState<boolean>(false);
     const [ deleteUserFormModal, setDeleteUserFormModal ] = useState<boolean>(false);
 
-    const [ customUserFieldList, setCustomUserFielList] = useState<string[]>([
-        "id", "username", "matricle", "first_name", "last_name",
-        "title", "telephone", "email", "address", "is_active", "role"
-    ])
-    const [ userProfileFieldList, setUserProfileFieldList] = useState<string[]>([
-        "id", "user__username", "user__matricle", "user__first_name", "user__last_name", "specialty__id", 
-        "specialty__main_specialty__specialty_name", "user__title", "user__telephone", "user__email", "user__address",
-        "user__is_active", "user__role"
-    ])
+    const [ customUserFieldList, setCustomUserFielList] = useState<string[]>(CustomUserFieldList)
+    const [ userProfileFieldList, setUserProfileFieldList] = useState<string[]>(UserProfileFieldList)
 
     useEffect(() => {
-        let URL = PageUserCRUDUrl
         if (count == 0) {
-            if (page == 0) { getOptimizedQuery(setUserProfiles, ()=>{}, ()=>{}, ()=>{}, ()=>{}, UserControlOptimizedQueryUrl, { model: "UserProfile", fieldList: [...userProfileFieldList], page: 1}) }
+            // if (page == 0) { getOptimizedQuery(setUserProfiles, ()=>{}, ()=>{}, ()=>{}, ()=>{}, UserControlOptimizedQueryUrl, { model: "UserProfile", fieldList: [...userProfileFieldList], page: 1}) }
             if (page == 0) { getOptimizedQuery(setUsers, setFetching, setCountTotal, setNextLink, setPrevLink, UserControlOptimizedQueryUrl, { model: "CustomUser", fieldList: [...customUserFieldList], page: 1}) }
             if (page != 0) { getOptimizedQuery(setUsers, setFetching, setCountTotal, setNextLink, setPrevLink, UserControlOptimizedQueryUrl, { model: "CustomUser", fieldList: [...customUserFieldList], page: page}) }
             setCount(count + 1)
@@ -79,7 +73,21 @@ const TableUsers = () => {
             }
             setCount(count + 1)
         }
-    }, [users, usersData, nextLink, prevLink, count, page, userProfileFieldList, customUserFieldList, dispatch])
+
+        if (count == 4) {
+            getOptimizedQuery(setUserProfiles, setFetching, setCountTotal, setNextLink, setPrevLink, UserControlOptimizedQueryUrl, { 
+                model: "UserProfile", 
+                searchField: "user__id", 
+                value: selectedUser && selectedUser[0], 
+                fieldList: [...userProfileFieldList]
+            })
+            if (userProfiles) {
+                dispatch(addChoosenUserProfile(userProfiles[0]));
+                router.push(`/AdministrationPages/AccountSettings`);
+                setCount(count + 1)
+            }
+        }
+    }, [users, selectedUser, userProfiles, usersData, nextLink, prevLink, count, page, userProfileFieldList, customUserFieldList, dispatch, router])
 
     const reset = () => {
         setCount(0)
@@ -277,9 +285,8 @@ const TableUsers = () => {
                                                     </Button>
                                                     <Button 
                                                         onClick={ () => { 
-                                                            console.log(userProfiles.filter((item: UserProfileOptimizedType) => item[15] == item[0] )[0]);
-                                                            // dispatch(addChoosenUserProfile( userProfiles.filter((up: UserProfileOptimizedType) => up.user.id == item.id )[0]) ); 
-                                                            router.push(`/AdministrationPages/AccountSettings`) 
+                                                            setSelectedUser(item);
+                                                            setCount(4);
                                                         }} 
                                                         variant="contained" disableElevation color="primary">
                                                         View

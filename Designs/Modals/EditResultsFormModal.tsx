@@ -1,9 +1,9 @@
 import { Form, Input, Modal, notification } from 'antd'
 import { FC, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { DomainCRUDUrl, ResultRUDUrl } from '@/Utils/Config';
+import { ResultRUDUrl } from '@/Utils/Config';
 import { axiosRequest } from '@/Utils/functions';
-import { DataProps, ResultProps } from '@/Utils/types';
+import { ResultOptimizedType } from '@/Utils/types';
 import { selectAuthUser } from '@/Redux/Reducers/sliceUser';
 import MyButtonUpdate from '@/Designs/MyButtonUpdate';
 
@@ -11,27 +11,29 @@ import MyButtonUpdate from '@/Designs/MyButtonUpdate';
 interface EditResultsFormProps {
   showModal: any
   setShowModal: any
-  record: ResultProps | null
+  record: ResultOptimizedType | undefined
   reset: any
+  setRecord: any
 }
 
-const EditResultsFormModal:FC<EditResultsFormProps> = ({ showModal, setShowModal, reset, record }: any) => {
+
+const EditResultsFormModal:FC<EditResultsFormProps> = ({ showModal, setShowModal, reset, record, setRecord }: any) => {
 
     const storeUser = useSelector(selectAuthUser)
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false)
-
     
-    const onSubmit = async (values: DataProps) => {
-  
+    const onSubmit = async (values: any) => {
+        values["validated"] = false
+
         if (values["ca"] == "" || values["ca"] == undefined || values["ca"] == null){
-            values["ca"] = record["ca"]
+            values["ca"] = record[4]
         }
         if (values["exam"] == "" || values["exam"] == undefined || values["exam"] == null){
-            values["exam"] = record["exam"]
+            values["exam"] = record[5]
         }
         if (values["resit"] == "" || values["resit"] == undefined || values["resit"] == null){
-            values["resit"] = record["resit"]
+            values["resit"] = record[6]
         }
         if (values["ca"] > 30 || values["ca"] < 0){
             notification.error({
@@ -54,18 +56,24 @@ const EditResultsFormModal:FC<EditResultsFormProps> = ({ showModal, setShowModal
             })
             return;
         }
-        setLoading(true)
-
+        if ((parseInt(values["ca"]) + parseInt(values["exam"])) >= 50 || (parseInt(values["ca"]) + parseInt(values["resit"])) >= 50){
+            values["validated"] = true
+        }
+       
         const payload = {
             ...values, 
-            course_id: record.course.id, 
-            student_id: record.student.id, 
+            course_id: record[12], 
+            student_id: record[11], 
             updated_by_id: storeUser.id
         }
 
+        console.log(payload)
+        // return
+        setLoading(true)
+
         const response = await axiosRequest<any>({
             method: "put",
-            url: ResultRUDUrl + "/" + record.id,
+            url: ResultRUDUrl + "/" + record[0],
             payload: payload,
             hasAuth: true,
         })
@@ -82,14 +90,12 @@ const EditResultsFormModal:FC<EditResultsFormProps> = ({ showModal, setShowModal
             form.resetFields()
         }
         else if (response?.data.errors) {
-            console.log(response.data.errors)
             notification.error({
                 message: "Operation Failed",
                 description: `${JSON.stringify(response.data.errors)}`
             })
         }
         else if (response?.data.error) {
-            console.log(response.data.error)
             notification.error({
                 message: "Operation Failed",
                 description: `${JSON.stringify(response.data.error)}`
@@ -99,9 +105,9 @@ const EditResultsFormModal:FC<EditResultsFormProps> = ({ showModal, setShowModal
 
     return (
         <Modal
-            title={`EDIT - ${record?.student?.user?.first_name} ${record?.student?.user?.last_name}`}
+            title={`EDIT - ${record && record[2]} ${record && record[3]} - ${record && record[1]} `}
             open={showModal}
-            onCancel={() => setShowModal(false)}
+            onCancel={() => { setShowModal(false); setRecord(undefined) }}
             footer={false}
             destroyOnClose={true}
         >
@@ -110,19 +116,19 @@ const EditResultsFormModal:FC<EditResultsFormProps> = ({ showModal, setShowModal
                 <Form.Item label="CA" name="ca"
                     rules={[{ required: false, message: "Please Input CA" }]}
                 >
-                    <Input defaultValue={`${record?.ca}`} type='number' max={30} />
+                    <Input defaultValue={`${record && record[4]}`} type='number' max={30} />
                 </Form.Item>
 
                 <Form.Item label="EXAM" name="exam"
                     rules={[{ required: false, message: "Please Input EXAM" }]}
                 >
-                    <Input defaultValue={`${record?.exam}`} type='number' max={70}/>
+                    <Input defaultValue={`${record && record[5]}`} type='number' max={70}/>
                 </Form.Item>
 
                 <Form.Item label="RESIT" name="resit"
                     rules={[{ required: false, message: "Please Input RESIT" }]}
                 >
-                    <Input defaultValue={`${record?.resit}`} type='number' max={60}/>
+                    <Input defaultValue={`${record && record[6]}`} type='number' max={60}/>
                 </Form.Item>
 
                 <Form.Item>

@@ -41,11 +41,13 @@ const Tab2UploadResults:FC<Tab2UploadResultsProps> = ({  }) => {
     getAllResults(setAllResults, setFetching)
   }
 
+  console.log(choosenCourse)
+
   useEffect(() => {
     if (count == 0) {
-        if (storeChoosenCourse.id > 0) {
-            getAllResults(setAllMyResults, setFetching, { searchField: "course__id", value: storeChoosenCourse?.id});
-        }
+        // if (storeChoosenCourse[0] >= 0) {
+        //     getAllResults(setAllMyResults, setFetching, { searchField: "course__id", value: storeChoosenCourse?.id});
+        // }
         setCount(count + 1);
     }
     if (count == 1) {
@@ -56,120 +58,122 @@ const Tab2UploadResults:FC<Tab2UploadResultsProps> = ({  }) => {
   
 
   return (
-    <DashboardCard title={`RESULTS FOR - ${storeChoosenCourse?.main_course?.course_name}`} loading={loading}>
-      <Box sx={{ overflow: 'auto', width: { xs: '380px', sm: 'auto' },}}>
-          <Grid container spacing={0}>
-              {storeChoosenCourse.id > 0 && <Grid item xs={12}>
-                <Typography variant='h5' mb="2">
-                    {storeChoosenCourse?.specialty?.main_specialty?.specialty_name} / {storeChoosenCourse?.specialty?.academic_year} /  Level {storeChoosenCourse?.specialty?.level.level}
-                </Typography>
-              </Grid>}
-              <Grid item xs={12}>
-                  <Table
-                      aria-label="simple table"
-                      sx={{
-                          whiteSpace: "nowrap",
-                          mt: 0
-                      }}
-                  >
-                      <TableHead>
-                          <TableRow>
+    <></>
+    // <DashboardCard title={`RESULTS FOR - ${storeChoosenCourse && storeChoosenCourse[1]}`} loading={loading}>
+    // <DashboardCard title={`RESULTS FOR - `} loading={loading}>
+    //   {/* <Box sx={{ overflow: 'auto', width: { xs: '380px', sm: 'auto' },}}>
+    //       <Grid container spacing={0}>
+    //           {storeChoosenCourse[0] > 0 && <Grid item xs={12}>
+    //             <Typography variant='h5' mb="2">
+    //                 {storeChoosenCourse?[2]} / {storeChoosenCourse[3]} /  Level {storeChoosenCourse[4]}
+    //             </Typography>
+    //           </Grid>}
+    //           <Grid item xs={12}>
+    //               <Table
+    //                   aria-label="simple table"
+    //                   sx={{
+    //                       whiteSpace: "nowrap",
+    //                       mt: 0
+    //                   }}
+    //               >
+    //                   <TableHead>
+    //                       <TableRow>
                         
-                              <TableCell>
-                                  <Typography variant="subtitle2" fontWeight={600}>
-                                      STUDENT NAME
-                                  </Typography>
-                              </TableCell>
+    //                           <TableCell>
+    //                               <Typography variant="subtitle2" fontWeight={600}>
+    //                                   STUDENT NAME
+    //                               </Typography>
+    //                           </TableCell>
 
-                              <TableCell>
-                                  <Typography variant="subtitle2" fontWeight={600}>
-                                      CA
-                                  </Typography>
-                              </TableCell>
+    //                           <TableCell>
+    //                               <Typography variant="subtitle2" fontWeight={600}>
+    //                                   CA
+    //                               </Typography>
+    //                           </TableCell>
 
-                              <TableCell>
-                                  <Typography variant="subtitle2" fontWeight={600}>
-                                      EXAM
-                                  </Typography>
-                              </TableCell>
+    //                           <TableCell>
+    //                               <Typography variant="subtitle2" fontWeight={600}>
+    //                                   EXAM
+    //                               </Typography>
+    //                           </TableCell>
 
-                              <TableCell>
-                                  <Typography variant="subtitle2" fontWeight={600}>
-                                      RESIT
-                                  </Typography>
-                              </TableCell>
+    //                           <TableCell>
+    //                               <Typography variant="subtitle2" fontWeight={600}>
+    //                                   RESIT
+    //                               </Typography>
+    //                           </TableCell>
 
-                              <TableCell>
-                                  <Typography variant="subtitle2" fontWeight={600}>
-                                      STATUS
-                                  </Typography>
-                              </TableCell>
+    //                           <TableCell>
+    //                               <Typography variant="subtitle2" fontWeight={600}>
+    //                                   STATUS
+    //                               </Typography>
+    //                           </TableCell>
 
-                              <TableCell>
-                                  <Typography variant="subtitle2" fontWeight={600}>
-                                      ACTION
-                                  </Typography>
-                              </TableCell>
-                          </TableRow>
-                      </TableHead>
-                      <TableBody>
-                          {allMyResults.map((item: ResultProps) => (
-                              <TableRow key={item.id}>
+    //                           <TableCell>
+    //                               <Typography variant="subtitle2" fontWeight={600}>
+    //                                   ACTION
+    //                               </Typography>
+    //                           </TableCell>
+    //                       </TableRow>
+    //                   </TableHead>
+    //                   <TableBody>
+    //                       {allMyResults.map((item: ResultProps) => (
+    //                           <TableRow key={item.id}>
                                   
-                                  <TableCell>
-                                      <Typography
-                                          sx={{
-                                              fontSize: "15px",
-                                              fontWeight: "500",
-                                          }}
-                                      >
-                                          {item.student.user.first_name} {item.student.user.last_name}
-                                      </Typography>
-                                  </TableCell>
+    //                               <TableCell>
+    //                                   <Typography
+    //                                       sx={{
+    //                                           fontSize: "15px",
+    //                                           fontWeight: "500",
+    //                                       }}
+    //                                   >
+    //                                       {item.student.user.first_name} {item.student.user.last_name}
+    //                                   </Typography>
+    //                               </TableCell>
 
-                                  <TableCell>
-                                      <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                                          {item.ca}
-                                      </Typography>
-                                  </TableCell>
-                                  <TableCell>
-                                      <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                                          {item.exam}
-                                      </Typography>
-                                  </TableCell>
-                                  <TableCell>
-                                      <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                                          {item.resit}
-                                      </Typography>
-                                  </TableCell>
-                                  <TableCell>
-                                      <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                                          {item.validated}
-                                      </Typography>
-                                  </TableCell>
-                                  <TableCell>
-                                      <Button onClick={() => { setRecord(item); setEditResults(true) }}>Edit</Button>
-                                  </TableCell>
-                              </TableRow>
-                          ))}
-                      </TableBody>
-                  </Table>
-              </Grid>
+    //                               <TableCell>
+    //                                   <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
+    //                                       {item.ca}
+    //                                   </Typography>
+    //                               </TableCell>
+    //                               <TableCell>
+    //                                   <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
+    //                                       {item.exam}
+    //                                   </Typography>
+    //                               </TableCell>
+    //                               <TableCell>
+    //                                   <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
+    //                                       {item.resit}
+    //                                   </Typography>
+    //                               </TableCell>
+    //                               <TableCell>
+    //                                   <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
+    //                                       {item.validated}
+    //                                   </Typography>
+    //                               </TableCell>
+    //                               <TableCell>
+    //                                   <Button onClick={() => { setRecord(item); setEditResults(true) }}>Edit</Button>
+    //                               </TableCell>
+    //                           </TableRow>
+    //                       ))}
+    //                   </TableBody>
+    //               </Table>
+    //           </Grid>
               
-            {allMyResults.length < 1 && <div style={{ flex: 1, alignItems: "center", textAlign: "center", justifyContent: "center", fontSize: "30", paddingTop: 50, paddingBottom: 70, paddingLeft: 60, paddingRight: 25 }}>
-                No Student Found ...
-            </div>}  
-          </Grid>
+    //         {allMyResults.length < 1 && <div style={{ flex: 1, alignItems: "center", textAlign: "center", justifyContent: "center", fontSize: "30", paddingTop: 50, paddingBottom: 70, paddingLeft: 60, paddingRight: 25 }}>
+    //             No Student Found ...
+    //         </div>}  
+    //       </Grid>
 
-        <EditResultsFormModal
-            showModal={editResults}
-            setShowModal={setEditResults}
-            record={record}
-            reset={reset}
-        />
+    //     <EditResultsFormModal
+    //         showModal={editResults}
+    //         setShowModal={setEditResults}
+    //         record={record}
+    //         reset={reset}
+    //     />
 
-      </Box>            
-  </DashboardCard>
+    //   </Box>             */}
+    //   {/* </DashboardCard> */}
   )
 }
 

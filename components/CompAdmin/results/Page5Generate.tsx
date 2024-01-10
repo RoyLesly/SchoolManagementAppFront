@@ -177,7 +177,7 @@ const Page5Generate = () => {
               <Box justifyContent="center">
                 <Button 
                   className='mx-auto'
-                  onClick={() => { dispatch(addPrintResults(resultsForSelectedYearStudent)); setShowPrint(true); }}
+                  // onClick={() => { dispatch(addPrintResults(resultsForSelectedYearStudent)); setShowPrint(true); }}
                 >
                   Preview Results
                 </Button>
@@ -206,12 +206,12 @@ const Page5Generate = () => {
         </Grid>
       </Box>
 
-      <EditResultsFormModal 
+      {/* <EditResultsFormModal 
         showModal={editResults}
         setShowModal={setEditResults}
         record={record}
         reset={reset}
-      />
+      /> */}
 
       <PrintTranscriptModal
         open={showPrint}

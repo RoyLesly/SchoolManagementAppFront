@@ -22,54 +22,54 @@ const ResetPasswordFormModal:FC<ResetPasswordFormProps> = ({ showModal, setShowM
     const storeChoosenUser = useSelector(selectChoosenUser);
     const [loading, setLoading] = useState(false);
 
-    const Reset = async () => {
-        const payload = {
-            updated_by_id: storeUser.id, 
-            account_to_reset_id: storeChoosenUser.id,
-            password: "0000",
-            action: "resetting_password"
-        }
-        const response = await axiosRequest<any>({
-            method: "post",
-            url: CreateUpdateResetPasswordUrl,
-            payload: payload,
-            hasAuth: true,
-        })
+    // const Reset = async () => {
+    //     const payload = {
+    //         updated_by_id: storeUser.id, 
+    //         account_to_reset_id: storeChoosenUser.id,
+    //         password: "0000",
+    //         action: "resetting_password"
+    //     }
+    //     const response = await axiosRequest<any>({
+    //         method: "post",
+    //         url: CreateUpdateResetPasswordUrl,
+    //         payload: payload,
+    //         hasAuth: true,
+    //     })
 
-        setLoading(false)
-        if (response?.data.success) {
-            notification.success({
-                message: "Operation Successful",
-                description: "Password Reset Successfully"
-            })
-            setShowModal(false)
-        }
-        if (response?.data.error) {
-            notification.error({
-                message: "Operation Failed",
-                description : `${JSON.stringify(response.data.error)}`
-            })
-        }
-    }
+    //     setLoading(false)
+    //     if (response?.data.success) {
+    //         notification.success({
+    //             message: "Operation Successful",
+    //             description: "Password Reset Successfully"
+    //         })
+    //         setShowModal(false)
+    //     }
+    //     if (response?.data.error) {
+    //         notification.error({
+    //             message: "Operation Failed",
+    //             description : `${JSON.stringify(response.data.error)}`
+    //         })
+    //     }
+    // }
 
-    return (
-        <Modal
-            title={`Reset Password - ${storeChoosenUser?.first_name} ${storeChoosenUser?.last_name}`}
-            open={showModal}
-            onCancel={() => setShowModal(false)}
-            footer={false}
-        >
-            <Grid item xs={12} sx={{ marginTop: 3 }} container justifyContent="center">
-                <Typography alignContent="center" variant='h2'>Are You Sure to Reset Account Password ? </Typography>
-                <Typography alignContent="center" variant='h1'>NB</Typography>
-                <Typography alignContent="center" variant='h5'><code>{storeChoosenUser?.first_name} will not be able to login with old password</code></Typography>
-                <Typography alignContent="center" variant='h5'><code>The New Password after successful Reset will be</code></Typography>
-                <Typography alignContent="center" variant='h3'>0000</Typography>
-                <Grid item xs={12} sx={{ marginTop: 3 }} container justifyContent="center">
-                    <Button onClick={() => {Reset()}}>Reset</Button>
-                </Grid>
-            </Grid>
-        </Modal>
+    return (<></>
+        // <Modal
+        //     title={`Reset Password - ${storeChoosenUser?.first_name} ${storeChoosenUser?.last_name}`}
+        //     open={showModal}
+        //     onCancel={() => setShowModal(false)}
+        //     footer={false}
+        // >
+        //     <Grid item xs={12} sx={{ marginTop: 3 }} container justifyContent="center">
+        //         <Typography alignContent="center" variant='h2'>Are You Sure to Reset Account Password ? </Typography>
+        //         <Typography alignContent="center" variant='h1'>NB</Typography>
+        //         <Typography alignContent="center" variant='h5'><code>{storeChoosenUser?.first_name} will not be able to login with old password</code></Typography>
+        //         <Typography alignContent="center" variant='h5'><code>The New Password after successful Reset will be</code></Typography>
+        //         <Typography alignContent="center" variant='h3'>0000</Typography>
+        //         <Grid item xs={12} sx={{ marginTop: 3 }} container justifyContent="center">
+        //             <Button onClick={() => {Reset()}}>Reset</Button>
+        //         </Grid>
+        //     </Grid>
+        // </Modal>
     )
 }
 

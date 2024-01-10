@@ -1,6 +1,6 @@
 'use client';
 import { useGetAllResults } from '@/Utils/customHooks';
-import { ResultProps } from '@/Utils/types';
+import { ResultOptimizedType, ResultProps } from '@/Utils/types';
 import {
     Typography, Box, Grid,
     Table,
@@ -25,14 +25,14 @@ const Tab2Results:FC<Tab2ResultsProps> = ({  }) => {
   const storeUser = useSelector(selectAuthUser);
   const storeChoosenUserProfile = useSelector(selectChoosenUserProfile);
   const [ fetching, setFetching ] = useState<boolean>(false)
-  const [ allResults, setAllResults ] = useState<ResultProps[]>([])
-  const [ allMyResults, setAllMyResults ] = useState<ResultProps[]>([])
+  const [ allResults, setAllResults ] = useState<ResultOptimizedType[]>([])
+  const [ allMyResults, setAllMyResults ] = useState<ResultOptimizedType[]>([])
 
-  useGetAllResults(setAllResults, setFetching);
+//   useGetAllResults(setAllResults, setFetching);
 
   useEffect(() => {
-      const filA = allResults.filter((item: ResultProps) => item.student.id == storeChoosenUserProfile.id);
-      const filB = filA.filter((item: ResultProps) => item.course?.specialty?.id == storeChoosenUserProfile?.specialty?.id);
+      const filA = allResults.filter((item: ResultOptimizedType) => item[11] == storeChoosenUserProfile[0]);
+      const filB = filA.filter((item: ResultOptimizedType) => item[15] == storeChoosenUserProfile[5]);
       setAllMyResults(filB)
   }, [allResults, storeUser, storeChoosenUserProfile])  
 
@@ -57,7 +57,7 @@ const Tab2Results:FC<Tab2ResultsProps> = ({  }) => {
   }
 
   return (
-    <DashboardCard loading={false} title={`RESULTS FOR ${storeChoosenUserProfile?.specialty?.main_specialty.specialty_name} ${storeChoosenUserProfile?.specialty?.level.level} `}>
+    <DashboardCard loading={false} title={`RESULTS FOR ${storeChoosenUserProfile[1]} ${storeChoosenUserProfile[6]} `}>
       <Box sx={{ overflow: 'auto', width: { xs: '380px', sm: 'auto' },}}>
           <Grid container spacing={0}>
               <Grid item xs={12}>
@@ -112,8 +112,8 @@ const Tab2Results:FC<Tab2ResultsProps> = ({  }) => {
                           </TableRow>
                       </TableHead>
                       <TableBody>
-                          {allMyResults.map((item: ResultProps) => (
-                              <TableRow key={item.id}>
+                          {allMyResults.map((item: ResultOptimizedType) => (
+                              <TableRow key={item[0]}>
                                   
                                   <TableCell>
                                       <Typography
@@ -122,33 +122,33 @@ const Tab2Results:FC<Tab2ResultsProps> = ({  }) => {
                                               fontWeight: "500",
                                           }}
                                       >
-                                          {item.course.main_course.course_name}
+                                          {item[16]}
                                       </Typography>
                                   </TableCell>
 
                                   <TableCell>
                                       <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                                          {item.ca}
+                                          {item[4]}
                                       </Typography>
                                   </TableCell>
                                   <TableCell>
                                       <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                                          {item.exam}
+                                          {item[5]}
                                       </Typography>
                                   </TableCell>
                                   <TableCell>
                                       <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                                          {item.resit}
+                                          {item[6]}
                                       </Typography>
                                   </TableCell>
                                   <TableCell>
                                       <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                                        {calcTotalMarks(item.ca, item.exam, item.resit)}
+                                        {calcTotalMarks(item[4], item[5], item[6])}
                                       </Typography>
                                   </TableCell>
                                   <TableCell>
                                       <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                                          {checkValidated(calcTotalMarks(item.ca, item.exam, item.resit))}
+                                          {checkValidated(calcTotalMarks(item[4], item[5], item[6]))}
                                       </Typography>
                                   </TableCell>
                               </TableRow>

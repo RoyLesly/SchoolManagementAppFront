@@ -1,23 +1,23 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppState } from '../store';
 import { HYDRATE } from "next-redux-wrapper";
-import { CustomUserOptimizedType, UserProfile, UserProfileOptimizedType, UserType } from '@/Utils/types';
+import { UserProfile, UserType } from '@/Utils/types';
 import { initUser, initUserProfile } from '@/Redux/Reducers/sliceUser';
 
 
-const initialChoosenUserOptimizedState = [0, "", "", "", "", "", 0, "", "", false, "", "", "", false, "", false]
-const initialChoosenUserProfileOptimizedState = [0, "", "", "", "", 0, "", "", "", "", "", false, "", "", 0, 0, 0, false]
+const initialChoosenUserState: UserType = initUser
+const initialChoosenUserProfileState: UserProfile = initUserProfile
 
 export const choosenUserSlice = createSlice({
     name: 'choosenUser',
-    initialState: initialChoosenUserOptimizedState,
+    initialState: initialChoosenUserState,
     reducers: {
-        addChoosenUser: (state, action: PayloadAction<CustomUserOptimizedType>) => {
+        addChoosenUser: (state, action: PayloadAction<UserType>) => {
             const chosenUser = action.payload;
             return chosenUser
         },
         removeChoosenUser: () => {
-            return initialChoosenUserOptimizedState
+            return initialChoosenUserState
         }
     },
     extraReducers: {
@@ -32,14 +32,14 @@ export const choosenUserSlice = createSlice({
 
 export const choosenUserProfileSlice = createSlice({
     name: 'choosenUserProfile',
-    initialState: initialChoosenUserProfileOptimizedState,
+    initialState: initialChoosenUserProfileState,
     reducers: {
-        addChoosenUserProfile: (state, action: PayloadAction<UserProfileOptimizedType>) => {
+        addChoosenUserProfile: (state, action: PayloadAction<UserProfile>) => {
             const userProfile = action.payload;
             return userProfile
         },
         removeChoosenUserProfile: () => {
-            return initialChoosenUserProfileOptimizedState
+            return initialChoosenUserProfileState
         }
     },
     extraReducers: {

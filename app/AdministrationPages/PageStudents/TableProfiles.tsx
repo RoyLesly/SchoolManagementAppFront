@@ -25,6 +25,7 @@ import { removeChoosenUser, removeChoosenUserProfile } from '@/Redux/Reducers/sl
 import { useRouter } from 'next/navigation';
 import MyButtonLoader from '@/Designs/MyButtonLoader';
 import { getOptimizedQuery } from '@/Utils/pagination';
+import { addChoosenUserProfile } from '@/app/Redux/Reducers/sliceUserAndProfile';
 
 
 interface UserProfilesProps {
@@ -52,10 +53,6 @@ const TableProfiles:FC<UserProfilesProps> = ({ userprofiletype }) => {
 
     const [ searchText, setSearchText ] = useState<string>("")
     const [ dataFound, setDataFound ] = useState<boolean>(true)
-
-    console.log(loading)
-    console.log(dataFound)
-    console.log(fetching)
 
     const [ userProfileFieldList, setUserProfileFieldList] = useState<string[]>([
         "id", "user__username", "user__matricle", "user__first_name", "user__last_name", "specialty__id", 
@@ -259,7 +256,7 @@ const TableProfiles:FC<UserProfilesProps> = ({ userprofiletype }) => {
                                                     <Stack justifyItems="center" direction="row" spacing={1} justifyContent="center">
                                                         <Button 
                                                             onClick={ () => { 
-                                                                // dispatch(addChoosenUserProfile(item)); 
+                                                                dispatch(addChoosenUserProfile(item)); 
                                                                 router.push(`/AdministrationPages/AccountSettings`) 
                                                             }} 
                                                             variant="contained" disableElevation color="primary">

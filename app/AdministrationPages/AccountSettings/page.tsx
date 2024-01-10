@@ -44,15 +44,13 @@ interface AccountSettingsProps {
 }
 
 const Page:FC<AccountSettingsProps> = ({  }) => {
-  const storeAccountRole = useSelector(selectChoosenUserProfile)?.user?.role
+  const storeAccountRole = useSelector(selectChoosenUserProfile)[12]
 
   const [value, setValue] = useState<string>('account')
 
   const handleChange = (event: SyntheticEvent, newValue: string) => {
     setValue(newValue)
   }
-
-
   return (
     <Card>
       <TabContext value={value}>

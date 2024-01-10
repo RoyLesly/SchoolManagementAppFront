@@ -1,25 +1,73 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppState } from '../store';
 import { HYDRATE } from "next-redux-wrapper";
-import { CourseOptimizedType, DomainOptimizedType, SpecialtyOptimizedType } from '../../Utils/types';
+import { CourseProps, DomainProps, SpecialtyProps } from '../../Utils/types';
+import { initUser } from './sliceUser';
 
-export const initChoosenDomainOptimized = [0, ""] 
+const initLevel = { 
+    id: 0, level: 0, created_at: "", updated_at: ""
+}
 
-export const initChoosenSpecialtyOptimized = [0, "", "", 0, 0, 0, 0]
+const initChoosenDomain = { 
+    id: 0, domain_name: "", created_at: "", updated_at: ""
+}
 
-export const initChoosenCourseOptimized = [0, '', '', '', 0, 0, 0, false, 0, '', 0, "", "", 0, 0]
+export const initChoosenSpecialty = {
+    id: 0, 
+    academic_year: "",
+    level: initLevel,
+    main_specialty: {
+        specialty_name: "",
+        domain: initChoosenDomain,
+        id: 0,
+        created_at: "",
+        updated_at: ""
+    }, 
+    updated_at: "", created_at: ""
+}
 
+const MainCourseP = {
+    course_name: "",
+    id: 0,
+    created_at: "",
+    created_by: initUser,
+    updated_at: "",
+    updated_by: initUser
+}
+
+export const initChoosenCourse = {
+    id: 0,
+    main_course: MainCourseP,
+    specialty: initChoosenSpecialty,
+    course_code: "",
+    course_credit: 0,
+    semester: 1,
+    hours: 0,
+    completed: false,
+    assigned: false,
+    paid: false,
+    assigned_to: initUser,
+    date_assigned: "",
+    created_at: "",
+    created_by: initUser,
+    updated_at: "",
+    updated_by: initUser
+}
+
+const initialChoosenDomainState: DomainProps = initChoosenDomain
+const initialChoosenSpecialtyState: SpecialtyProps = initChoosenSpecialty
+const initialChoosenCourseState: CourseProps = initChoosenCourse
 
 export const choosenDomainSlice = createSlice({
     name: 'choosenDomain',
-    initialState: initChoosenDomainOptimized,
+    initialState: initialChoosenDomainState,
     reducers: {
-        addChoosenDomain: (state, action: PayloadAction<DomainOptimizedType>) => {
+        addChoosenDomain: (state, action: PayloadAction<DomainProps>) => {
             const domain = action.payload;
             return domain
         },
         removeChoosenDomain: () => {
-            return initChoosenDomainOptimized
+            return initialChoosenDomainState
         }
     },
     extraReducers: {
@@ -34,14 +82,14 @@ export const choosenDomainSlice = createSlice({
 
 export const choosenSpecialtySlice = createSlice({
     name: 'choosenSpecialty',
-    initialState: initChoosenSpecialtyOptimized,
+    initialState: initialChoosenSpecialtyState,
     reducers: {
-        addChoosenSpecialty: (state, action: PayloadAction<SpecialtyOptimizedType>) => {
+        addChoosenSpecialty: (state, action: PayloadAction<SpecialtyProps>) => {
             const specialty = action.payload;
             return specialty
         },
         removeChoosenSpecialty: () => {
-            return initChoosenSpecialtyOptimized
+            return initialChoosenSpecialtyState
         }
     },
     extraReducers: {
@@ -56,14 +104,14 @@ export const choosenSpecialtySlice = createSlice({
 
 export const choosenCourseSlice = createSlice({
     name: 'choosenCourse',
-    initialState: initChoosenCourseOptimized,
+    initialState: initialChoosenCourseState,
     reducers: {
-        addChoosenCourse: (state, action: PayloadAction<CourseOptimizedType>) => {
+        addChoosenCourse: (state, action: PayloadAction<CourseProps>) => {
             const course = action.payload;
             return course
         },
         removeChoosenCourse: () => {
-            return initChoosenCourseOptimized
+            return initialChoosenCourseState
         }
     },
     extraReducers: {

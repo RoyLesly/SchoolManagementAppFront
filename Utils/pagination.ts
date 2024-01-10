@@ -393,7 +393,7 @@ export const getOptimizedQuery = async (
     setNextLink: (val: boolean) => void,
     setPrevLink: (val: boolean) => void,
     url: string,
-    params?: { fieldList?: any, searchField?: any, value?: any, page?: number, model: string},
+    params?: { fieldList?: any, searchField?: any, value?: any, page?: number, model: string, kpi?: boolean},
 ) => {
 
 const response = await axiosRequest<{ count: number, results: any[], next: boolean, previous: boolean }>({

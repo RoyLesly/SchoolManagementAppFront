@@ -1,6 +1,6 @@
 'use client';
 import { useGetAllUserProfiles } from '@/Utils/customHooks';
-import { SpecialtyProps, UserProfile } from '@/Utils/types';
+import { SpecialtyProps, UserProfile, UserProfileOptimizedType } from '@/Utils/types';
 import {
     Typography, Box, Grid,
     Table,
@@ -27,13 +27,13 @@ const Tab1SelectProfile:FC<Tab1SelectProfileProps> = ({ setSelectedNumber }) => 
   const storeUser = useSelector(selectAuthUser);
   const dispatch = useDispatch();    
   const [ fetching, setFetching ] = useState<boolean>(false)
-  const [ userProfiles, setUserProfiles ] = useState<UserProfile[]>([])
-  const [ myProfilesData, setMyProfilesData ] = useState<UserProfile[]>([])
+  const [ userProfiles, setUserProfiles ] = useState<UserProfileOptimizedType[]>([])
+  const [ myProfilesData, setMyProfilesData ] = useState<UserProfileOptimizedType[]>([])
 
-  useGetAllUserProfiles(setUserProfiles, setFetching);
+//   useGetAllUserProfiles(setUserProfiles, setFetching);
   useEffect(() => {
-      const fil = userProfiles.filter((item: UserProfile) => item.user.id == storeUser.id);
-      setMyProfilesData(fil)
+    //   const fil = userProfiles.filter((item: UserProfile) => item.user.id == storeUser.id);
+    //   setMyProfilesData(fil)
   }, [userProfiles, storeUser])
   
 
@@ -81,8 +81,8 @@ const Tab1SelectProfile:FC<Tab1SelectProfileProps> = ({ setSelectedNumber }) => 
                           </TableRow>
                       </TableHead>
                       <TableBody>
-                          {myProfilesData.map((item: UserProfile) => (
-                              <TableRow key={item.id}>
+                          {myProfilesData.map((item: UserProfileOptimizedType) => (
+                              <TableRow key={item[0]}>
                                   <TableCell>
                                       <Typography
                                           sx={{
@@ -90,18 +90,18 @@ const Tab1SelectProfile:FC<Tab1SelectProfileProps> = ({ setSelectedNumber }) => 
                                               fontWeight: "500",
                                           }}
                                       >
-                                          {item.specialty?.main_specialty.specialty_name}
+                                          {item[2]}
                                       </Typography>
                                   </TableCell>
 
                                   <TableCell>
                                       <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                                          {item.specialty?.academic_year}
+                                          {item[3]}
                                       </Typography>
                                   </TableCell>
                                   <TableCell>
                                       <Typography color="textSecondary" variant="subtitle2" fontWeight={400}>
-                                          {item.specialty?.level.level}
+                                          {item[4]}
                                       </Typography>
                                   </TableCell>
                                   <TableCell align='left'>
